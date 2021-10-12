@@ -1,0 +1,11 @@
+{
+  "name": "auth",
+  "version": "1.0.0",
+  "main": "index.ts",
+  "dependencies": {
+    "amazon-cognito-identity-js": "5.2.0",
+    "aws-amplify": "4.3.2",
+    "crypto-js": "4.1.1",
+    "react": "17.0.2"
+  }
+}
