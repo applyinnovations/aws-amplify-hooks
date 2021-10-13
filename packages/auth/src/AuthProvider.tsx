@@ -15,7 +15,7 @@ export const AuthProvider: React.FC<AuthContextValuesParams> = ({
   });
   useEffect(() => {
     Amplify.configure(awsConfig);
-  }, []);
+  }, [Amplify]);
   return (
     <AuthContext.Provider value={providerValues}>
       {children}

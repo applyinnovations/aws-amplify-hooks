@@ -1,6 +1,6 @@
-﻿import { Auth, DataStore, Hub } from 'aws-amplify';
-import { CognitoUser } from 'amazon-cognito-identity-js';
-import { MD5 } from 'crypto-js';
+﻿import { Auth, DataStore, Hub } from "aws-amplify";
+import { CognitoUser } from "amazon-cognito-identity-js";
+import { MD5 } from "crypto-js";
 
 import {
   useState,
@@ -9,23 +9,23 @@ import {
   useContext,
   createContext,
   useCallback,
-} from 'react';
+} from "react";
 
 import {
   ANSWER_CHALLENGE_ERRORS,
   AuthContextValues,
   AuthContextValuesParams,
   UserAttributes,
-} from './types';
+} from "./types";
 
 const DEFAULT_USER_DATA = {
-  phone_number: '',
-  given_name: '',
-  family_name: '',
-  'custom:postcode': '',
-  'custom:country_code': '',
-  'custom:avatar': 'profile-1',
-  email: '',
+  phone_number: "",
+  given_name: "",
+  family_name: "",
+  "custom:postcode": "",
+  "custom:country_code": "",
+  "custom:avatar": "profile-1",
+  email: "",
 } as UserAttributes;
 
 export const AuthContext = createContext<AuthContextValues>({
@@ -40,7 +40,7 @@ export const AuthContext = createContext<AuthContextValues>({
   confirmSignUp: () => Promise.resolve({ success: false }),
   confirmSignIn: () => Promise.resolve({ success: false }),
   signOutUser: () => Promise.resolve(),
-  updateUserData: (params) => Promise.resolve(),
+  updateUserData: (_) => Promise.resolve(),
 });
 
 const getParamsWithDefaultValue = (field: string, value: string) =>
@@ -64,7 +64,7 @@ export const authContextValues = ({
           .then((item) => res(item))
           .catch(rej);
       }),
-    [Auth],
+    [Auth]
   );
 
   const handleSessionStart = useCallback(async () => {
@@ -80,21 +80,21 @@ export const authContextValues = ({
   }, [onSessionFailed]);
 
   useEffect(() => {
-    Hub.listen('auth', (data) => {
+    Hub.listen("auth", (data) => {
       switch (data.payload.event) {
-        case 'signIn':
-          console.log('user signed in');
+        case "signIn":
+          console.log("user signed in");
           handleSessionStart();
           break;
-        case 'signUp':
-          console.log('user signed up');
+        case "signUp":
+          console.log("user signed up");
           break;
-        case 'signOut':
-          console.log('user signed out');
+        case "signOut":
+          console.log("user signed out");
           handleSessionFailed();
           break;
-        case 'signIn_failure':
-          console.log('user sign in failed');
+        case "signIn_failure":
+          console.log("user sign in failed");
           handleSessionFailed();
           break;
       }
@@ -102,7 +102,7 @@ export const authContextValues = ({
     (async () =>
       await Auth.currentAuthenticatedUser()
         .then(() => handleSessionStart())
-        .catch((err) => handleSessionFailed()))();
+        .catch((_) => handleSessionFailed()))();
   }, []);
 
   const signInUser = useCallback(
@@ -112,7 +112,7 @@ export const authContextValues = ({
       const newUserData = await Auth.signIn(username, getPassword(phone));
       setCognitoUser(newUserData);
     },
-    [Auth],
+    [Auth]
   );
 
   const getUserName = (phoneNumber: string, email: string) =>
@@ -124,7 +124,7 @@ export const authContextValues = ({
     async (
       phoneNumber: string,
       email: string,
-      countryCode: string,
+      countryCode: string
     ): Promise<CognitoUser> => {
       try {
         const result = await Auth.signUp({
@@ -134,8 +134,8 @@ export const authContextValues = ({
           attributes: {
             email,
             phone_number: phoneNumber,
-            'custom:country_code': countryCode,
-            'custom:avatar': 'profile-1',
+            "custom:country_code": countryCode,
+            "custom:avatar": "profile-1",
           },
         });
         return result.user;
@@ -144,7 +144,7 @@ export const authContextValues = ({
         throw e;
       }
     },
-    [],
+    []
   );
 
   const confirmSignUp = useCallback(
@@ -156,7 +156,7 @@ export const authContextValues = ({
         return { success: true };
       } catch (e) {
         console.log(e);
-        if (e === 'No current user') {
+        if (e === "No current user") {
           return {
             success: false,
             error: ANSWER_CHALLENGE_ERRORS.INCORRECT_CODE,
@@ -165,14 +165,14 @@ export const authContextValues = ({
         return { success: false, error: ANSWER_CHALLENGE_ERRORS.GENERIC_ERROR };
       }
     },
-    [cognitoUser, Auth],
+    [cognitoUser, Auth]
   );
 
   const resendSignUp = useCallback(
     async (phoneNumber: string, email: string) => {
       await Auth.resendSignUp(getUserName(phoneNumber, email));
     },
-    [Auth],
+    [Auth]
   );
 
   const confirmSignIn = useCallback(
@@ -180,11 +180,11 @@ export const authContextValues = ({
       try {
         const user = await Auth.confirmSignIn(cognitoUser, answer);
         setCognitoUser(user);
-        console.log('User logged in');
+        console.log("User logged in");
         return { success: true };
       } catch (e) {
         console.log(e);
-        if (e === 'No current user') {
+        if (e === "No current user") {
           return {
             success: false,
             error: ANSWER_CHALLENGE_ERRORS.INCORRECT_CODE,
@@ -193,16 +193,16 @@ export const authContextValues = ({
         return { success: false, error: ANSWER_CHALLENGE_ERRORS.GENERIC_ERROR };
       }
     },
-    [cognitoUser, Auth],
+    [cognitoUser, Auth]
   );
 
   const signOutUser = useCallback(async () => {
     try {
       await Auth.signOut();
       await DataStore.clear();
-      console.log('user signed out');
+      console.log("user signed out");
     } catch (error) {
-      console.log('error signing out: ', error);
+      console.log("error signing out: ", error);
     }
   }, [Auth]);
 
@@ -210,23 +210,23 @@ export const authContextValues = ({
     async (data) => {
       try {
         await Auth.updateUserAttributes(cognitoUser, {
-          ...getParamsWithDefaultValue('family_name', data.lastName),
-          ...getParamsWithDefaultValue('given_name', data.firstName),
-          ...getParamsWithDefaultValue('custom:postcode', data.postCode),
-          ...getParamsWithDefaultValue('email', data.emailAddress),
-          ...getParamsWithDefaultValue('custom:country_code', data.countryCode),
-          ...getParamsWithDefaultValue('custom:avatar', data.avatar),
+          ...getParamsWithDefaultValue("family_name", data.lastName),
+          ...getParamsWithDefaultValue("given_name", data.firstName),
+          ...getParamsWithDefaultValue("custom:postcode", data.postCode),
+          ...getParamsWithDefaultValue("email", data.emailAddress),
+          ...getParamsWithDefaultValue("custom:country_code", data.countryCode),
+          ...getParamsWithDefaultValue("custom:avatar", data.avatar),
         });
 
         const newCognitoUser = await getUser();
 
         setCognitoUser(newCognitoUser);
       } catch (e) {
-        console.log('Error while updating user', e);
-        alert('something went wrong');
+        console.log("Error while updating user", e);
+        alert("something went wrong");
       }
     },
-    [Auth, cognitoUser],
+    [Auth, cognitoUser]
   );
 
   const userAttributes = useMemo(() => {
@@ -257,7 +257,7 @@ export const authContextValues = ({
       signOutUser,
       updateUserData,
       userAttributes,
-    ],
+    ]
   );
 };
 
