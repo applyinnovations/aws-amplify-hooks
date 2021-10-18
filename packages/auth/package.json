@@ -9,15 +9,15 @@
   "types": "dist/index.d.ts",
   "dependencies": {
     "amazon-cognito-identity-js": "5.2.0",
-    "crypto-js": "4.1.1",
-    "react": "17.0.2"
+    "crypto-js": "4.1.1"
   },
   "devDependencies": {
-    "@types/crypto-js": "^4.0.2",
-    "@types/react": "^17.0.29",
+    "@types/crypto-js": "4.0.2",
+    "@types/react": "17.0.29",
     "typescript": "^4.4.4"
   },
   "peerDependencies": {
-    "aws-amplify": "4.2.5"
+    "aws-amplify": "4.2.5",
+    "react": "17.0.2"
   }
 }
