@@ -8,7 +8,6 @@
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
   "dependencies": {
-    "aws-amplify": "4.2.5",
     "react": "17.0.2",
     "uuid": "8.3.2"
   },
@@ -16,5 +15,8 @@
     "@types/react": "17.0.29",
     "typescript": "4.4.4",
     "@types/uuid": "8.3.1"
+  },
+  "peerDependencies": {
+    "aws-amplify": "4.2.5"
   }
 }

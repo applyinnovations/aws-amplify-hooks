@@ -3,7 +3,6 @@ export declare type ProfileTypes = "profile-1" | "profile-2" | "profile-3" | "pr
 export interface AuthContextValuesParams {
     onSessionStart: () => void;
     onSessionFailed: () => void;
-    awsConfig?: any;
 }
 export declare enum ANSWER_CHALLENGE_ERRORS {
     GENERIC_ERROR = "GENERIC_ERROR",

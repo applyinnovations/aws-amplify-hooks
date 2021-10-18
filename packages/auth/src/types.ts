@@ -11,7 +11,6 @@ export type ProfileTypes =
 export interface AuthContextValuesParams {
   onSessionStart: () => void;
   onSessionFailed: () => void;
-  awsConfig?: any;
 }
 
 export enum ANSWER_CHALLENGE_ERRORS {
