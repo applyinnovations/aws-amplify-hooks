@@ -9,7 +9,7 @@
   "types": "dist/index.d.ts",
   "dependencies": {
     "amazon-cognito-identity-js": "5.2.0",
-    "aws-amplify": "4.3.2",
+    "aws-amplify": "4.2.5",
     "crypto-js": "4.1.1",
     "react": "17.0.2"
   },
