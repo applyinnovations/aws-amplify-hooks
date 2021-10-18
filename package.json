@@ -6,7 +6,7 @@
   "license": "MIT",
   "scripts": {
     "build:auth": "cd packages/auth && yarn build",
-    "build:datastore": "cd packages/auth && yarn build",
+    "build:datastore": "cd packages/datastore && yarn build",
     "build": "yarn build:auth && yarn build:datastore"
   },
   "devDependencies": {
