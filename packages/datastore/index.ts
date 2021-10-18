@@ -1,4 +1,5 @@
-﻿export * from "./types";
+﻿export * from "./src/types";
 
-export { useSubscription } from "./useSubscription";
-export { DatastoreProvider } from "./DatastoreProvider";
+export { useSubscription } from "./src/useSubscription";
+export { useMutation } from "./src/useMutation";
+export { DatastoreProvider } from "./src/DatastoreProvider";

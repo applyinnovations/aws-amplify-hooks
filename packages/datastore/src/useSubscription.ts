@@ -5,8 +5,8 @@ import { useState, useEffect, useCallback, useMemo } from "react";
 import { getFileUrl } from "./storageUtils";
 import { extractStorageObjectKeyName } from "./extractStorageObjectKeyName";
 
-import { FileUrl } from ".";
 import { useDataStore } from "./DatastoreProvider";
+import { FileUrl } from "./types";
 
 export function useSubscription<TData = any>(type: string, id?: string) {
   const { Models, schema } = useDataStore();
