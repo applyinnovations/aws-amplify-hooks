@@ -1,6 +1,7 @@
 {
   "name": "@aws-amplify-hooks/datastore",
   "version": "1.0.0",
+  "license": "MIT",
   "scripts": {
     "build": "rm -rf dist/ && tsc",
     "prepublish": "npm run build"
