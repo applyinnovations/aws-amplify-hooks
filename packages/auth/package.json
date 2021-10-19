@@ -14,7 +14,7 @@
   "devDependencies": {
     "@types/crypto-js": "4.0.2",
     "@types/react": "17.0.29",
-    "typescript": "^4.4.4"
+    "typescript": "4.4.4"
   },
   "peerDependencies": {
     "aws-amplify": "4.2.5",
