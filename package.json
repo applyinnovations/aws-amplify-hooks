@@ -7,8 +7,7 @@
   "scripts": {
     "build:auth": "cd packages/auth && yarn build",
     "build:datastore": "cd packages/datastore && yarn build",
-    "build:datastore2": "cd packages/datastore2 && yarn build",
-    "build": "yarn build:auth && yarn build:datastore && yarn build:datastore2"
+    "build": "yarn build:auth && yarn build:datastore"
   },
   "devDependencies": {
     "lerna": "^4.0.0",
