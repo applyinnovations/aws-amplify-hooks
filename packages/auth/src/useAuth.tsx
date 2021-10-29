@@ -22,9 +22,6 @@ const DEFAULT_USER_DATA = {
   phone_number: "",
   given_name: "",
   family_name: "",
-  "custom:postcode": "",
-  "custom:country_code": "",
-  "custom:avatar": "profile-1",
   email: "",
 } as UserAttributes;
 
@@ -46,10 +43,10 @@ export const AuthContext = createContext<AuthContextValues>({
 const getParamsWithDefaultValue = (field: string, value: string) =>
   value ? { [field]: value } : {};
 
-export const authContextValues = ({
+export function authContextValues<CustomUserAttributes = any>({
   onSessionStart,
   onSessionFailed,
-}: AuthContextValuesParams): AuthContextValues => {
+}: AuthContextValuesParams): AuthContextValues<CustomUserAttributes> {
   const [authenticated, setAuthenticated] = useState(false);
   const [cognitoUser, setCognitoUser] = useState({
     attributes: DEFAULT_USER_DATA,
@@ -124,7 +121,9 @@ export const authContextValues = ({
     async (
       phoneNumber: string,
       email: string,
-      countryCode: string
+      customUserAttributes: {
+        [key: string]: any;
+      }
     ): Promise<CognitoUser> => {
       try {
         const result = await Auth.signUp({
@@ -134,8 +133,7 @@ export const authContextValues = ({
           attributes: {
             email,
             phone_number: phoneNumber,
-            "custom:country_code": countryCode,
-            "custom:avatar": "profile-1",
+            ...customUserAttributes,
           },
         });
         return result.user;
@@ -207,15 +205,13 @@ export const authContextValues = ({
   }, [Auth]);
 
   const updateUserData = useCallback(
-    async (data) => {
+    async (data, customUserAttributes) => {
       try {
         await Auth.updateUserAttributes(cognitoUser, {
           ...getParamsWithDefaultValue("family_name", data.lastName),
           ...getParamsWithDefaultValue("given_name", data.firstName),
-          ...getParamsWithDefaultValue("custom:postcode", data.postCode),
           ...getParamsWithDefaultValue("email", data.emailAddress),
-          ...getParamsWithDefaultValue("custom:country_code", data.countryCode),
-          ...getParamsWithDefaultValue("custom:avatar", data.avatar),
+          ...customUserAttributes,
         });
 
         const newCognitoUser = await getUser();
@@ -259,6 +255,6 @@ export const authContextValues = ({
       userAttributes,
     ]
   );
-};
+}
 
 export const useAuth = () => useContext(AuthContext);
