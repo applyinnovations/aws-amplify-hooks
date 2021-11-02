@@ -53,9 +53,6 @@ var DEFAULT_USER_DATA = {
     phone_number: "",
     given_name: "",
     family_name: "",
-    "custom:postcode": "",
-    "custom:country_code": "",
-    "custom:avatar": "profile-1",
     email: "",
 };
 export var AuthContext = createContext({
@@ -76,13 +73,14 @@ var getParamsWithDefaultValue = function (field, value) {
     var _a;
     return value ? (_a = {}, _a[field] = value, _a) : {};
 };
-export var authContextValues = function (_a) {
+export function authContextValues(_a) {
+    var _this = this;
     var onSessionStart = _a.onSessionStart, onSessionFailed = _a.onSessionFailed;
     var _b = useState(false), authenticated = _b[0], setAuthenticated = _b[1];
     var _c = useState({
         attributes: DEFAULT_USER_DATA,
     }), cognitoUser = _c[0], setCognitoUser = _c[1];
-    var getUser = useCallback(function () { return __awaiter(void 0, void 0, void 0, function () {
+    var getUser = useCallback(function () { return __awaiter(_this, void 0, void 0, function () {
         return __generator(this, function (_a) {
             return [2 /*return*/, new Promise(function (res, rej) {
                     Auth.currentAuthenticatedUser({
@@ -93,7 +91,7 @@ export var authContextValues = function (_a) {
                 })];
         });
     }); }, [Auth]);
-    var handleSessionStart = useCallback(function () { return __awaiter(void 0, void 0, void 0, function () {
+    var handleSessionStart = useCallback(function () { return __awaiter(_this, void 0, void 0, function () {
         var userFetched;
         return __generator(this, function (_a) {
             switch (_a.label) {
@@ -108,7 +106,7 @@ export var authContextValues = function (_a) {
             }
         });
     }); }, [getUser, onSessionStart]);
-    var handleSessionFailed = useCallback(function () { return __awaiter(void 0, void 0, void 0, function () {
+    var handleSessionFailed = useCallback(function () { return __awaiter(_this, void 0, void 0, function () {
         return __generator(this, function (_a) {
             onSessionFailed();
             setAuthenticated(false);
@@ -135,7 +133,7 @@ export var authContextValues = function (_a) {
                     break;
             }
         });
-        (function () { return __awaiter(void 0, void 0, void 0, function () {
+        (function () { return __awaiter(_this, void 0, void 0, function () {
             return __generator(this, function (_a) {
                 switch (_a.label) {
                     case 0: return [4 /*yield*/, Auth.currentAuthenticatedUser()
@@ -146,7 +144,7 @@ export var authContextValues = function (_a) {
             });
         }); })();
     }, []);
-    var signInUser = useCallback(function (phone, email) { return __awaiter(void 0, void 0, void 0, function () {
+    var signInUser = useCallback(function (phone, email) { return __awaiter(_this, void 0, void 0, function () {
         var username, newUserData;
         return __generator(this, function (_a) {
             switch (_a.label) {
@@ -164,7 +162,7 @@ export var authContextValues = function (_a) {
         return MD5(phoneNumber + " " + email).toString();
     };
     var getPassword = function (phoneNumber) { return MD5("" + phoneNumber).toString(); };
-    var signUpUser = useCallback(function (phoneNumber, email, countryCode) { return __awaiter(void 0, void 0, void 0, function () {
+    var signUpUser = useCallback(function (phoneNumber, email, customUserAttributes) { return __awaiter(_this, void 0, void 0, function () {
         var result, e_1;
         return __generator(this, function (_a) {
             switch (_a.label) {
@@ -174,12 +172,7 @@ export var authContextValues = function (_a) {
                             username: getUserName(phoneNumber, email),
                             // MFA is forced therefore we do not need a password
                             password: getPassword(phoneNumber),
-                            attributes: {
-                                email: email,
-                                phone_number: phoneNumber,
-                                "custom:country_code": countryCode,
-                                "custom:avatar": "profile-1",
-                            },
+                            attributes: __assign({ email: email, phone_number: phoneNumber }, customUserAttributes),
                         })];
                 case 1:
                     result = _a.sent();
@@ -192,7 +185,7 @@ export var authContextValues = function (_a) {
             }
         });
     }); }, []);
-    var confirmSignUp = useCallback(function (phoneNumber, email, answer) { return __awaiter(void 0, void 0, void 0, function () {
+    var confirmSignUp = useCallback(function (phoneNumber, email, answer) { return __awaiter(_this, void 0, void 0, function () {
         var username, e_2;
         return __generator(this, function (_a) {
             switch (_a.label) {
@@ -220,7 +213,7 @@ export var authContextValues = function (_a) {
             }
         });
     }); }, [cognitoUser, Auth]);
-    var resendSignUp = useCallback(function (phoneNumber, email) { return __awaiter(void 0, void 0, void 0, function () {
+    var resendSignUp = useCallback(function (phoneNumber, email) { return __awaiter(_this, void 0, void 0, function () {
         return __generator(this, function (_a) {
             switch (_a.label) {
                 case 0: return [4 /*yield*/, Auth.resendSignUp(getUserName(phoneNumber, email))];
@@ -230,7 +223,7 @@ export var authContextValues = function (_a) {
             }
         });
     }); }, [Auth]);
-    var confirmSignIn = useCallback(function (answer) { return __awaiter(void 0, void 0, void 0, function () {
+    var confirmSignIn = useCallback(function (answer) { return __awaiter(_this, void 0, void 0, function () {
         var user, e_3;
         return __generator(this, function (_a) {
             switch (_a.label) {
@@ -256,7 +249,7 @@ export var authContextValues = function (_a) {
             }
         });
     }); }, [cognitoUser, Auth]);
-    var signOutUser = useCallback(function () { return __awaiter(void 0, void 0, void 0, function () {
+    var signOutUser = useCallback(function () { return __awaiter(_this, void 0, void 0, function () {
         var error_1;
         return __generator(this, function (_a) {
             switch (_a.label) {
@@ -278,13 +271,13 @@ export var authContextValues = function (_a) {
             }
         });
     }); }, [Auth]);
-    var updateUserData = useCallback(function (data) { return __awaiter(void 0, void 0, void 0, function () {
+    var updateUserData = useCallback(function (data, customUserAttributes) { return __awaiter(_this, void 0, void 0, function () {
         var newCognitoUser, e_4;
         return __generator(this, function (_a) {
             switch (_a.label) {
                 case 0:
                     _a.trys.push([0, 3, , 4]);
-                    return [4 /*yield*/, Auth.updateUserAttributes(cognitoUser, __assign(__assign(__assign(__assign(__assign(__assign({}, getParamsWithDefaultValue("family_name", data.lastName)), getParamsWithDefaultValue("given_name", data.firstName)), getParamsWithDefaultValue("custom:postcode", data.postCode)), getParamsWithDefaultValue("email", data.emailAddress)), getParamsWithDefaultValue("custom:country_code", data.countryCode)), getParamsWithDefaultValue("custom:avatar", data.avatar)))];
+                    return [4 /*yield*/, Auth.updateUserAttributes(cognitoUser, __assign(__assign(__assign(__assign({}, getParamsWithDefaultValue("family_name", data.lastName)), getParamsWithDefaultValue("given_name", data.firstName)), getParamsWithDefaultValue("email", data.emailAddress)), customUserAttributes))];
                 case 1:
                     _a.sent();
                     return [4 /*yield*/, getUser()];
@@ -327,6 +320,6 @@ export var authContextValues = function (_a) {
         updateUserData,
         userAttributes,
     ]);
-};
+}
 export var useAuth = function () { return useContext(AuthContext); };
 //# sourceMappingURL=useAuth.js.map
