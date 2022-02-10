@@ -104,8 +104,11 @@ export function authContextValues<CustomUserAttributes = any>({
   }, []);
 
   const signInUser = useCallback(
-    async (phone: string) => {
-      const newUserData = await Auth.signIn(phone, getPassword(phone));
+    async (phone: string, password?: string) => {
+      const newUserData = await Auth.signIn(
+        phone,
+        password ?? getPassword(phone)
+      );
       setCognitoUser(newUserData);
     },
     [Auth]

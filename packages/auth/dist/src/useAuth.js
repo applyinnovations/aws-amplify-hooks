@@ -144,11 +144,11 @@ export function authContextValues(_a) {
             });
         }); })();
     }, []);
-    var signInUser = useCallback(function (phone) { return __awaiter(_this, void 0, void 0, function () {
+    var signInUser = useCallback(function (phone, password) { return __awaiter(_this, void 0, void 0, function () {
         var newUserData;
         return __generator(this, function (_a) {
             switch (_a.label) {
-                case 0: return [4 /*yield*/, Auth.signIn(phone, getPassword(phone))];
+                case 0: return [4 /*yield*/, Auth.signIn(phone, password !== null && password !== void 0 ? password : getPassword(phone))];
                 case 1:
                     newUserData = _a.sent();
                     setCognitoUser(newUserData);

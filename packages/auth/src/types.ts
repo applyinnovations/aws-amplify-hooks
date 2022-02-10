@@ -47,7 +47,7 @@ export interface AuthContextValues<CustomUserAttributes = {}> {
   cognitoUser: UserData | CognitoUser;
   userAttributes: UserAttributes | undefined;
   authenticated: boolean;
-  signInUser: (phoneNumber: string) => Promise<void>;
+  signInUser: (phoneNumber: string, password?: string) => Promise<void>;
   signUpUser: (params: SignUpParams) => Promise<CognitoUser | undefined>;
   resendSignUp: (phoneNumber: string, email: string) => Promise<void>;
   confirmSignUp: (
