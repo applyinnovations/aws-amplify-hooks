@@ -45,15 +45,15 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
         if (op[0] & 5) throw op[1]; return { value: op[0] ? op[1] : void 0, done: true };
     }
 };
-import { Auth, DataStore, Hub } from "aws-amplify";
-import { MD5 } from "crypto-js";
-import { useState, useMemo, useEffect, useContext, createContext, useCallback, } from "react";
-import { ANSWER_CHALLENGE_ERRORS, } from "./types";
+import { Auth, DataStore, Hub } from 'aws-amplify';
+import { MD5 } from 'crypto-js';
+import { useState, useMemo, useEffect, useContext, createContext, useCallback, } from 'react';
+import { ANSWER_CHALLENGE_ERRORS, } from './types';
 var DEFAULT_USER_DATA = {
-    phone_number: "",
-    given_name: "",
-    family_name: "",
-    email: "",
+    phone_number: '',
+    given_name: '',
+    family_name: '',
+    email: '',
 };
 export var AuthContext = createContext({
     cognitoUser: {
@@ -114,21 +114,21 @@ export function authContextValues(_a) {
         });
     }); }, [onSessionFailed]);
     useEffect(function () {
-        Hub.listen("auth", function (data) {
+        Hub.listen('auth', function (data) {
             switch (data.payload.event) {
-                case "signIn":
-                    console.log("user signed in");
+                case 'signIn':
+                    console.log('user signed in');
                     handleSessionStart();
                     break;
-                case "signUp":
-                    console.log("user signed up");
+                case 'signUp':
+                    console.log('user signed up');
                     break;
-                case "signOut":
-                    console.log("user signed out");
+                case 'signOut':
+                    console.log('user signed out');
                     handleSessionFailed();
                     break;
-                case "signIn_failure":
-                    console.log("user sign in failed");
+                case 'signIn_failure':
+                    console.log('user sign in failed');
                     handleSessionFailed();
                     break;
             }
@@ -144,13 +144,11 @@ export function authContextValues(_a) {
             });
         }); })();
     }, []);
-    var signInUser = useCallback(function (phone, email) { return __awaiter(_this, void 0, void 0, function () {
-        var username, newUserData;
+    var signInUser = useCallback(function (phone) { return __awaiter(_this, void 0, void 0, function () {
+        var newUserData;
         return __generator(this, function (_a) {
             switch (_a.label) {
-                case 0:
-                    username = email ? getUserName(phone, email) : phone;
-                    return [4 /*yield*/, Auth.signIn(username, getPassword(phone))];
+                case 0: return [4 /*yield*/, Auth.signIn(phone, getPassword(phone))];
                 case 1:
                     newUserData = _a.sent();
                     setCognitoUser(newUserData);
@@ -158,65 +156,57 @@ export function authContextValues(_a) {
             }
         });
     }); }, [Auth]);
-    var getUserName = function (phoneNumber, email) {
-        return MD5(phoneNumber + " " + email).toString();
-    };
     var getPassword = function (phoneNumber) { return MD5("" + phoneNumber).toString(); };
-    var signUpUser = useCallback(function (phoneNumber, email, customUserAttributes) { return __awaiter(_this, void 0, void 0, function () {
-        var result, e_1;
-        return __generator(this, function (_a) {
-            switch (_a.label) {
-                case 0:
-                    _a.trys.push([0, 2, , 3]);
-                    return [4 /*yield*/, Auth.signUp({
-                            username: getUserName(phoneNumber, email),
+    var signUpUser = useCallback(function (_a) {
+        var phoneNumber = _a.phoneNumber, email = _a.email, password = _a.password, customUserAttributes = _a.customUserAttributes;
+        return __awaiter(_this, void 0, void 0, function () {
+            var result;
+            return __generator(this, function (_b) {
+                switch (_b.label) {
+                    case 0: return [4 /*yield*/, Auth.signUp({
+                            username: phoneNumber,
                             // MFA is forced therefore we do not need a password
-                            password: getPassword(phoneNumber),
+                            password: password !== null && password !== void 0 ? password : getPassword(phoneNumber),
                             attributes: __assign({ email: email, phone_number: phoneNumber }, customUserAttributes),
                         })];
-                case 1:
-                    result = _a.sent();
-                    return [2 /*return*/, result.user];
-                case 2:
-                    e_1 = _a.sent();
-                    console.log(e_1);
-                    throw e_1;
-                case 3: return [2 /*return*/];
-            }
+                    case 1:
+                        result = _b.sent();
+                        return [2 /*return*/, result.user];
+                }
+            });
         });
-    }); }, []);
-    var confirmSignUp = useCallback(function (phoneNumber, email, answer) { return __awaiter(_this, void 0, void 0, function () {
-        var username, e_2;
+    }, []);
+    var confirmSignUp = useCallback(function (phoneNumber, answer) { return __awaiter(_this, void 0, void 0, function () {
+        var e_1;
         return __generator(this, function (_a) {
             switch (_a.label) {
                 case 0:
                     _a.trys.push([0, 3, , 4]);
-                    username = getUserName(phoneNumber, email);
-                    return [4 /*yield*/, Auth.confirmSignUp(username, answer)];
+                    return [4 /*yield*/, Auth.confirmSignUp(phoneNumber, answer)];
                 case 1:
                     _a.sent();
-                    return [4 /*yield*/, signInUser(phoneNumber, email)];
+                    return [4 /*yield*/, signInUser(phoneNumber)];
                 case 2:
                     _a.sent();
                     return [2 /*return*/, { success: true }];
                 case 3:
-                    e_2 = _a.sent();
-                    console.log(e_2);
-                    if (e_2 === "No current user") {
+                    e_1 = _a.sent();
+                    console.log(e_1);
+                    if (e_1 === 'No current user') {
                         return [2 /*return*/, {
                                 success: false,
                                 error: ANSWER_CHALLENGE_ERRORS.INCORRECT_CODE,
                             }];
                     }
-                    return [2 /*return*/, { success: false, error: ANSWER_CHALLENGE_ERRORS.GENERIC_ERROR }];
+                    throw e_1;
                 case 4: return [2 /*return*/];
             }
         });
     }); }, [cognitoUser, Auth]);
-    var resendSignUp = useCallback(function (phoneNumber, email) { return __awaiter(_this, void 0, void 0, function () {
+    var resendSignUp = useCallback(function (phoneNumber) { return __awaiter(_this, void 0, void 0, function () {
         return __generator(this, function (_a) {
             switch (_a.label) {
-                case 0: return [4 /*yield*/, Auth.resendSignUp(getUserName(phoneNumber, email))];
+                case 0: return [4 /*yield*/, Auth.resendSignUp(phoneNumber)];
                 case 1:
                     _a.sent();
                     return [2 /*return*/];
@@ -224,7 +214,7 @@ export function authContextValues(_a) {
         });
     }); }, [Auth]);
     var confirmSignIn = useCallback(function (answer) { return __awaiter(_this, void 0, void 0, function () {
-        var user, e_3;
+        var user, e_2;
         return __generator(this, function (_a) {
             switch (_a.label) {
                 case 0:
@@ -233,64 +223,46 @@ export function authContextValues(_a) {
                 case 1:
                     user = _a.sent();
                     setCognitoUser(user);
-                    console.log("User logged in");
                     return [2 /*return*/, { success: true }];
                 case 2:
-                    e_3 = _a.sent();
-                    console.log(e_3);
-                    if (e_3 === "No current user") {
+                    e_2 = _a.sent();
+                    console.error(e_2);
+                    if (e_2 === 'No current user') {
                         return [2 /*return*/, {
                                 success: false,
                                 error: ANSWER_CHALLENGE_ERRORS.INCORRECT_CODE,
                             }];
                     }
-                    return [2 /*return*/, { success: false, error: ANSWER_CHALLENGE_ERRORS.GENERIC_ERROR }];
+                    throw e_2;
                 case 3: return [2 /*return*/];
             }
         });
     }); }, [cognitoUser, Auth]);
     var signOutUser = useCallback(function () { return __awaiter(_this, void 0, void 0, function () {
-        var error_1;
         return __generator(this, function (_a) {
             switch (_a.label) {
-                case 0:
-                    _a.trys.push([0, 3, , 4]);
-                    return [4 /*yield*/, Auth.signOut()];
+                case 0: return [4 /*yield*/, Auth.signOut()];
                 case 1:
                     _a.sent();
                     return [4 /*yield*/, DataStore.clear()];
                 case 2:
                     _a.sent();
-                    console.log("user signed out");
-                    return [3 /*break*/, 4];
-                case 3:
-                    error_1 = _a.sent();
-                    console.log("error signing out: ", error_1);
-                    return [3 /*break*/, 4];
-                case 4: return [2 /*return*/];
+                    return [2 /*return*/];
             }
         });
     }); }, [Auth]);
     var updateUserData = useCallback(function (data, customUserAttributes) { return __awaiter(_this, void 0, void 0, function () {
-        var newCognitoUser, e_4;
+        var newCognitoUser;
         return __generator(this, function (_a) {
             switch (_a.label) {
-                case 0:
-                    _a.trys.push([0, 3, , 4]);
-                    return [4 /*yield*/, Auth.updateUserAttributes(cognitoUser, __assign(__assign(__assign(__assign({}, getParamsWithDefaultValue("family_name", data.lastName)), getParamsWithDefaultValue("given_name", data.firstName)), getParamsWithDefaultValue("email", data.emailAddress)), customUserAttributes))];
+                case 0: return [4 /*yield*/, Auth.updateUserAttributes(cognitoUser, __assign(__assign(__assign(__assign({}, getParamsWithDefaultValue('family_name', data.lastName)), getParamsWithDefaultValue('given_name', data.firstName)), getParamsWithDefaultValue('email', data.emailAddress)), customUserAttributes))];
                 case 1:
                     _a.sent();
                     return [4 /*yield*/, getUser()];
                 case 2:
                     newCognitoUser = _a.sent();
                     setCognitoUser(newCognitoUser);
-                    return [3 /*break*/, 4];
-                case 3:
-                    e_4 = _a.sent();
-                    console.log("Error while updating user", e_4);
-                    alert("something went wrong");
-                    return [3 /*break*/, 4];
-                case 4: return [2 /*return*/];
+                    return [2 /*return*/];
             }
         });
     }); }, [Auth, cognitoUser]);

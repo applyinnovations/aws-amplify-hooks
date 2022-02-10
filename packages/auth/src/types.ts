@@ -1,12 +1,12 @@
-﻿import { CognitoUser } from "amazon-cognito-identity-js";
+﻿import { CognitoUser } from 'amazon-cognito-identity-js';
 
 export type ProfileTypes =
-  | "profile-1"
-  | "profile-2"
-  | "profile-3"
-  | "profile-4"
-  | "profile-5"
-  | "profile-6";
+  | 'profile-1'
+  | 'profile-2'
+  | 'profile-3'
+  | 'profile-4'
+  | 'profile-5'
+  | 'profile-6';
 
 export interface AuthContextValuesParams {
   onSessionStart: () => void;
@@ -14,8 +14,7 @@ export interface AuthContextValuesParams {
 }
 
 export enum ANSWER_CHALLENGE_ERRORS {
-  GENERIC_ERROR = "GENERIC_ERROR",
-  INCORRECT_CODE = "INCORRECT_CODE",
+  INCORRECT_CODE = 'INCORRECT_CODE',
 }
 
 export interface UserAttributes {
@@ -35,20 +34,24 @@ export interface ConfirmationResult {
   error?: ANSWER_CHALLENGE_ERRORS;
 }
 
+export interface SignUpParams {
+  phoneNumber: string;
+  email: string;
+  password?: string;
+  customUserAttributes: {
+    [key: string]: any;
+  };
+}
+
 export interface AuthContextValues<CustomUserAttributes = {}> {
   cognitoUser: UserData | CognitoUser;
   userAttributes: UserAttributes | undefined;
   authenticated: boolean;
-  signInUser: (phoneNumber: string, email?: string) => Promise<void>;
-  signUpUser: (
-    phoneNumber: string,
-    email: string,
-    customUserAttributes: CustomUserAttributes
-  ) => Promise<CognitoUser | undefined>;
+  signInUser: (phoneNumber: string) => Promise<void>;
+  signUpUser: (params: SignUpParams) => Promise<CognitoUser | undefined>;
   resendSignUp: (phoneNumber: string, email: string) => Promise<void>;
   confirmSignUp: (
     phoneNumber: string,
-    email: string,
     answer: string
   ) => Promise<ConfirmationResult>;
   confirmSignIn: (answer: string) => Promise<ConfirmationResult>;

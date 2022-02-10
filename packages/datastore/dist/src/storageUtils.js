@@ -47,7 +47,7 @@ export var uploadFile = function (_a) {
                 case 0:
                     name = file.name;
                     _b = /([^.]+)(\.(\w+))?$/.exec(name), extension = _b[3];
-                    key = "" + uuid() + (extension && ".") + extension;
+                    key = "".concat(uuid()).concat(extension && ".").concat(extension);
                     currentTime = new Date().getTime();
                     expires = new Date(currentTime + SIX_HOURS_IN_MS);
                     return [4 /*yield*/, Auth.currentUserCredentials()];
