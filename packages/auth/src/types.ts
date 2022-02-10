@@ -38,7 +38,7 @@ export interface SignUpParams {
   phoneNumber: string;
   email: string;
   password?: string;
-  customUserAttributes: {
+  customUserAttributes?: {
     [key: string]: any;
   };
 }
