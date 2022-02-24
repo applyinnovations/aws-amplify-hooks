@@ -41,6 +41,7 @@ export const AuthContext = createContext<AuthContextValues>({
   confirmSignIn: () => Promise.resolve({ success: false }),
   signOutUser: () => Promise.resolve(),
   updateUserData: (_) => Promise.resolve(),
+  testFunction: () => "testing versioning function",
 });
 
 const getParamsWithDefaultValue = (field: string, value: string) =>
@@ -233,6 +234,8 @@ export const authContextValues = ({
     return cognitoUser?.attributes;
   }, [cognitoUser]);
 
+  const testFunction = () => "testing versioning function";
+
   return useMemo(
     () => ({
       cognitoUser,
@@ -245,6 +248,7 @@ export const authContextValues = ({
       signOutUser,
       updateUserData,
       userAttributes,
+      testFunction,
     }),
     [
       cognitoUser,
@@ -257,6 +261,7 @@ export const authContextValues = ({
       signOutUser,
       updateUserData,
       userAttributes,
+      testFunction,
     ]
   );
 };
