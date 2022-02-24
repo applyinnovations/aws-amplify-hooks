@@ -71,6 +71,7 @@ export var AuthContext = createContext({
     confirmSignIn: function () { return Promise.resolve({ success: false }); },
     signOutUser: function () { return Promise.resolve(); },
     updateUserData: function (_) { return Promise.resolve(); },
+    testFunction: function () { return "testing versioning function"; },
 });
 var getParamsWithDefaultValue = function (field, value) {
     var _a;
@@ -304,6 +305,7 @@ export var authContextValues = function (_a) {
     var userAttributes = useMemo(function () {
         return cognitoUser === null || cognitoUser === void 0 ? void 0 : cognitoUser.attributes;
     }, [cognitoUser]);
+    var testFunction = function () { return "testing versioning function"; };
     return useMemo(function () { return ({
         cognitoUser: cognitoUser,
         authenticated: authenticated,
@@ -315,6 +317,7 @@ export var authContextValues = function (_a) {
         signOutUser: signOutUser,
         updateUserData: updateUserData,
         userAttributes: userAttributes,
+        testFunction: testFunction,
     }); }, [
         cognitoUser,
         authenticated,
@@ -326,6 +329,7 @@ export var authContextValues = function (_a) {
         signOutUser,
         updateUserData,
         userAttributes,
+        testFunction,
     ]);
 };
 export var useAuth = function () { return useContext(AuthContext); };
