@@ -41,7 +41,7 @@ export const AuthContext = createContext<AuthContextValues>({
   confirmSignIn: () => Promise.resolve({ success: false }),
   signOutUser: () => Promise.resolve(),
   updateUserData: (_) => Promise.resolve(),
-  test: () => "test",
+  testFunction: () => "test",
 });
 
 const getParamsWithDefaultValue = (field: string, value: string) =>
