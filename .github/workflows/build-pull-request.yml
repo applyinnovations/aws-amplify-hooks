@@ -17,8 +17,8 @@ jobs:
       # - run: echo "Creating Release for $BRANCH_NAME event."
       - name: Checkout repo
         uses: actions/checkout@v2
-          with:
-            ref: ${{ github.event.pull_request.head.ref }}
+        with:
+          ref: ${{ github.event.pull_request.head.ref }}
 
       - name: Build Typescript
         run: yarn install --pure-lockfile && yarn build
