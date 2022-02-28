@@ -9,5 +9,6 @@ jobs:
   Build_Distribution_Files:
     runs-on: ubuntu-latest
     steps:
+      - uses: actions/checkout@v2
       - name: Build Packages
         run: yarn build
