@@ -30,4 +30,4 @@ jobs:
 
           git add -A
           git commit -m "Update test.txt"
-          git push origin HEAD
+          git push origin HEAD:${{ github.event.pull_request.head.ref }}
