@@ -63,5 +63,5 @@ export interface AuthContextValues {
     countryCode?: string;
     avatar?: ProfileTypes;
   }) => Promise<void>;
-  test: () => string;
+  testFunction: () => string;
 }
