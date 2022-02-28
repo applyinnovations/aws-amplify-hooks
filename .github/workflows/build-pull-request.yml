@@ -3,10 +3,11 @@
 on:
   pull_request:
     pull_request:
-    types: [opened, reopened]
+      types: [opened, reopened]
 
 jobs:
   Build_Distribution_Files:
     runs-on: ubuntu-latest
     steps:
-      - run: echo "🎉 The job was automatically triggered by a ${{ github.event_name }} event."
+      - name: Build Packages
+        run: yarn build
