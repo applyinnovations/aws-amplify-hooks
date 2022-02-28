@@ -21,14 +21,21 @@ jobs:
       - name: Build Typescript
         run: yarn install --pure-lockfile && yarn build
 
-      - name: Push Build Files
-        run: |
-          echo "Test push commit to the remote in the workflow" >> test.txt
+      # - name: Push Build Files
+      #   run: |
+      #     echo "Test push commit to the remote in the workflow" >> test.txt
 
-          git config --global user.name "github-actions[bot]"
-          git config --global user.email "actions@github.com"
+      #     git config --global user.name "github-actions[bot]"
+      #     git config --global user.email "actions@github.com"
 
-          git add -A
-          git pull origin HEAD:${{ github.event.pull_request.head.ref }}          
-          git commit -m "Update test.txt"
-          git push origin HEAD:${{ github.event.pull_request.head.ref }}
+      #     git add -A
+      #     git pull origin HEAD:${{ github.event.pull_request.head.ref }}          
+      #     git commit -m "Update test.txt"
+      #     git push origin HEAD:${{ github.event.pull_request.head.ref }}
+   - name: Commit changes
+        uses: EndBug/add-and-commit@v8
+        with:
+          author_name: github-actions[bot]
+          author_email: actions@github.com
+          message: 'pushing dist'
+          add: '*/dist'
