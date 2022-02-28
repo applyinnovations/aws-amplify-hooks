@@ -11,4 +11,4 @@ jobs:
     steps:
       - uses: actions/checkout@v2
       - name: Build Packages
-        run: yarn build
+        run: yarn install --pure-lockfile && yarn build
