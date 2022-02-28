@@ -6,9 +6,22 @@ on:
       types: [opened, reopened]
 
 jobs:
-  Build_Distribution_Files:
+  build:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2
-      - name: Build Packages
+      # extract branch name on pull request
+      - name: Print branch name
+        if: github.event_name == 'pull_request'
+        run: echo "::set-env name=BRANCH_NAME::$(echo ${GITHUB_HEAD_REF})"
+
+      - run: echo "Creating Release for $BRANCH_NAME event."
+      - name: Checkout repo
+        uses: actions/checkout@v2
+
+      - name: Build Typescript
         run: yarn install --pure-lockfile && yarn build
+
+      - name: Commit changes
+        uses: $BRANCH_NAME
+        with:
+          default_author: github_actions
