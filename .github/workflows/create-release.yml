@@ -17,7 +17,7 @@ jobs:
         id: get_tag_name_from_commit_message
         with:
           text: ${{ github.event.head_commit.message }}
-          regex: '[v]([0-9]+)\.([0-9]+)\.([0-9]+)(?:-([0-9A-Za-z-]+(?:\.[0-9A-Za-z-]+)*))?(?:\+[0-9A-Za-z-]+)?/g'
+          regex: '[v]([0-9]+)\.([0-9]+)\.([0-9]+)(?:-([0-9A-Za-z-]+(?:\.[0-9A-Za-z-]+)*))?(?:\+[0-9A-Za-z-]+)?/'
       - run: echo "This is the Tag Version ${{ steps.get_tag_name_from_commit_message.outputs.match }}"
 
       # - name: Create Tag
