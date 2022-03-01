@@ -22,6 +22,7 @@ jobs:
       #     author_email: actions@github.com
       #     message: "pushing dist"
       #     add: "**/dist/*"
+
       - name: Get Release Name
         uses: actions-ecosystem/action-regex-match@v2
         id: get_release_name
