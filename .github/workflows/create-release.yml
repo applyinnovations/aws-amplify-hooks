@@ -5,14 +5,33 @@ on:
     branches:
       - release
 
+env:
+  TAG_NAME: ${{ github.event.head_commit.message }}
+
 jobs:
   Explore-GitHub-Actions:
     runs-on: ubuntu-latest
     steps:
       - run: echo "🎉 The job was automatically triggered by a ${{ github.event.head_commit.message }} event."
-      - name: Create Tag
-        uses: negz/create-tag@v1
+      - uses: actions-ecosystem/action-regex-match@v2
+        id: get_tag_name_from_commit_message
         with:
-          version: ${{ github.event.head_commit.message }}
-          message: Creating Tag for ${{ github.event.head_commit.message }}
-          token: ${{ secrets.GITHUB_TOKEN }}
+          text: ${{ github.event.head_commit.message }}
+          regex: '[v]([0-9]+)\.([0-9]+)\.([0-9]+)(?:-([0-9A-Za-z-]+(?:\.[0-9A-Za-z-]+)*))?(?:\+[0-9A-Za-z-]+)?/g'
+      - run: echo "This is the Tag Version ${{ steps.get_tag_name_from_commit_message.outputs.match }}"
+
+      # - name: Create Tag
+      #   if: contains(${{ github.event.head_commit.message }}, 'Tag Version')
+      #   id: tag_and_prepare_release
+      #   uses: negz/create-tag@v1
+      #   with:
+      #     version: ${{ github.event.head_commit.message }}
+      #     message: Creating Tag for ${{ github.event.head_commit.message }}
+      #     token: ${{ secrets.GITHUB_TOKEN }}
+      # - name: Upload release notes
+      #   if: steps.tag_and_prepare_release.outputs.tag
+      #   uses: Roang-zero1/github-create-release-action@master
+      #   with:
+      #     created_tag: ${{ steps.tag_and_prepare_release.outputs.tag }}
+      #   env:
+      #     GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
