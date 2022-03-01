@@ -19,12 +19,13 @@ jobs:
           text: "${{ github.event.head_commit.message }}"
           regex: '[v]([0-9]+)\.([0-9]+)\.([0-9]+)(?:-([0-9A-Za-z-]+(?:\.[0-9A-Za-z-]+)*))?(?:\+[0-9A-Za-z-]+)?'
       - run: echo "TAG VERSION FOUND  ${{ steps.version_tag_from_commit_message.outputs.match }}"
+      - run: echo "${{ steps.version_tag_from_commit_message.outputs.match }} | tr '$' ' ' "
       - name: Create Tag
         if: contains(${{ github.event.head_commit.message }}, 'Tag Version')
         id: tag_and_prepare_release
         uses: negz/create-tag@v1
         with:
-          version: ${{ steps.version_tag_from_commit_message.outputs.match }}.replace('v', '')
+          version: "${{ steps.version_tag_from_commit_message.outputs.match }} | tr '$' ' ' "
           message: Creating Tag for ${{ steps.version_tag_from_commit_message.outputs.match }}
           token: ${{ secrets.GITHUB_TOKEN }}
 
