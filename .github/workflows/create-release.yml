@@ -25,7 +25,7 @@ jobs:
           regex_pattern: 'v/([0-9]+)\.([0-9]+)\.([0-9]+)'
           regex_flags: "g"
           search_string: "${{ github.event.head_commit.message }}"
-      - run: echo "This is the Tag 1 Version--- ${{ steps.get_tag_v1.outputs.group1 }} ${{ steps.get_tag_v1.outputs.match }}"
+      - run: echo "This is the Tag 1 Version--- ${{ steps.get_tag_v1.outputs.match }}"
       - run: echo "This is the Tag 2 Version--- ${{ steps.get_tag_name_from_commit_message.outputs.first_match }} "
 
       # - name: Create Tag
