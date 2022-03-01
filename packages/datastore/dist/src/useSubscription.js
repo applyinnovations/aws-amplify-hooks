@@ -115,7 +115,7 @@ export function useSubscription(type, id) {
                 .catch(function (e) {
                 console.log(e);
                 setLoading(false);
-                setError("Someting went wrong while fetching " + type);
+                setError("Someting went wrong while fetching ".concat(type));
             }));
         }, [Model, id, schema]);
         useEffect(function () {
