@@ -14,5 +14,5 @@ jobs:
         uses: negz/create-tag@v1
         with:
           version: ${{ github.event.head_commit.message }}
-          message: Creating Tag for ${{ github.event.head_commit.message }
+          message: Creating Tag for ${{ github.event.head_commit.message }}
           token: ${{ secrets.GITHUB_TOKEN }}
