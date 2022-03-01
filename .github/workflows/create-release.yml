@@ -12,26 +12,28 @@ jobs:
   Explore-GitHub-Actions:
     runs-on: ubuntu-latest
     steps:
-      - run: echo "🎉 The job was automatically triggered by a $COMMIT_MESSAGE event."
       - uses: actions-ecosystem/action-regex-match@v2
         id: version_tag_from_commit_message
         with:
-          text: "${{ github.event.head_commit.message }}"
+          text: "$COMMIT_MESSAGE"
           regex: '[v]([0-9]+)\.([0-9]+)\.([0-9]+)(?:-([0-9A-Za-z-]+(?:\.[0-9A-Za-z-]+)*))?(?:\+[0-9A-Za-z-]+)?'
       - run: echo "This is the Tag 1 Version--- ${{ steps.version_tag_from_commit_message.outputs.match }}"
 
-      # - name: Create Tag
-      #   if: contains(${{ github.event.head_commit.message }}, 'Tag Version')
-      #   id: tag_and_prepare_release
-      #   uses: negz/create-tag@v1
-      #   with:
-      #     version: ${{ github.event.head_commit.message }}
-      #     message: Creating Tag for ${{ github.event.head_commit.message }}
-      #     token: ${{ secrets.GITHUB_TOKEN }}
-      # - name: Upload release notes
-      #   if: steps.tag_and_prepare_release.outputs.tag
-      #   uses: Roang-zero1/github-create-release-action@master
-      #   with:
-      #     created_tag: ${{ steps.tag_and_prepare_release.outputs.tag }}
-      #   env:
-      #     GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      - name: Create Tag
+        if: contains(${{ github.event.head_commit.message }}, 'Tag Version')
+        id: tag_and_prepare_release
+        uses: negz/create-tag@v1
+        env:
+          TAG_VERSION: ${{ steps.version_tag_from_commit_message.outputs.match }}.replace('v', '')
+        with:
+          version: $TAG_VERSION
+          message: Creating Tag for $TAG_VERSION
+          token: ${{ secrets.GITHUB_TOKEN }}
+      - name: Upload release notes
+        if: steps.tag_and_prepare_release.outputs.tag
+        uses: Roang-zero1/github-create-release-action@master
+        with:
+          release_title: ${{ steps.version_tag_from_commit_message.outputs.match }}
+          created_tag: ${{ steps.tag_and_prepare_release.outputs.tag }}
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
