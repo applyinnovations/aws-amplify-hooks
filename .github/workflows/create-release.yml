@@ -12,21 +12,24 @@ jobs:
   Explore-GitHub-Actions:
     runs-on: ubuntu-latest
     steps:
-      - name: Find for semver in commit message
+      - name: Get Release Name
         uses: actions-ecosystem/action-regex-match@v2
-        id: version_tag_from_commit_message
+        id: get_release_name
         with:
           text: "${{ github.event.head_commit.message }}"
           regex: '[v]([0-9]+)\.([0-9]+)\.([0-9]+)(?:-([0-9A-Za-z-]+(?:\.[0-9A-Za-z-]+)*))?(?:\+[0-9A-Za-z-]+)?'
-      - run: echo "TAG VERSION FOUND  ${{ steps.version_tag_from_commit_message.outputs.match }}"
-      - run: echo "${{ steps.version_tag_from_commit_message.outputs.match }} | tr 'v' ' ' "
+      - name: Get Tag Name
+        uses: bhowell2/github-substring-action
+          id: get_tag_name
+          with:
+            value: "${{ steps.get_release_name.outputs.match }}"
+            index_of_str: "v"
       - name: Create Tag
-        if: contains(${{ github.event.head_commit.message }}, 'Tag Version')
         id: tag_and_prepare_release
         uses: negz/create-tag@v1
         with:
-          version: "${{ steps.version_tag_from_commit_message.outputs.match }} | tr '$' ' ' "
-          message: Creating Tag for ${{ steps.version_tag_from_commit_message.outputs.match }}
+          version: "${{ steps.get_tag_name.outputs.substring }}"
+          message: "Creating Tag for ${{ steps.get_tag_name.outputs.substring }}"
           token: ${{ secrets.GITHUB_TOKEN }}
 
       # - name: Upload release notes
