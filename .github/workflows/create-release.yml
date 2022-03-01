@@ -10,7 +10,9 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - run: echo "🎉 The job was automatically triggered by a ${{ github.event.head_commit.message }} event."
-      - name: Bump version and push tag
-        uses: anothrNick/github-tag-action@1.36.0
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      - name: Create Tag
+        uses: negz/create-tag@v1
+        with:
+          version: ${{ github.event.head_commit.message }}
+          message: Creating Tag for ${{ github.event.head_commit.message }
+          token: ${{ secrets.GITHUB_TOKEN }}
