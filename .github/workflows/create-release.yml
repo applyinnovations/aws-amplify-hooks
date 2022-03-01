@@ -18,7 +18,7 @@ jobs:
         with:
           text: "$COMMIT_MESSAGE"
           regex: '[v]([0-9]+)\.([0-9]+)\.([0-9]+)(?:-([0-9A-Za-z-]+(?:\.[0-9A-Za-z-]+)*))?(?:\+[0-9A-Za-z-]+)?'
-
+      - run: echo "TAG VERSION FOUND  ${{ steps.version_tag_from_commit_message.outputs.match }}"
       - name: Create Tag
         if: contains(${{ github.event.head_commit.message }}, 'Tag Version')
         id: tag_and_prepare_release
