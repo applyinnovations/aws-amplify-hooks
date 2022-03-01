@@ -18,12 +18,14 @@ jobs:
         with:
           text: "${{ github.event.head_commit.message }}"
           regex: '[v]([0-9]+)\.([0-9]+)\.([0-9]+)(?:-([0-9A-Za-z-]+(?:\.[0-9A-Za-z-]+)*))?(?:\+[0-9A-Za-z-]+)?'
+
       - name: Get Tag Name
         uses: bhowell2/github-substring-action
-          id: get_tag_name
-          with:
-            value: "${{ steps.get_release_name.outputs.match }}"
-            index_of_str: "v"
+        id: get_tag_name
+        with:
+          value: "${{ steps.get_release_name.outputs.match }}"
+          index_of_str: "v"
+
       - name: Create Tag
         id: tag_and_prepare_release
         uses: negz/create-tag@v1
