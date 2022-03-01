@@ -13,11 +13,11 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - run: echo "🎉 The job was automatically triggered by a ${{ github.event.head_commit.message }} event."
-      # - uses: actions-ecosystem/action-regex-match@v2
-      #   id: get_tag_name_from_commit_message
-      #   with:
-      #     text: ${{ github.event.head_commit.message }}
-      #     regex: "/version"
+      - uses: actions-ecosystem/action-regex-match@v2
+        id: get_tag_v1
+        with:
+          text: "${{ github.event.head_commit.message }}"
+          regex: "/[v]([0-9]+)\.([0-9]+)\.([0-9]+)(?:-([0-9A-Za-z-]+(?:\.[0-9A-Za-z-]+)*))?(?:\+[0-9A-Za-z-]+)?/g"
 
       - name: "Get Version"
         id: get_tag_name_from_commit_message
@@ -26,7 +26,8 @@ jobs:
           regex_pattern: 'v/([0-9]+)\.([0-9]+)\.([0-9]+)'
           regex_flags: "g"
           search_string: "${{ github.event.head_commit.message }}"
-      - run: echo "This is the Tag Version--- ${{ steps.get_tag_name_from_commit_message.outputs.first_match}}"
+      - run: echo "This is the Tag 1 Version--- ${{ steps.get_tag_v1.outputs.group1 }}"
+      - run: echo "This is the Tag 2 Version--- ${{ steps.get_tag_name_from_commit_message.outputs.first_match }} "
 
       # - name: Create Tag
       #   if: contains(${{ github.event.head_commit.message }}, 'Tag Version')
