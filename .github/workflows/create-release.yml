@@ -1,22 +1,64 @@
-﻿name: Create Release
+﻿# name: Create Release
 
+# on:
+#   push:
+#     branches:
+#       - release
+
+# env:
+#   COMMIT_MESSAGE: ${{ github.event.head_commit.message }}
+
+# jobs:
+#   Explore-GitHub-Actions:
+#     runs-on: ubuntu-latest
+#     steps:
+#       - name: Get Release Name
+#         uses: actions-ecosystem/action-regex-match@v2
+#         id: get_release_name
+#         with:
+#           text: "${{ github.event.head_commit.message }}"
+#           regex: '[v]([0-9]+)\.([0-9]+)\.([0-9]+)(?:-([0-9A-Za-z-]+(?:\.[0-9A-Za-z-]+)*))?(?:\+[0-9A-Za-z-]+)?'
+
+#       - name: Get Tag Name
+#         uses: frabert/replace-string-action@v2.0
+#         id: get_tag_name
+#         with:
+#           pattern: "v"
+#           string: "${{ steps.get_release_name.outputs.match }}"
+#           replace-with: ""
+
+#       - name: Create Tag
+#         id: tag_and_prepare_release
+#         uses: negz/create-tag@v1
+#         with:
+#           version: "${{ steps.get_tag_name.outputs.replaced }}"
+#           message: "Creating Tag for ${{ steps.get_release_name.outputs.match }}"
+#           token: ${{ secrets.GITHUB_TOKEN }}
+
+#       - name: Upload release notes
+#         if: steps.tag_and_prepare_release.outputs.tag
+#         uses: Roang-zero1/github-create-release-action@master
+#         with:
+#           release_title: ${{ steps.get_release_name.outputs.match }}
+#           created_tag: ${{ steps.tag_and_prepare_release.outputs.tag }}
+#         env:
+#           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+name: Create Tags and Release
 on:
-  push:
-    branches:
-      - release
-
-env:
-  COMMIT_MESSAGE: ${{ github.event.head_commit.message }}
+  pull_request:
+    types: closed
 
 jobs:
-  Explore-GitHub-Actions:
+  build:
     runs-on: ubuntu-latest
+    if: github.event.pull_request.merged && startsWith(github.head_ref, 'release')
     steps:
       - name: Get Release Name
         uses: actions-ecosystem/action-regex-match@v2
         id: get_release_name
         with:
-          text: "${{ github.event.head_commit.message }}"
+          text: "${{ github.event.pull_request.title }}"
           regex: '[v]([0-9]+)\.([0-9]+)\.([0-9]+)(?:-([0-9A-Za-z-]+(?:\.[0-9A-Za-z-]+)*))?(?:\+[0-9A-Za-z-]+)?'
 
       - name: Get Tag Name
@@ -27,14 +69,15 @@ jobs:
           string: "${{ steps.get_release_name.outputs.match }}"
           replace-with: ""
 
-      - name: Create Tag
+      - uses: actions/checkout@master
+      - name: Tag and prepare release
         id: tag_and_prepare_release
-        uses: negz/create-tag@v1
+        uses: K-Phoen/semver-release-action@master
         with:
-          version: "${{ steps.get_tag_name.outputs.replaced }}"
-          message: "Creating Tag for ${{ steps.get_release_name.outputs.match }}"
-          token: ${{ secrets.GITHUB_TOKEN }}
-
+          release_branch: release
+          tag: "${{ steps.get_tag_name.outputs.replaced }}"
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       - name: Upload release notes
         if: steps.tag_and_prepare_release.outputs.tag
         uses: Roang-zero1/github-create-release-action@master
