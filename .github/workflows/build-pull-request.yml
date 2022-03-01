@@ -30,5 +30,5 @@ jobs:
           text: "${{ github.event.pull_request.title }}"
           regex: '[v]([0-9]+)\.([0-9]+)\.([0-9]+)(?:-([0-9A-Za-z-]+(?:\.[0-9A-Za-z-]+)*))?(?:\+[0-9A-Za-z-]+)?'
       - name: Check Test
-        if: ${{ steps.get_release_name.outputs.match }} != ''
+        if: ${{ steps.get_release_name.outputs.match != '' }}
         run: echo "THIS IS RUNNING  ${{ steps.get_release_name.outputs.match }}"
