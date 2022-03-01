@@ -23,7 +23,7 @@ jobs:
         id: get_tag_name_from_commit_message
         uses: AsasInnab/regex-action@v1
         with:
-        regex_pattern: '/[v]([0-9]+)\.([0-9]+)\.([0-9]+)(?:-([0-9A-Za-z-]+(?:\.[0-9A-Za-z-]+)*))?(?:\+[0-9A-Za-z-]+)?/'
+        regex_pattern: 'v/([0-9]+)\.([0-9]+)\.([0-9]+)'
         regex_flags: "g"
         search_string: "${{ github.event.head_commit.message }}"
       - run: echo "This is the Tag Version--- ${{ steps.jira.outputs.first_match}}"
