@@ -43,16 +43,15 @@ jobs:
       #     created_tag: ${{ steps.tag_and_prepare_release.outputs.tag }}
       #   env:
       #     GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-       
-      
+
+      - uses: actions/checkout@v2
       - name: Upload release notes
-        uses: actions/checkout@v2
+
         uses: ncipollo/release-action@v1
         with:
           artifacts: "release.tar.gz,foo/*.txt"
           tag: ${{ steps.tag_and_prepare_release.outputs.tag }}
           token: ${{ secrets.GITHUB_TOKEN }}
-
 # name: Create Tags and Release
 # on:
 #   pull_request:
