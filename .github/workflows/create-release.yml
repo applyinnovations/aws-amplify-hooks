@@ -6,27 +6,19 @@ on:
       - release
 
 env:
-  TAG_NAME: ${{ github.event.head_commit.message }}
+  COMMIT_MESSAGE: ${{ github.event.head_commit.message }}
 
 jobs:
   Explore-GitHub-Actions:
     runs-on: ubuntu-latest
     steps:
-      - run: echo "🎉 The job was automatically triggered by a ${{ github.event.head_commit.message }} event."
+      - run: echo "🎉 The job was automatically triggered by a $COMMIT_MESSAGE event."
       - uses: actions-ecosystem/action-regex-match@v2
-        id: get_tag_v1
+        id: version_tag_from_commit_message
         with:
           text: "${{ github.event.head_commit.message }}"
           regex: '[v]([0-9]+)\.([0-9]+)\.([0-9]+)(?:-([0-9A-Za-z-]+(?:\.[0-9A-Za-z-]+)*))?(?:\+[0-9A-Za-z-]+)?'
-      - name: "Get Version"
-        id: get_tag_name_from_commit_message
-        uses: AsasInnab/regex-action@v1
-        with:
-          regex_pattern: 'v/([0-9]+)\.([0-9]+)\.([0-9]+)'
-          regex_flags: "g"
-          search_string: "${{ github.event.head_commit.message }}"
-      - run: echo "This is the Tag 1 Version--- ${{ steps.get_tag_v1.outputs.match }}"
-      - run: echo "This is the Tag 2 Version--- ${{ steps.get_tag_name_from_commit_message.outputs.first_match }} "
+      - run: echo "This is the Tag 1 Version--- ${{ steps.version_tag_from_commit_message.outputs.match }}"
 
       # - name: Create Tag
       #   if: contains(${{ github.event.head_commit.message }}, 'Tag Version')
