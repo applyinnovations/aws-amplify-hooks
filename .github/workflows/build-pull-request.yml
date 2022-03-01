@@ -34,6 +34,7 @@ jobs:
       #     git pull origin HEAD:${{ github.event.pull_request.head.ref }}
       #     git commit -m "Update test.txt"
       #     git push origin HEAD:${{ github.event.pull_request.head.ref }}
+      - run: echo "${{ github.event.pull_request.base.ref }}"
       - name: Commit changes
         uses: EndBug/add-and-commit@v8
         with:
