@@ -27,21 +27,19 @@ jobs:
           string: "${{ steps.get_release_name.outputs.match }}"
           replace-with: ""
 
-      - run: echo "${{ steps.get_tag_name.outputs.replaced }}"
-
       - name: Create Tag
         id: tag_and_prepare_release
         uses: negz/create-tag@v1
         with:
-          version: "${{ steps.get_release_name.outputs.match }}"
+          version: "${{ steps.get_tag_name.outputs.replaced }}"
           message: "Creating Tag for ${{ steps.get_release_name.outputs.match }}"
           token: ${{ secrets.GITHUB_TOKEN }}
 
-      # - name: Upload release notes
-      #   if: steps.tag_and_prepare_release.outputs.tag
-      #   uses: Roang-zero1/github-create-release-action@master
-      #   with:
-      #     release_title: ${{ steps.version_tag_from_commit_message.outputs.match }}
-      #     created_tag: ${{ steps.tag_and_prepare_release.outputs.tag }}
-      #   env:
-      #     GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      - name: Upload release notes
+        if: steps.tag_and_prepare_release.outputs.tag
+        uses: Roang-zero1/github-create-release-action@master
+        with:
+          release_title: ${{ .get_release_name.outputs.match }}
+          created_tag: ${{ steps.tag_and_prepare_release.outputs.tag }}
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
