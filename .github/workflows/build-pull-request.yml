@@ -1,0 +1,26 @@
+﻿name: Create Pull Request
+
+on:
+  pull_request:
+    pull_request:
+      types: [opened, reopened]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v2
+        with:
+          ref: ${{ github.event.pull_request.head.ref }}
+
+      - name: Build Typescript
+        run: yarn install --pure-lockfile && yarn build
+
+      - name: Commit changes for the generated build
+        uses: EndBug/add-and-commit@v8
+        with:
+          author_name: github-actions[bot]
+          author_email: actions@github.com
+          message: "pushing dist"
+          add: "**/dist/*"
