@@ -1,9 +1,6 @@
-﻿name: Create Pull Request
+﻿name: Build Typescript
 
-on:
-  pull_request:
-    pull_request:
-      types: [opened, reopened]
+on: pull_request
 
 jobs:
   build:
@@ -22,5 +19,5 @@ jobs:
         with:
           author_name: github-actions[bot]
           author_email: actions@github.com
-          message: "pushing dist"
-          add: "**/dist/*"
+          message: 'pushing dist'
+          add: '**/dist/*'
