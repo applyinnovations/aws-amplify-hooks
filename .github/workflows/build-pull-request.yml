@@ -19,5 +19,5 @@ jobs:
         with:
           author_name: github-actions[bot]
           author_email: actions@github.com
-          message: 'pushing dist'
-          add: '**/dist/*'
+          message: "[**/dist/**] generated build files"
+          add: "**/dist/**"
