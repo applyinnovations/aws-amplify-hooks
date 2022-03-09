@@ -45,11 +45,11 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
         if (op[0] & 5) throw op[1]; return { value: op[0] ? op[1] : void 0, done: true };
     }
 };
-import { DataStore } from "aws-amplify";
-import { useCallback, useState, useMemo } from "react";
-import { uploadFile } from "./storageUtils";
-import { extractStorageObjectKeyName } from "./extractStorageObjectKeyName";
-import { useDataStore } from "./DatastoreProvider";
+import { DataStore } from 'aws-amplify';
+import { useCallback, useState, useMemo } from 'react';
+import { uploadFile } from './storageUtils';
+import { extractStorageObjectKeyName } from './extractStorageObjectKeyName';
+import { useDataStore } from './DatastoreProvider';
 export var Operations;
 (function (Operations) {
     Operations[Operations["Delete"] = 0] = "Delete";
@@ -131,7 +131,7 @@ export function useMutation(type, op) {
                 case 7:
                     if (!updates) {
                         setLoading(false);
-                        throw Error("An update was performed however no updated model was provided.");
+                        throw Error('An update was performed however no updated model was provided.');
                     }
                     return [4 /*yield*/, DataStore.save(Model.copyOf(original, function (updated) {
                             return diff(original, updates, updated);

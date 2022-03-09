@@ -34,17 +34,17 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
         if (op[0] & 5) throw op[1]; return { value: op[0] ? op[1] : void 0, done: true };
     }
 };
-import { Predicates, DataStore } from "aws-amplify";
-import { useState, useEffect, useCallback, useMemo } from "react";
-import { getFileUrl } from "./storageUtils";
-import { extractStorageObjectKeyName } from "./extractStorageObjectKeyName";
-import { useDataStore } from "./DatastoreProvider";
+import { Predicates, DataStore } from 'aws-amplify';
+import { useState, useEffect, useCallback, useMemo } from 'react';
+import { getFileUrl } from './storageUtils';
+import { extractStorageObjectKeyName } from './extractStorageObjectKeyName';
+import { useDataStore } from './DatastoreProvider';
 export function useSubscription(type, id) {
     var _this = this;
     var _a = useDataStore(), Models = _a.Models, schema = _a.schema;
-    var _b = useState([]), data = _b[0], setData = _b[1];
+    var _b = useState(), data = _b[0], setData = _b[1];
     var _c = useState(undefined), fileUrl = _c[0], setFileUrl = _c[1];
-    var _d = useState(""), error = _d[0], setError = _d[1];
+    var _d = useState(''), error = _d[0], setError = _d[1];
     var _e = useState(false), loading = _e[0], setLoading = _e[1];
     // @ts-ignore
     var Model = useMemo(function () { return Models === null || Models === void 0 ? void 0 : Models[type]; }, [type, Models]);
@@ -61,7 +61,7 @@ export function useSubscription(type, id) {
                     switch (_a.label) {
                         case 0:
                             setLoading(false);
-                            fileUrl = Array.isArray(d) ? [] : "";
+                            fileUrl = Array.isArray(d) ? [] : '';
                             if (!Array.isArray(d)) return [3 /*break*/, 2];
                             return [4 /*yield*/, Promise.all(d === null || d === void 0 ? void 0 : d.map(function (dataItem) { return __awaiter(_this, void 0, void 0, function () {
                                     var fileField, urlString;
@@ -73,7 +73,7 @@ export function useSubscription(type, id) {
                                                     type: type,
                                                     schema: schema,
                                                 });
-                                                urlString = "";
+                                                urlString = '';
                                                 if (!fileField) return [3 /*break*/, 2];
                                                 return [4 /*yield*/, getFileUrl(dataItem[fileField])];
                                             case 1:
@@ -105,7 +105,7 @@ export function useSubscription(type, id) {
                             fileUrl = [{ id: d.id, url: newFileUrl }];
                             _a.label = 4;
                         case 4:
-                            // @ts-ignore
+                            //@ts-ignore
                             setData(d);
                             setFileUrl(fileUrl);
                             return [2 /*return*/];
