@@ -3,7 +3,7 @@ export declare enum Operations {
     Update = 1,
     Create = 2
 }
-export declare function useMutation(type: string, op: Operations): {
-    mutate: (original: any, updates?: any) => Promise<any>;
+export declare function useMutation<TData = any>(type: string, op: Operations): {
+    mutate: (original: TData, updates?: Partial<TData> | undefined) => Promise<any>;
     loading: boolean;
 };
