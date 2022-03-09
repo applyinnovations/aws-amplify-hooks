@@ -1,8 +1,5 @@
-import { Model } from './types';
-export declare const extractStorageObjectKeyName: <T>({ data, type, schema, }: {
-    data: Partial<Readonly<{
-        id: string;
-    } & T>>;
+export declare const extractStorageObjectKeyName: <T>({ updates, type, schema, }: {
+    updates?: Partial<T> | undefined;
     type: string;
     schema: any;
 }) => (keyof T)[];
