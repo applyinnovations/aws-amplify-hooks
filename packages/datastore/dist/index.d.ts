@@ -1,4 +1,5 @@
-export * from "./src/types";
-export { useSubscription } from "./src/useSubscription";
-export { useMutation, Operations } from "./src/useMutation";
-export { DatastoreProvider } from "./src/DatastoreProvider";
+export * from './src/types';
+export { useStorageObject } from './src/useStorageObject';
+export { useSubscription } from './src/useSubscription';
+export { useMutation, Operations } from './src/useMutation';
+export { DatastoreProvider } from './src/DatastoreProvider';
