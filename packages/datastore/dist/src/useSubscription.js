@@ -36,17 +36,14 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
 };
 import { Predicates, DataStore } from 'aws-amplify';
 import { useState, useEffect, useCallback, useMemo } from 'react';
-import { getFileUrl } from './storageUtils';
-import { extractStorageObjectKeyName } from './extractStorageObjectKeyName';
 import { useDataStore } from './DatastoreProvider';
 export function useSubscription(type, id) {
     var _this = this;
     var _a = useDataStore(), Models = _a.Models, schema = _a.schema;
     var _b = useState(), dataSingle = _b[0], setDataSingle = _b[1];
     var _c = useState([]), dataArray = _c[0], setDataArray = _c[1];
-    var _d = useState(undefined), fileUrl = _d[0], setFileUrl = _d[1];
-    var _e = useState(''), error = _e[0], setError = _e[1];
-    var _f = useState(false), loading = _f[0], setLoading = _f[1];
+    var _d = useState(), error = _d[0], setError = _d[1];
+    var _e = useState(false), loading = _e[0], setLoading = _e[1];
     var Model = useMemo(function () { return Models === null || Models === void 0 ? void 0 : Models[type]; }, [type, Models]);
     if (Model) {
         var fetchData_1 = useCallback(function () {
@@ -54,59 +51,15 @@ export function useSubscription(type, id) {
             // @ts-ignore
             return DataStore.query(Model, id !== null && id !== void 0 ? id : Predicates.ALL)
                 .then(function (data) { return __awaiter(_this, void 0, void 0, function () {
-                var fileUrl_1, fileField, newFileUrl;
-                var _this = this;
                 return __generator(this, function (_a) {
-                    switch (_a.label) {
-                        case 0:
-                            setLoading(false);
-                            if (!Array.isArray(data)) return [3 /*break*/, 2];
-                            return [4 /*yield*/, Promise.all(data === null || data === void 0 ? void 0 : data.map(function (dataItem) { return __awaiter(_this, void 0, void 0, function () {
-                                    var fileField, urlString;
-                                    return __generator(this, function (_a) {
-                                        switch (_a.label) {
-                                            case 0:
-                                                fileField = extractStorageObjectKeyName({
-                                                    data: dataItem,
-                                                    type: type,
-                                                    schema: schema,
-                                                });
-                                                urlString = '';
-                                                if (!fileField) return [3 /*break*/, 2];
-                                                return [4 /*yield*/, getFileUrl(dataItem[fileField])];
-                                            case 1:
-                                                urlString = _a.sent();
-                                                _a.label = 2;
-                                            case 2: return [2 /*return*/, {
-                                                    id: dataItem.id,
-                                                    url: urlString,
-                                                }];
-                                        }
-                                    });
-                                }); }))];
-                        case 1:
-                            fileUrl_1 = _a.sent();
-                            setFileUrl(fileUrl_1);
-                            setDataArray(data);
-                            return [3 /*break*/, 5];
-                        case 2:
-                            if (!data) return [3 /*break*/, 4];
-                            fileField = extractStorageObjectKeyName({
-                                data: data,
-                                type: type,
-                                schema: schema,
-                            });
-                            if (!fileField) return [3 /*break*/, 4];
-                            return [4 /*yield*/, getFileUrl(data[fileField])];
-                        case 3:
-                            newFileUrl = _a.sent();
-                            setFileUrl([{ id: data.id, url: newFileUrl }]);
-                            _a.label = 4;
-                        case 4:
-                            setDataSingle(data);
-                            _a.label = 5;
-                        case 5: return [2 /*return*/];
+                    setLoading(false);
+                    if (Array.isArray(data)) {
+                        setDataArray(data);
                     }
+                    else {
+                        setDataSingle(data);
+                    }
+                    return [2 /*return*/];
                 });
             }); })
                 .catch(function (e) {
@@ -130,7 +83,6 @@ export function useSubscription(type, id) {
         dataArray: dataArray,
         error: error,
         loading: loading,
-        fileUrl: fileUrl,
     };
 }
 //# sourceMappingURL=useSubscription.js.map

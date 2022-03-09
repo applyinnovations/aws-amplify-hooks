@@ -42,17 +42,20 @@ export var uploadFile = function (_a) {
     var file = _a.file, level = _a.level, contentType = _a.contentType;
     return __awaiter(void 0, void 0, void 0, function () {
         var name, _b, extension, key, currentTime, expires, credentials;
-        return __generator(this, function (_c) {
-            switch (_c.label) {
+        var _c;
+        return __generator(this, function (_d) {
+            switch (_d.label) {
                 case 0:
                     name = file.name;
-                    _b = /([^.]+)(\.(\w+))?$/.exec(name), extension = _b[3];
-                    key = "".concat(uuid()).concat(extension && '.').concat(extension);
+                    _b = (_c = /([^.]+)(\.(\w+))?$/.exec(name)) !== null && _c !== void 0 ? _c : [], extension = _b[3];
+                    if (!extension)
+                        throw Error('Extension missing from filename.');
+                    key = "".concat(uuid(), ".").concat(extension);
                     currentTime = new Date().getTime();
                     expires = new Date(currentTime + SIX_HOURS_IN_MS);
                     return [4 /*yield*/, Auth.currentUserCredentials()];
                 case 1:
-                    credentials = _c.sent();
+                    credentials = _d.sent();
                     return [4 /*yield*/, Storage.put(key, file, {
                             cacheControl: 'no-cache',
                             expires: expires,
@@ -60,7 +63,7 @@ export var uploadFile = function (_a) {
                             contentType: contentType,
                         })];
                 case 2:
-                    _c.sent();
+                    _d.sent();
                     return [2 /*return*/, {
                             key: key,
                             level: level,
@@ -79,7 +82,6 @@ export var getFileUrl = function (_a) {
             switch (_c.label) {
                 case 0: return [4 /*yield*/, Storage.get(key, {
                         contentType: contentType,
-                        // @ts-ignore
                         level: level,
                         identityId: level === StorageObjectLevel.PROTECTED ? identityId : undefined,
                     })];
