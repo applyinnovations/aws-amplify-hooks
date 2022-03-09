@@ -3,7 +3,7 @@ import { useCallback, useState, useMemo } from 'react';
 import { uploadFile } from './storageUtils';
 import { extractStorageObjectKeyName } from './extractStorageObjectKeyName';
 import { useDataStore } from './DatastoreProvider';
-import { Model, StorageProperties } from './types';
+import { Files, Model, StorageObjectLevel, StorageProperties } from './types';
 
 export enum Operations {
   Delete,
@@ -25,21 +25,28 @@ const diff = <T>(
   return updated as Model<T>;
 };
 
-const uploadAndLinkFile = async <T>(
-  data: Partial<Model<T>>,
-  fileKeyName: keyof T,
-  storageProperties?: StorageProperties
-) => {
-  const fileData = data[fileKeyName];
-  if (storageProperties && fileData) {
+const uploadAndLinkFile = async <T>({
+  data,
+  file,
+  fileKey,
+  storageProperties = {
+    contentType: 'application/octet-stream',
+    level: StorageObjectLevel.PUBLIC,
+  },
+}: {
+  data: Partial<Model<T>>;
+  fileKey: keyof T;
+  file: File;
+  storageProperties?: StorageProperties;
+}) => {
+  if (storageProperties && file) {
     const storageObject = await uploadFile({
-      file: fileData,
-      contentType: storageProperties.contentType,
-      level: storageProperties.level,
+      file,
+      ...storageProperties,
     });
     return {
       ...data,
-      [fileKeyName]: storageObject,
+      [fileKey]: storageObject,
     };
   } else
     throw Error('Please provide storage properties when uploading a file.');
@@ -49,20 +56,23 @@ const resolveFiles = async <T>(
   model: Partial<Model<T>>,
   type: string,
   schema: any,
-  storageProperties?: StorageProperties
+  files?: Files<T>
 ) => {
-  const fileKeyNames = extractStorageObjectKeyName({
+  if (!files) return model;
+  const fileKeys = extractStorageObjectKeyName({
     data: model,
     type,
     schema,
   });
   let mutationPayload = model;
-  for (const fileKeyName of fileKeyNames) {
-    mutationPayload = await uploadAndLinkFile<T>(
-      mutationPayload,
-      fileKeyName,
-      storageProperties
-    );
+  for (const fileKey of fileKeys) {
+    if (fileKey in files) {
+      mutationPayload = await uploadAndLinkFile<T>({
+        data: mutationPayload,
+        fileKey,
+        ...files[fileKey],
+      });
+    }
   }
   return mutationPayload;
 };
@@ -73,11 +83,15 @@ export function useMutation<T>(type: string, op: Operations) {
   const Model = useMemo(() => Models?.[type], [type]);
 
   const mutate = useCallback(
-    async (
-      original?: Model<T>,
-      updates?: Partial<Model<T>>,
-      storageProperties?: StorageProperties
-    ) => {
+    async ({
+      original,
+      updates,
+      files,
+    }: {
+      original?: Model<T>;
+      updates?: Partial<Model<T>>;
+      files?: Files<T>;
+    }) => {
       setLoading(true);
       if (!original)
         throw Error('Mutation was attempted without providing any data.');
@@ -88,7 +102,7 @@ export function useMutation<T>(type: string, op: Operations) {
               original,
               type,
               schema,
-              storageProperties
+              files
             );
             const createResponse = await DataStore.save(
               new Model(createPayload)
@@ -107,7 +121,7 @@ export function useMutation<T>(type: string, op: Operations) {
               updates,
               type,
               schema,
-              storageProperties
+              files
             );
             const newModel = Model.copyOf(original, (updated: any) =>
               diff(original, updatePayload, updated)
