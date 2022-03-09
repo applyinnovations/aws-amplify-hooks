@@ -26,12 +26,12 @@ jobs:
         uses: technote-space/package-version-check-action@v1
         with:
           NEXT_VERSION: '${{ steps.get_release_name.outputs.match }}'
-          COMMIT_MESSAGE: '[package.json] updated package.json to ${{ steps.get_release_name.outputs.match }}'
+          COMMIT_DISABLED: 1
 
       - name: Commit changes for the generated build
         uses: EndBug/add-and-commit@v8
         with:
           author_name: github-actions[bot]
           author_email: actions@github.com
-          message: '[**/dist/**] generated build files'
+          message: '[**/dist/**] generated build files; [package.json] updated to ${{ steps.get_release_name.outputs.match }}'
           add: '**/dist/**'
