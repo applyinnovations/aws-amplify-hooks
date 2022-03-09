@@ -1,5 +1,7 @@
-export declare type FileUrl = string;
-export declare type FileUrls<T> = Record<keyof T, FileUrl>;
+export declare type Files<T> = Record<keyof T, {
+    file: File;
+    storageProperties?: StorageProperties;
+}>;
 export declare enum StorageObjectLevel {
     PRIVATE = "private",
     PROTECTED = "protected",
@@ -16,6 +18,6 @@ export interface StorageObject extends StorageProperties {
     key: string;
     identityId?: string;
 }
-export declare type Model<T extends Record<keyof T, any>> = Readonly<{
+export declare type Model<T extends Partial<Record<keyof T, any>>> = Readonly<{
     id: string;
-} & ((T & Record<keyof T, StorageObject> & Record<keyof T, File>) | Record<keyof T, null>)>;
+} & T>;
