@@ -9,6 +9,11 @@ jobs:
     runs-on: ubuntu-latest
     if: github.event.pull_request.merged && github.event.pull_request.base.ref == 'release'
     steps:
+      - name: Checkout repo
+        uses: actions/checkout@v2
+        with:
+          ref: ${{ github.event.pull_request.head.ref }}
+
       - name: Update version in package.json
         if: ${{ steps.get_tag_name.outputs.replaced }}
         uses: technote-space/package-version-check-action@v1
