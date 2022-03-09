@@ -1,7 +1,7 @@
-export declare type Files<T> = Record<keyof T, {
+export declare type Files<T> = Partial<Record<keyof T, {
     file: File;
     storageProperties?: StorageProperties;
-}>;
+}>>;
 export declare enum StorageObjectLevel {
     PRIVATE = "private",
     PROTECTED = "protected",
