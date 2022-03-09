@@ -9,18 +9,6 @@ jobs:
     runs-on: ubuntu-latest
     if: github.event.pull_request.merged && github.event.pull_request.base.ref == 'release'
     steps:
-      - name: Checkout repo
-        uses: actions/checkout@v2
-        with:
-          ref: ${{ github.event.pull_request.head.ref }}
-
-      - name: Update version in package.json
-        if: ${{ steps.get_tag_name.outputs.replaced }}
-        uses: technote-space/package-version-check-action@v1
-        with:
-          NEXT_VERSION: '${{ steps.get_tag_name.outputs.replaced }}'
-          COMMIT_MESSAGE: '[package.json] updated package.json to ${{ steps.get_tag_name.outputs.replaced }}'
-
       - name: Get Release Name
         uses: actions-ecosystem/action-regex-match@v2
         id: get_release_name
@@ -35,6 +23,18 @@ jobs:
           pattern: 'v'
           string: '${{ steps.get_release_name.outputs.match }}'
           replace-with: ''
+
+      - name: Checkout repo
+        uses: actions/checkout@v2
+        with:
+          ref: ${{ github.event.pull_request.head.ref }}
+
+      - name: Update version in package.json
+        if: ${{ steps.get_tag_name.outputs.replaced }}
+        uses: technote-space/package-version-check-action@v1
+        with:
+          NEXT_VERSION: '${{ steps.get_tag_name.outputs.replaced }}'
+          COMMIT_MESSAGE: '[package.json] updated package.json to ${{ steps.get_tag_name.outputs.replaced }}'
 
       - uses: actions/checkout@v2
       - name: Create Tags
