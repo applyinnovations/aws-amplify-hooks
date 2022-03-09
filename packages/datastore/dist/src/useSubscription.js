@@ -126,7 +126,8 @@ export function useSubscription(type, id) {
         }, [Model, id, fetchData_1]);
     }
     return {
-        data: dataSingle !== null && dataSingle !== void 0 ? dataSingle : dataArray,
+        dataSingle: dataSingle,
+        dataArray: dataArray,
         error: error,
         loading: loading,
         fileUrl: fileUrl,

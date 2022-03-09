@@ -78,7 +78,8 @@ export function useSubscription<T>(type: string, id?: string) {
     }, [Model, id, fetchData]);
   }
   return {
-    data: dataSingle ?? dataArray,
+    dataSingle,
+    dataArray,
     error,
     loading,
     fileUrl,
