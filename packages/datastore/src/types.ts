@@ -20,4 +20,6 @@ export declare class StorageObject {
   contentType: string;
 }
 
-export type Data<T> = Readonly<{ id: string } & Record<string, any>> & T;
+export type Data<T extends Record<keyof T, any>> = Readonly<
+  { id: string } & Record<string, StorageObject> & T
+>;
