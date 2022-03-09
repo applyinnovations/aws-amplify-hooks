@@ -7,8 +7,8 @@ export declare enum Operations {
 export declare function useMutation<T>(type: string, op: Operations): {
     mutate: (original?: Readonly<{
         id: string;
-    } & Record<keyof T, import("./types").StorageObject> & Record<keyof T, File> & T> | undefined, updates?: Partial<Readonly<{
+    } & T & Record<keyof T, import("./types").StorageObject> & Record<keyof T, File> & Record<keyof T, null>> | undefined, updates?: Partial<Readonly<{
         id: string;
-    } & Record<keyof T, import("./types").StorageObject> & Record<keyof T, File> & T>> | undefined, storageProperties?: StorageProperties | undefined) => Promise<any>;
+    } & T & Record<keyof T, import("./types").StorageObject> & Record<keyof T, File> & Record<keyof T, null>>> | undefined, storageProperties?: StorageProperties | undefined) => Promise<any>;
     loading: boolean;
 };

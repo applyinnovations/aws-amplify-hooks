@@ -20,4 +20,4 @@ export interface StorageObject extends StorageProperties {
 }
 export declare type Model<T extends Record<keyof T, any & StorageObject & File>> = Readonly<{
     id: string;
-} & Record<keyof T, StorageObject> & Record<keyof T, File> & T>;
+} & T & Record<keyof T, StorageObject> & Record<keyof T, File> & Record<keyof T, null>>;
