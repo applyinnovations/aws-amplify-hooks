@@ -29,6 +29,11 @@ jobs:
           COMMIT_MESSAGE: '[package.json] updated to ${{ steps.get_release_name.outputs.match }}'
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
+      - name: Checkout repo
+        uses: actions/checkout@v2
+        with:
+          ref: ${{ github.event.pull_request.head.ref }}
+
       - name: Commit changes for the generated build
         uses: EndBug/add-and-commit@v8
         with:
