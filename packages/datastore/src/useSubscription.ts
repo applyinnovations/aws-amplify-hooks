@@ -9,8 +9,8 @@ export function useSubscription<T>(type: string, id?: string) {
   const [dataArray, setDataArray] = useState<Model<T>[]>([]);
   const [error, setError] = useState<string>();
   const [loading, setLoading] = useState(false);
-
   const Model = useMemo(() => Models?.[type], [type, Models]);
+
   if (Model) {
     const fetchData = useCallback(() => {
       setLoading(true);
