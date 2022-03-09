@@ -6,9 +6,7 @@ import { getFileUrl } from './storageUtils';
 import { extractStorageObjectKeyName } from './extractStorageObjectKeyName';
 
 import { useDataStore } from './DatastoreProvider';
-import { FileUrl } from './types';
-
-type Data<T extends Record<string, any>> = Readonly<{ id: string } & T>;
+import { FileUrl, Data } from './types';
 
 export function useSubscription<T>(type: string, id?: string) {
   const { Models, schema } = useDataStore();
@@ -20,7 +18,6 @@ export function useSubscription<T>(type: string, id?: string) {
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
 
-  // @ts-ignore
   const Model = useMemo(() => Models?.[type], [type, Models]);
   if (Model) {
     const fetchData = useCallback(() => {
