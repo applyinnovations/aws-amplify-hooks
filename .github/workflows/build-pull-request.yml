@@ -26,8 +26,7 @@ jobs:
         uses: technote-space/package-version-check-action@v1
         with:
           NEXT_VERSION: '${{ steps.get_release_name.outputs.match }}'
-          COMMIT_MESSAGE: '[package.json] updated to ${{ steps.get_release_name.outputs.match }}'
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          COMMIT_DISABLED: 1
 
       - name: Checkout repo
         uses: actions/checkout@v2
@@ -39,5 +38,5 @@ jobs:
         with:
           author_name: github-actions[bot]
           author_email: actions@github.com
-          message: '[**/dist/**] generated build files'
-          add: '**/dist/**'
+          message: '[**/dist/**] generated build files; [package.json] updated to ${{ steps.get_release_name.outputs.match }};'
+          add: '["**/dist/**", "package.json"]'
