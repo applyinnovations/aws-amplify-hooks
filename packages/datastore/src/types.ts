@@ -1,6 +1,5 @@
-﻿export type Files<T> = Record<
-  keyof T,
-  { file: File; storageProperties?: StorageProperties }
+﻿export type Files<T> = Partial<
+  Record<keyof T, { file: File; storageProperties?: StorageProperties }>
 >;
 
 export enum StorageObjectLevel {
