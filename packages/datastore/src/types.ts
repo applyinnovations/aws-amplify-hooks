@@ -13,13 +13,17 @@ export interface FileWithFileUrl extends File {
   fileUrl?: string;
 }
 
-export declare class StorageObject {
-  key: string;
-  identityId?: string;
+export interface StorageProperties {
   level: StorageObjectLevel;
   contentType: string;
 }
 
-export type Data<T extends Record<keyof T, any>> = Readonly<
-  { id: string } & Record<string, StorageObject> & Record<string, File> & T
->;
+export interface StorageObject extends StorageProperties {
+  key: string;
+  identityId?: string;
+}
+
+export type Model<T extends Record<keyof T, any & StorageObject & File>> =
+  Readonly<
+    { id: string } & Record<keyof T, StorageObject> & Record<keyof T, File> & T
+  >;
