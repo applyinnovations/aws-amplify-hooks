@@ -5,11 +5,11 @@ export const extractStorageObjectKeyName = <T>({
   type,
   schema,
 }: {
-  data: Model<T>;
+  data: Partial<Model<T>>;
   type: string;
   schema: any;
 }) =>
-  Object.keys(data).find(
+  Object.keys(data).filter(
     (key) =>
       schema?.models?.[type]?.fields?.[key]?.type?.nonModel === 'StorageObject'
-  ) as keyof T;
+  ) as (keyof T)[];

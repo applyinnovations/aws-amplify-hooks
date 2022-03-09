@@ -1,7 +1,5 @@
-﻿export interface FileUrl {
-  id: string;
-  url: string;
-}
+﻿export type FileUrl = string;
+export type FileUrls<T> = Record<keyof T, FileUrl>;
 
 export enum StorageObjectLevel {
   PRIVATE = 'private',
@@ -23,10 +21,9 @@ export interface StorageObject extends StorageProperties {
   identityId?: string;
 }
 
-export type Model<T extends Record<keyof T, any & StorageObject & File>> =
-  Readonly<
-    { id: string } & T &
-      Record<keyof T, StorageObject> &
-      Record<keyof T, File> &
-      Record<keyof T, null>
-  >;
+export type Model<T extends Record<keyof T, any>> = Readonly<
+  { id: string } & (
+    | (T & Record<keyof T, StorageObject> & Record<keyof T, File>)
+    | Record<keyof T, null>
+  )
+>;
