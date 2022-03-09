@@ -1,20 +1,13 @@
 ﻿import { Predicates, DataStore } from 'aws-amplify';
 import { useState, useEffect, useCallback, useMemo } from 'react';
-import { getFileUrl } from './storageUtils';
-import { extractStorageObjectKeyName } from './extractStorageObjectKeyName';
 import { useDataStore } from './DatastoreProvider';
-import { FileUrl, Model } from './types';
+import { Model } from './types';
 
 export function useSubscription<T>(type: string, id?: string) {
   const { Models, schema } = useDataStore();
   const [dataSingle, setDataSingle] = useState<Model<T>>();
   const [dataArray, setDataArray] = useState<Model<T>[]>([]);
-
-  const [fileUrl, setFileUrl] = useState<Array<FileUrl> | FileUrl | undefined>(
-    undefined
-  );
-
-  const [error, setError] = useState('');
+  const [error, setError] = useState<string>();
   const [loading, setLoading] = useState(false);
 
   const Model = useMemo(() => Models?.[type], [type, Models]);
@@ -26,37 +19,8 @@ export function useSubscription<T>(type: string, id?: string) {
         .then(async (data) => {
           setLoading(false);
           if (Array.isArray(data)) {
-            const fileUrl: FileUrl[] = await Promise.all(
-              data?.map(async (dataItem: Model<T>) => {
-                const fileField = extractStorageObjectKeyName({
-                  data: dataItem,
-                  type,
-                  schema,
-                });
-                let urlString = '';
-                if (fileField) {
-                  urlString = await getFileUrl(dataItem[fileField]);
-                }
-                return {
-                  id: dataItem.id,
-                  url: urlString,
-                };
-              })
-            );
-            setFileUrl(fileUrl);
             setDataArray(data);
           } else {
-            if (data) {
-              const fileField = extractStorageObjectKeyName<typeof data>({
-                data: data,
-                type,
-                schema,
-              });
-              if (fileField) {
-                const newFileUrl = await getFileUrl(data[fileField]);
-                setFileUrl([{ id: data.id, url: newFileUrl }]);
-              }
-            }
             setDataSingle(data as Model<T>);
           }
         })
@@ -82,6 +46,5 @@ export function useSubscription<T>(type: string, id?: string) {
     dataArray,
     error,
     loading,
-    fileUrl,
   };
 }

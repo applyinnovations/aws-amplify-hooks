@@ -26,12 +26,12 @@ const diff = <T>(
 };
 
 const uploadAndLinkFile = async <T>(
-  data: Model<T>,
+  data: Partial<Model<T>>,
   fileKeyName: keyof T,
   storageProperties?: StorageProperties
 ) => {
   const fileData = data[fileKeyName];
-  if (storageProperties) {
+  if (storageProperties && fileData) {
     const storageObject = await uploadFile({
       file: fileData,
       contentType: storageProperties.contentType,
@@ -43,6 +43,28 @@ const uploadAndLinkFile = async <T>(
     };
   } else
     throw Error('Please provide storage properties when uploading a file.');
+};
+
+const resolveFiles = async <T>(
+  model: Partial<Model<T>>,
+  type: string,
+  schema: any,
+  storageProperties?: StorageProperties
+) => {
+  const fileKeyNames = extractStorageObjectKeyName({
+    data: model,
+    type,
+    schema,
+  });
+  let mutationPayload = model;
+  for (const fileKeyName of fileKeyNames) {
+    mutationPayload = await uploadAndLinkFile<T>(
+      mutationPayload,
+      fileKeyName,
+      storageProperties
+    );
+  }
+  return mutationPayload;
 };
 
 export function useMutation<T>(type: string, op: Operations) {
@@ -62,22 +84,14 @@ export function useMutation<T>(type: string, op: Operations) {
       try {
         switch (op) {
           case Operations.Create:
-            const fileKeyName = extractStorageObjectKeyName({
-              data: original,
+            const createPayload = await resolveFiles(
+              original,
               type,
               schema,
-            });
-
-            const mutationPayload = fileKeyName
-              ? await uploadAndLinkFile<T>(
-                  original,
-                  fileKeyName,
-                  storageProperties
-                )
-              : original;
-
+              storageProperties
+            );
             const createResponse = await DataStore.save(
-              new Model(mutationPayload)
+              new Model(createPayload)
             );
             setLoading(false);
             return createResponse;
@@ -89,12 +103,16 @@ export function useMutation<T>(type: string, op: Operations) {
                 'An update was performed however no updated model was provided.'
               );
             }
-
-            const updateResponse = await DataStore.save(
-              Model.copyOf(original, (updated: any) =>
-                diff(original, updates, updated)
-              )
+            const updatePayload = await resolveFiles(
+              updates,
+              type,
+              schema,
+              storageProperties
             );
+            const newModel = Model.copyOf(original, (updated: any) =>
+              diff(original, updatePayload, updated)
+            );
+            const updateResponse = await DataStore.save(newModel);
             setLoading(false);
             return updateResponse;
 
