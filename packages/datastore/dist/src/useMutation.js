@@ -76,23 +76,24 @@ var diff = function (original, updates, updated) {
     }
     return updated;
 };
-var generateNewfileUrl = function (data, fileKeyName) { return __awaiter(void 0, void 0, void 0, function () {
+var uploadAndLinkFile = function (data, fileKeyName) { return __awaiter(void 0, void 0, void 0, function () {
     var fileData, storageObject, storageProperties, rest;
     var _a;
-    var _b, _c;
-    return __generator(this, function (_d) {
-        switch (_d.label) {
+    return __generator(this, function (_b) {
+        switch (_b.label) {
             case 0:
                 fileData = data[fileKeyName];
+                if (!data) return [3 /*break*/, 2];
                 return [4 /*yield*/, uploadFile({
                         file: fileData,
-                        contentType: (_b = data === null || data === void 0 ? void 0 : data.storageProperties) === null || _b === void 0 ? void 0 : _b.contentType,
-                        level: (_c = data === null || data === void 0 ? void 0 : data.storageProperties) === null || _c === void 0 ? void 0 : _c.level,
+                        contentType: data.storageProperties.contentType,
+                        level: data.storageProperties.level,
                     })];
             case 1:
-                storageObject = _d.sent();
+                storageObject = _b.sent();
                 storageProperties = data.storageProperties, rest = __rest(data, ["storageProperties"]);
                 return [2 /*return*/, __assign(__assign({}, rest), (_a = {}, _a[fileKeyName] = storageObject, _a))];
+            case 2: throw Error('No file provided.');
         }
     });
 }); };
@@ -124,7 +125,7 @@ export function useMutation(type, op) {
                         schema: schema,
                     });
                     if (!fileKeyName) return [3 /*break*/, 4];
-                    return [4 /*yield*/, generateNewfileUrl(original, fileKeyName)];
+                    return [4 /*yield*/, uploadAndLinkFile(original, fileKeyName)];
                 case 3:
                     _b = _c.sent();
                     return [3 /*break*/, 5];
@@ -158,7 +159,7 @@ export function useMutation(type, op) {
                 case 11: return [3 /*break*/, 13];
                 case 12:
                     e_1 = _c.sent();
-                    console.log(e_1);
+                    console.error(e_1);
                     setLoading(false);
                     return [3 /*break*/, 13];
                 case 13: return [2 /*return*/];

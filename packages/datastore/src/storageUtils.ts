@@ -1,12 +1,11 @@
-﻿import { Storage, Auth } from "aws-amplify";
-import { StorageObject, StorageObjectLevel } from "./types";
-import { v4 as uuid } from "uuid";
+﻿import { Storage, Auth } from 'aws-amplify';
+import { StorageObject, StorageObjectLevel } from './types';
+import { v4 as uuid } from 'uuid';
 
 const SIX_HOURS_IN_MS = 6 * 60 * 60 * 1000; // 6 hours in seconds
 
 export const uploadFile = async ({
   file,
-
   level,
   contentType,
 }: {
@@ -19,13 +18,13 @@ export const uploadFile = async ({
   // @ts-ignore
   const [, , , extension] = /([^.]+)(\.(\w+))?$/.exec(name);
 
-  const key = `${uuid()}${extension && "."}${extension}`;
+  const key = `${uuid()}${extension && '.'}${extension}`;
   const currentTime = new Date().getTime();
   const expires = new Date(currentTime + SIX_HOURS_IN_MS);
   const credentials = await Auth.currentUserCredentials();
 
   await Storage.put(key, file, {
-    cacheControl: "no-cache",
+    cacheControl: 'no-cache',
     expires: expires,
     level,
     contentType,
@@ -52,9 +51,9 @@ export const getFileUrl = async ({
     identityId: level === StorageObjectLevel.PROTECTED ? identityId : undefined,
   });
 
-  if (typeof result === "string") {
+  if (typeof result === 'string') {
     return result;
   } else {
-    throw new Error("Invalid File URL format returned");
+    throw new Error('Invalid File URL format returned');
   }
 };

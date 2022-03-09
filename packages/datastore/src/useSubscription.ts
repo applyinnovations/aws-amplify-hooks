@@ -1,20 +1,19 @@
 ﻿import { Predicates, DataStore } from 'aws-amplify';
-
 import { useState, useEffect, useCallback, useMemo } from 'react';
-
 import { getFileUrl } from './storageUtils';
 import { extractStorageObjectKeyName } from './extractStorageObjectKeyName';
-
 import { useDataStore } from './DatastoreProvider';
 import { FileUrl, Data } from './types';
 
 export function useSubscription<T>(type: string, id?: string) {
   const { Models, schema } = useDataStore();
-  const [data, setData] = useState<Data<T> | Data<T>[]>();
+  const [dataSingle, setDataSingle] = useState<Data<T>>();
+  const [dataArray, setDataArray] = useState<Data<T>[]>([]);
 
   const [fileUrl, setFileUrl] = useState<Array<FileUrl> | FileUrl | undefined>(
     undefined
   );
+
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
 
@@ -45,6 +44,7 @@ export function useSubscription<T>(type: string, id?: string) {
               })
             );
             setFileUrl(fileUrl);
+            setDataArray(data);
           } else {
             if (data) {
               const fileField = extractStorageObjectKeyName<typeof data>({
@@ -57,12 +57,11 @@ export function useSubscription<T>(type: string, id?: string) {
                 setFileUrl([{ id: data.id, url: newFileUrl }]);
               }
             }
+            setDataSingle(data as Data<T>);
           }
-          //@ts-ignore
-          setData(data);
         })
         .catch((e) => {
-          console.log(e);
+          console.error(e);
           setLoading(false);
           setError(`Someting went wrong while fetching ${type}`);
         });
@@ -79,7 +78,7 @@ export function useSubscription<T>(type: string, id?: string) {
     }, [Model, id, fetchData]);
   }
   return {
-    data,
+    data: dataSingle ?? dataArray,
     error,
     loading,
     fileUrl,

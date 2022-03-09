@@ -1,4 +1,4 @@
-import { StorageObject, StorageObjectLevel } from "./types";
+import { StorageObject, StorageObjectLevel } from './types';
 export declare const uploadFile: ({ file, level, contentType, }: {
     file: File;
     contentType: string;

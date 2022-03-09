@@ -1,6 +1,4 @@
-﻿import { Data } from './types';
-
-export const extractStorageObjectKeyName = <T>({
+﻿export const extractStorageObjectKeyName = <T>({
   data,
   type,
   schema,
