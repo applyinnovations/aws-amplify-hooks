@@ -1,15 +1,15 @@
 ﻿import { Model } from './types';
 
 export const extractStorageObjectKeyName = <T>({
-  data,
+  updates,
   type,
   schema,
 }: {
-  data: Partial<Model<T>>;
+  updates?: Partial<T>;
   type: string;
   schema: any;
 }) =>
-  Object.keys(data).filter(
+  Object.keys(updates || {}).filter(
     (key) =>
       schema?.models?.[type]?.fields?.[key]?.type?.nonModel === 'StorageObject'
   ) as (keyof T)[];

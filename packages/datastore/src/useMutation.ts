@@ -13,20 +13,21 @@ export enum Operations {
 
 const diff = <T>(
   original: Model<T>,
-  updates: Partial<Model<T>>,
+  updates: Partial<T> | undefined,
   updated: Record<keyof T, any>
 ) => {
+  if (!updates) return original;
   for (const key of Object.keys(updates)) {
     const keyofT = key as keyof T;
     if (key in original && original[keyofT] !== updates[keyofT]) {
       updated[keyofT] = updates[keyofT];
     }
   }
-  return updated as Model<T>;
+  return updated as T;
 };
 
 const uploadAndLinkFile = async <T>({
-  data,
+  updates,
   file,
   fileKey,
   storageProperties = {
@@ -34,7 +35,7 @@ const uploadAndLinkFile = async <T>({
     level: StorageObjectLevel.PUBLIC,
   },
 }: {
-  data: Partial<Model<T>>;
+  updates?: Partial<T>;
   fileKey: keyof T;
   file: File;
   storageProperties?: StorageProperties;
@@ -45,30 +46,35 @@ const uploadAndLinkFile = async <T>({
       ...storageProperties,
     });
     return {
-      ...data,
+      ...updates,
       [fileKey]: storageObject,
     };
   } else
     throw Error('Please provide storage properties when uploading a file.');
 };
 
-const resolveFiles = async <T>(
-  model: Partial<Model<T>>,
-  type: string,
-  schema: any,
-  files?: Files<T>
-) => {
-  if (!files) return model;
+const resolveFiles = async <T>({
+  updates,
+  type,
+  schema,
+  files,
+}: {
+  updates?: Partial<T>;
+  type: string;
+  schema: any;
+  files?: Files<T>;
+}) => {
+  if (!files) return updates;
   const fileKeys = extractStorageObjectKeyName({
-    data: model,
+    updates: updates,
     type,
     schema,
   });
-  let mutationPayload = model;
+  let mutationPayload = updates;
   for (const fileKey of fileKeys) {
     if (fileKey in files) {
       mutationPayload = await uploadAndLinkFile<T>({
-        data: mutationPayload,
+        updates: mutationPayload,
         fileKey,
         ...files[fileKey],
       });
@@ -98,12 +104,12 @@ export function useMutation<T>(type: string, op: Operations) {
       try {
         switch (op) {
           case Operations.Create:
-            const createPayload = await resolveFiles(
-              original,
+            const createPayload = await resolveFiles({
+              updates: original,
               type,
               schema,
-              files
-            );
+              files,
+            });
             const createResponse = await DataStore.save(
               new Model(createPayload)
             );
@@ -111,18 +117,18 @@ export function useMutation<T>(type: string, op: Operations) {
             return createResponse;
 
           case Operations.Update:
-            if (!updates) {
+            if (!updates && !files) {
               setLoading(false);
               throw Error(
-                'An update was performed however no updated model was provided.'
+                'An update was performed however no updated model or updated files were provided.'
               );
             }
-            const updatePayload = await resolveFiles(
+            const updatePayload = await resolveFiles({
               updates,
               type,
               schema,
-              files
-            );
+              files,
+            });
             const newModel = Model.copyOf(original, (updated: any) =>
               diff(original, updatePayload, updated)
             );
