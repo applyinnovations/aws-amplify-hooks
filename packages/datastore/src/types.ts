@@ -26,20 +26,3 @@ export interface StorageObject extends StorageProperties {
 export type Model<T extends Partial<Record<keyof T, any>>> = Readonly<
   { id: string } & T
 >;
-
-type Site = {
-  __typename: 'Site';
-  id: string;
-  name: string;
-  address: string;
-  link?: string | null;
-  notes?: string | null;
-  customSiteMessage?: string | null;
-  customLockedSiteMessage?: string | null;
-  logo?: StorageObject | null;
-  createdAt: string;
-  updatedAt: string;
-  _version: number;
-  _deleted?: boolean | null;
-  _lastChangedAt: number;
-};
