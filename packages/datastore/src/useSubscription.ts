@@ -22,60 +22,50 @@ export function useSubscription<T>(type: string, id?: string) {
   if (Model) {
     const fetchData = useCallback(() => {
       setLoading(true);
-      return (
-        // @ts-ignore
-        DataStore.query(Model, id ? id : Predicates.ALL)
-
-          .then(async (d) => {
-            setLoading(false);
-            // @ts-ignore
-            let fileUrl: FileUrl = Array.isArray(d) ? [] : '';
-
-            if (Array.isArray(d)) {
-              // @ts-ignore
-              fileUrl = await Promise.all(
-                d?.map(async (dataItem: { [key: string]: any }) => {
-                  const fileField = extractStorageObjectKeyName({
-                    data: dataItem,
-                    type,
-                    schema,
-                  });
-
-                  let urlString = '';
-                  if (fileField) {
-                    urlString = await getFileUrl(dataItem[fileField]);
-                  }
-
-                  return {
-                    id: dataItem?.id,
-                    url: urlString,
-                  };
-                })
-              );
-            } else {
-              const fileField = extractStorageObjectKeyName({
-                // @ts-ignore
-                data: d,
+      // @ts-ignore
+      return DataStore.query(Model, id ?? Predicates.ALL)
+        .then(async (data) => {
+          setLoading(false);
+          if (Array.isArray(data)) {
+            const fileUrl: FileUrl[] = await Promise.all(
+              data?.map(async (dataItem: Data<T>) => {
+                const fileField = extractStorageObjectKeyName({
+                  data: dataItem,
+                  type,
+                  schema,
+                });
+                let urlString = '';
+                if (fileField) {
+                  urlString = await getFileUrl(dataItem[fileField]);
+                }
+                return {
+                  id: dataItem.id,
+                  url: urlString,
+                };
+              })
+            );
+            setFileUrl(fileUrl);
+          } else {
+            if (data) {
+              const fileField = extractStorageObjectKeyName<typeof data>({
+                data: data,
                 type,
                 schema,
               });
               if (fileField) {
-                // @ts-ignore
-                const newFileUrl = await getFileUrl(d[fileField]);
-                // @ts-ignore
-                fileUrl = [{ id: d.id, url: newFileUrl }];
+                const newFileUrl = await getFileUrl(data[fileField]);
+                setFileUrl([{ id: data.id, url: newFileUrl }]);
               }
             }
-            //@ts-ignore
-            setData(d);
-            setFileUrl(fileUrl);
-          })
-          .catch((e) => {
-            console.log(e);
-            setLoading(false);
-            setError(`Someting went wrong while fetching ${type}`);
-          })
-      );
+          }
+          //@ts-ignore
+          setData(data);
+        })
+        .catch((e) => {
+          console.log(e);
+          setLoading(false);
+          setError(`Someting went wrong while fetching ${type}`);
+        });
     }, [Model, id, schema]);
 
     useEffect(() => {
