@@ -42,28 +42,26 @@ import { useDataStore } from './DatastoreProvider';
 export function useSubscription(type, id) {
     var _this = this;
     var _a = useDataStore(), Models = _a.Models, schema = _a.schema;
-    var _b = useState(), data = _b[0], setData = _b[1];
-    var _c = useState(undefined), fileUrl = _c[0], setFileUrl = _c[1];
-    var _d = useState(''), error = _d[0], setError = _d[1];
-    var _e = useState(false), loading = _e[0], setLoading = _e[1];
-    // @ts-ignore
+    var _b = useState(), dataSingle = _b[0], setDataSingle = _b[1];
+    var _c = useState([]), dataArray = _c[0], setDataArray = _c[1];
+    var _d = useState(undefined), fileUrl = _d[0], setFileUrl = _d[1];
+    var _e = useState(''), error = _e[0], setError = _e[1];
+    var _f = useState(false), loading = _f[0], setLoading = _f[1];
     var Model = useMemo(function () { return Models === null || Models === void 0 ? void 0 : Models[type]; }, [type, Models]);
     if (Model) {
         var fetchData_1 = useCallback(function () {
             setLoading(true);
-            return (
             // @ts-ignore
-            DataStore.query(Model, id ? id : Predicates.ALL)
-                .then(function (d) { return __awaiter(_this, void 0, void 0, function () {
-                var fileUrl, fileField, newFileUrl;
+            return DataStore.query(Model, id !== null && id !== void 0 ? id : Predicates.ALL)
+                .then(function (data) { return __awaiter(_this, void 0, void 0, function () {
+                var fileUrl_1, fileField, newFileUrl;
                 var _this = this;
                 return __generator(this, function (_a) {
                     switch (_a.label) {
                         case 0:
                             setLoading(false);
-                            fileUrl = Array.isArray(d) ? [] : '';
-                            if (!Array.isArray(d)) return [3 /*break*/, 2];
-                            return [4 /*yield*/, Promise.all(d === null || d === void 0 ? void 0 : d.map(function (dataItem) { return __awaiter(_this, void 0, void 0, function () {
+                            if (!Array.isArray(data)) return [3 /*break*/, 2];
+                            return [4 /*yield*/, Promise.all(data === null || data === void 0 ? void 0 : data.map(function (dataItem) { return __awaiter(_this, void 0, void 0, function () {
                                     var fileField, urlString;
                                     return __generator(this, function (_a) {
                                         switch (_a.label) {
@@ -80,43 +78,42 @@ export function useSubscription(type, id) {
                                                 urlString = _a.sent();
                                                 _a.label = 2;
                                             case 2: return [2 /*return*/, {
-                                                    id: dataItem === null || dataItem === void 0 ? void 0 : dataItem.id,
+                                                    id: dataItem.id,
                                                     url: urlString,
                                                 }];
                                         }
                                     });
                                 }); }))];
                         case 1:
-                            // @ts-ignore
-                            fileUrl = _a.sent();
-                            return [3 /*break*/, 4];
+                            fileUrl_1 = _a.sent();
+                            setFileUrl(fileUrl_1);
+                            setDataArray(data);
+                            return [3 /*break*/, 5];
                         case 2:
+                            if (!data) return [3 /*break*/, 4];
                             fileField = extractStorageObjectKeyName({
-                                // @ts-ignore
-                                data: d,
+                                data: data,
                                 type: type,
                                 schema: schema,
                             });
                             if (!fileField) return [3 /*break*/, 4];
-                            return [4 /*yield*/, getFileUrl(d[fileField])];
+                            return [4 /*yield*/, getFileUrl(data[fileField])];
                         case 3:
                             newFileUrl = _a.sent();
-                            // @ts-ignore
-                            fileUrl = [{ id: d.id, url: newFileUrl }];
+                            setFileUrl([{ id: data.id, url: newFileUrl }]);
                             _a.label = 4;
                         case 4:
-                            //@ts-ignore
-                            setData(d);
-                            setFileUrl(fileUrl);
-                            return [2 /*return*/];
+                            setDataSingle(data);
+                            _a.label = 5;
+                        case 5: return [2 /*return*/];
                     }
                 });
             }); })
                 .catch(function (e) {
-                console.log(e);
+                console.error(e);
                 setLoading(false);
                 setError("Someting went wrong while fetching ".concat(type));
-            }));
+            });
         }, [Model, id, schema]);
         useEffect(function () {
             fetchData_1();
@@ -129,7 +126,8 @@ export function useSubscription(type, id) {
         }, [Model, id, fetchData_1]);
     }
     return {
-        data: data,
+        dataSingle: dataSingle,
+        dataArray: dataArray,
         error: error,
         loading: loading,
         fileUrl: fileUrl,
