@@ -2,10 +2,10 @@ import { FileUrl } from './types';
 export declare function useSubscription<T>(type: string, id?: string): {
     dataSingle: Readonly<{
         id: string;
-    } & Record<string, import("./types").StorageObject> & Record<string, File> & T> | undefined;
+    } & Record<keyof T, import("./types").StorageObject> & Record<keyof T, File> & T> | undefined;
     dataArray: Readonly<{
         id: string;
-    } & Record<string, import("./types").StorageObject> & Record<string, File> & T>[];
+    } & Record<keyof T, import("./types").StorageObject> & Record<keyof T, File> & T>[];
     error: string;
     loading: boolean;
     fileUrl: FileUrl | FileUrl[] | undefined;
