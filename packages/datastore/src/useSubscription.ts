@@ -3,12 +3,12 @@ import { useState, useEffect, useCallback, useMemo } from 'react';
 import { getFileUrl } from './storageUtils';
 import { extractStorageObjectKeyName } from './extractStorageObjectKeyName';
 import { useDataStore } from './DatastoreProvider';
-import { FileUrl, Data } from './types';
+import { FileUrl, Model } from './types';
 
 export function useSubscription<T>(type: string, id?: string) {
   const { Models, schema } = useDataStore();
-  const [dataSingle, setDataSingle] = useState<Data<T>>();
-  const [dataArray, setDataArray] = useState<Data<T>[]>([]);
+  const [dataSingle, setDataSingle] = useState<Model<T>>();
+  const [dataArray, setDataArray] = useState<Model<T>[]>([]);
 
   const [fileUrl, setFileUrl] = useState<Array<FileUrl> | FileUrl | undefined>(
     undefined
@@ -27,7 +27,7 @@ export function useSubscription<T>(type: string, id?: string) {
           setLoading(false);
           if (Array.isArray(data)) {
             const fileUrl: FileUrl[] = await Promise.all(
-              data?.map(async (dataItem: Data<T>) => {
+              data?.map(async (dataItem: Model<T>) => {
                 const fileField = extractStorageObjectKeyName({
                   data: dataItem,
                   type,
@@ -57,7 +57,7 @@ export function useSubscription<T>(type: string, id?: string) {
                 setFileUrl([{ id: data.id, url: newFileUrl }]);
               }
             }
-            setDataSingle(data as Data<T>);
+            setDataSingle(data as Model<T>);
           }
         })
         .catch((e) => {
