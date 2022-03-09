@@ -19,7 +19,7 @@ export interface StorageProperties {
 
 export interface StorageObject extends StorageProperties {
   key: string;
-  identityId?: string;
+  identityId?: string | null;
 }
 
 export type Model<T extends Partial<Record<keyof T, any>>> = Readonly<
