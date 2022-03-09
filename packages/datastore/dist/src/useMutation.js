@@ -50,6 +50,7 @@ import { useCallback, useState, useMemo } from 'react';
 import { uploadFile } from './storageUtils';
 import { extractStorageObjectKeyName } from './extractStorageObjectKeyName';
 import { useDataStore } from './DatastoreProvider';
+import { StorageObjectLevel } from './types';
 export var Operations;
 (function (Operations) {
     Operations[Operations["Delete"] = 0] = "Delete";
@@ -66,43 +67,47 @@ var diff = function (original, updates, updated) {
     }
     return updated;
 };
-var uploadAndLinkFile = function (data, fileKeyName, storageProperties) { return __awaiter(void 0, void 0, void 0, function () {
-    var fileData, storageObject;
-    var _a;
-    return __generator(this, function (_b) {
-        switch (_b.label) {
-            case 0:
-                fileData = data[fileKeyName];
-                if (!(storageProperties && fileData)) return [3 /*break*/, 2];
-                return [4 /*yield*/, uploadFile({
-                        file: fileData,
-                        contentType: storageProperties.contentType,
-                        level: storageProperties.level,
-                    })];
-            case 1:
-                storageObject = _b.sent();
-                return [2 /*return*/, __assign(__assign({}, data), (_a = {}, _a[fileKeyName] = storageObject, _a))];
-            case 2: throw Error('Please provide storage properties when uploading a file.');
-        }
+var uploadAndLinkFile = function (_a) {
+    var data = _a.data, file = _a.file, fileKey = _a.fileKey, _b = _a.storageProperties, storageProperties = _b === void 0 ? {
+        contentType: 'application/octet-stream',
+        level: StorageObjectLevel.PUBLIC,
+    } : _b;
+    return __awaiter(void 0, void 0, void 0, function () {
+        var storageObject;
+        var _c;
+        return __generator(this, function (_d) {
+            switch (_d.label) {
+                case 0:
+                    if (!(storageProperties && file)) return [3 /*break*/, 2];
+                    return [4 /*yield*/, uploadFile(__assign({ file: file }, storageProperties))];
+                case 1:
+                    storageObject = _d.sent();
+                    return [2 /*return*/, __assign(__assign({}, data), (_c = {}, _c[fileKey] = storageObject, _c))];
+                case 2: throw Error('Please provide storage properties when uploading a file.');
+            }
+        });
     });
-}); };
-var resolveFiles = function (model, type, schema, storageProperties) { return __awaiter(void 0, void 0, void 0, function () {
-    var fileKeyNames, mutationPayload, _i, fileKeyNames_1, fileKeyName;
+};
+var resolveFiles = function (model, type, schema, files) { return __awaiter(void 0, void 0, void 0, function () {
+    var fileKeys, mutationPayload, _i, fileKeys_1, fileKey;
     return __generator(this, function (_a) {
         switch (_a.label) {
             case 0:
-                fileKeyNames = extractStorageObjectKeyName({
+                if (!files)
+                    return [2 /*return*/, model];
+                fileKeys = extractStorageObjectKeyName({
                     data: model,
                     type: type,
                     schema: schema,
                 });
                 mutationPayload = model;
-                _i = 0, fileKeyNames_1 = fileKeyNames;
+                _i = 0, fileKeys_1 = fileKeys;
                 _a.label = 1;
             case 1:
-                if (!(_i < fileKeyNames_1.length)) return [3 /*break*/, 4];
-                fileKeyName = fileKeyNames_1[_i];
-                return [4 /*yield*/, uploadAndLinkFile(mutationPayload, fileKeyName, storageProperties)];
+                if (!(_i < fileKeys_1.length)) return [3 /*break*/, 4];
+                fileKey = fileKeys_1[_i];
+                if (!(fileKey in files)) return [3 /*break*/, 3];
+                return [4 /*yield*/, uploadAndLinkFile(__assign({ data: mutationPayload, fileKey: fileKey }, files[fileKey]))];
             case 2:
                 mutationPayload = _a.sent();
                 _a.label = 3;
@@ -118,63 +123,66 @@ export function useMutation(type, op) {
     var _a = useState(false), loading = _a[0], setLoading = _a[1];
     var _b = useDataStore(), Models = _b.Models, schema = _b.schema;
     var Model = useMemo(function () { return Models === null || Models === void 0 ? void 0 : Models[type]; }, [type]);
-    var mutate = useCallback(function (original, updates, storageProperties) { return __awaiter(_this, void 0, void 0, function () {
-        var _a, createPayload, createResponse, updatePayload_1, newModel, updateResponse, deleteResponse, e_1;
-        return __generator(this, function (_b) {
-            switch (_b.label) {
-                case 0:
-                    setLoading(true);
-                    if (!original)
-                        throw Error('Mutation was attempted without providing any data.');
-                    _b.label = 1;
-                case 1:
-                    _b.trys.push([1, 11, , 12]);
-                    _a = op;
-                    switch (_a) {
-                        case Operations.Create: return [3 /*break*/, 2];
-                        case Operations.Update: return [3 /*break*/, 5];
-                        case Operations.Delete: return [3 /*break*/, 8];
-                    }
-                    return [3 /*break*/, 10];
-                case 2: return [4 /*yield*/, resolveFiles(original, type, schema, storageProperties)];
-                case 3:
-                    createPayload = _b.sent();
-                    return [4 /*yield*/, DataStore.save(new Model(createPayload))];
-                case 4:
-                    createResponse = _b.sent();
-                    setLoading(false);
-                    return [2 /*return*/, createResponse];
-                case 5:
-                    if (!updates) {
+    var mutate = useCallback(function (_a) {
+        var original = _a.original, updates = _a.updates, files = _a.files;
+        return __awaiter(_this, void 0, void 0, function () {
+            var _b, createPayload, createResponse, updatePayload_1, newModel, updateResponse, deleteResponse, e_1;
+            return __generator(this, function (_c) {
+                switch (_c.label) {
+                    case 0:
+                        setLoading(true);
+                        if (!original)
+                            throw Error('Mutation was attempted without providing any data.');
+                        _c.label = 1;
+                    case 1:
+                        _c.trys.push([1, 11, , 12]);
+                        _b = op;
+                        switch (_b) {
+                            case Operations.Create: return [3 /*break*/, 2];
+                            case Operations.Update: return [3 /*break*/, 5];
+                            case Operations.Delete: return [3 /*break*/, 8];
+                        }
+                        return [3 /*break*/, 10];
+                    case 2: return [4 /*yield*/, resolveFiles(original, type, schema, files)];
+                    case 3:
+                        createPayload = _c.sent();
+                        return [4 /*yield*/, DataStore.save(new Model(createPayload))];
+                    case 4:
+                        createResponse = _c.sent();
                         setLoading(false);
-                        throw Error('An update was performed however no updated model was provided.');
-                    }
-                    return [4 /*yield*/, resolveFiles(updates, type, schema, storageProperties)];
-                case 6:
-                    updatePayload_1 = _b.sent();
-                    newModel = Model.copyOf(original, function (updated) {
-                        return diff(original, updatePayload_1, updated);
-                    });
-                    return [4 /*yield*/, DataStore.save(newModel)];
-                case 7:
-                    updateResponse = _b.sent();
-                    setLoading(false);
-                    return [2 /*return*/, updateResponse];
-                case 8: return [4 /*yield*/, DataStore.delete(original)];
-                case 9:
-                    deleteResponse = _b.sent();
-                    setLoading(false);
-                    return [2 /*return*/, deleteResponse];
-                case 10: return [3 /*break*/, 12];
-                case 11:
-                    e_1 = _b.sent();
-                    console.error(e_1);
-                    setLoading(false);
-                    return [3 /*break*/, 12];
-                case 12: return [2 /*return*/];
-            }
+                        return [2 /*return*/, createResponse];
+                    case 5:
+                        if (!updates) {
+                            setLoading(false);
+                            throw Error('An update was performed however no updated model was provided.');
+                        }
+                        return [4 /*yield*/, resolveFiles(updates, type, schema, files)];
+                    case 6:
+                        updatePayload_1 = _c.sent();
+                        newModel = Model.copyOf(original, function (updated) {
+                            return diff(original, updatePayload_1, updated);
+                        });
+                        return [4 /*yield*/, DataStore.save(newModel)];
+                    case 7:
+                        updateResponse = _c.sent();
+                        setLoading(false);
+                        return [2 /*return*/, updateResponse];
+                    case 8: return [4 /*yield*/, DataStore.delete(original)];
+                    case 9:
+                        deleteResponse = _c.sent();
+                        setLoading(false);
+                        return [2 /*return*/, deleteResponse];
+                    case 10: return [3 /*break*/, 12];
+                    case 11:
+                        e_1 = _c.sent();
+                        console.error(e_1);
+                        setLoading(false);
+                        return [3 /*break*/, 12];
+                    case 12: return [2 /*return*/];
+                }
+            });
         });
-    }); }, [Model, schema]);
+    }, [Model, schema]);
     return { mutate: mutate, loading: loading };
 }
 //# sourceMappingURL=useMutation.js.map

@@ -1,10 +1,18 @@
-import { Model, StorageProperties } from './types';
+import { Files } from './types';
 export declare enum Operations {
     Delete = 0,
     Update = 1,
     Create = 2
 }
 export declare function useMutation<T>(type: string, op: Operations): {
-    mutate: (original?: Model<T> | undefined, updates?: Partial<Model<T>> | undefined, storageProperties?: StorageProperties | undefined) => Promise<any>;
+    mutate: ({ original, updates, files, }: {
+        original?: Readonly<{
+            id: string;
+        } & T> | undefined;
+        updates?: Partial<Readonly<{
+            id: string;
+        } & T>> | undefined;
+        files?: Files<T> | undefined;
+    }) => Promise<any>;
     loading: boolean;
 };

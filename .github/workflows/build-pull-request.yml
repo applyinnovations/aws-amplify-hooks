@@ -28,11 +28,6 @@ jobs:
           NEXT_VERSION: '${{ steps.get_release_name.outputs.match }}'
           COMMIT_DISABLED: 1
 
-      - name: Checkout repo
-        uses: actions/checkout@v2
-        with:
-          ref: ${{ github.event.pull_request.head.ref }}
-
       - name: Commit changes for the generated build
         uses: EndBug/add-and-commit@v8
         with:
