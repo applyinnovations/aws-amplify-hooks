@@ -14,6 +14,20 @@ jobs:
       - name: Build Typescript
         run: yarn install --pure-lockfile && yarn build
 
+      - name: Get Release Name
+        uses: actions-ecosystem/action-regex-match@v2
+        id: get_release_name
+        with:
+          text: '${{ github.event.pull_request.title }}'
+          regex: '[v]([0-9]+)\.([0-9]+)\.([0-9]+)(?:-([0-9A-Za-z-]+(?:\.[0-9A-Za-z-]+)*))?(?:\+[0-9A-Za-z-]+)?'
+
+      - name: Update version in package.json
+        if: ${{ steps.get_release_name.outputs.match }}
+        uses: technote-space/package-version-check-action@v1
+        with:
+          NEXT_VERSION: '${{ steps.get_release_name.outputs.match }}'
+          COMMIT_MESSAGE: '[package.json] updated package.json to ${{ steps.get_release_name.outputs.match }}'
+
       - name: Commit changes for the generated build
         uses: EndBug/add-and-commit@v8
         with:
