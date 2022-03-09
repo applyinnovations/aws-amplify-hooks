@@ -34,9 +34,9 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
         if (op[0] & 5) throw op[1]; return { value: op[0] ? op[1] : void 0, done: true };
     }
 };
-import { Storage, Auth } from "aws-amplify";
-import { StorageObjectLevel } from "./types";
-import { v4 as uuid } from "uuid";
+import { Storage, Auth } from 'aws-amplify';
+import { StorageObjectLevel } from './types';
+import { v4 as uuid } from 'uuid';
 var SIX_HOURS_IN_MS = 6 * 60 * 60 * 1000; // 6 hours in seconds
 export var uploadFile = function (_a) {
     var file = _a.file, level = _a.level, contentType = _a.contentType;
@@ -47,14 +47,14 @@ export var uploadFile = function (_a) {
                 case 0:
                     name = file.name;
                     _b = /([^.]+)(\.(\w+))?$/.exec(name), extension = _b[3];
-                    key = "".concat(uuid()).concat(extension && ".").concat(extension);
+                    key = "".concat(uuid()).concat(extension && '.').concat(extension);
                     currentTime = new Date().getTime();
                     expires = new Date(currentTime + SIX_HOURS_IN_MS);
                     return [4 /*yield*/, Auth.currentUserCredentials()];
                 case 1:
                     credentials = _c.sent();
                     return [4 /*yield*/, Storage.put(key, file, {
-                            cacheControl: "no-cache",
+                            cacheControl: 'no-cache',
                             expires: expires,
                             level: level,
                             contentType: contentType,
@@ -85,11 +85,11 @@ export var getFileUrl = function (_a) {
                     })];
                 case 1:
                     result = _c.sent();
-                    if (typeof result === "string") {
+                    if (typeof result === 'string') {
                         return [2 /*return*/, result];
                     }
                     else {
-                        throw new Error("Invalid File URL format returned");
+                        throw new Error('Invalid File URL format returned');
                     }
                     return [2 /*return*/];
             }

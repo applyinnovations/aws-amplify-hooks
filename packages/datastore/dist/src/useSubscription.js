@@ -42,10 +42,11 @@ import { useDataStore } from './DatastoreProvider';
 export function useSubscription(type, id) {
     var _this = this;
     var _a = useDataStore(), Models = _a.Models, schema = _a.schema;
-    var _b = useState(), data = _b[0], setData = _b[1];
-    var _c = useState(undefined), fileUrl = _c[0], setFileUrl = _c[1];
-    var _d = useState(''), error = _d[0], setError = _d[1];
-    var _e = useState(false), loading = _e[0], setLoading = _e[1];
+    var _b = useState(), dataSingle = _b[0], setDataSingle = _b[1];
+    var _c = useState([]), dataArray = _c[0], setDataArray = _c[1];
+    var _d = useState(undefined), fileUrl = _d[0], setFileUrl = _d[1];
+    var _e = useState(''), error = _e[0], setError = _e[1];
+    var _f = useState(false), loading = _f[0], setLoading = _f[1];
     var Model = useMemo(function () { return Models === null || Models === void 0 ? void 0 : Models[type]; }, [type, Models]);
     if (Model) {
         var fetchData_1 = useCallback(function () {
@@ -86,7 +87,8 @@ export function useSubscription(type, id) {
                         case 1:
                             fileUrl_1 = _a.sent();
                             setFileUrl(fileUrl_1);
-                            return [3 /*break*/, 4];
+                            setDataArray(data);
+                            return [3 /*break*/, 5];
                         case 2:
                             if (!data) return [3 /*break*/, 4];
                             fileField = extractStorageObjectKeyName({
@@ -101,14 +103,14 @@ export function useSubscription(type, id) {
                             setFileUrl([{ id: data.id, url: newFileUrl }]);
                             _a.label = 4;
                         case 4:
-                            //@ts-ignore
-                            setData(data);
-                            return [2 /*return*/];
+                            setDataSingle(data);
+                            _a.label = 5;
+                        case 5: return [2 /*return*/];
                     }
                 });
             }); })
                 .catch(function (e) {
-                console.log(e);
+                console.error(e);
                 setLoading(false);
                 setError("Someting went wrong while fetching ".concat(type));
             });
@@ -124,7 +126,7 @@ export function useSubscription(type, id) {
         }, [Model, id, fetchData_1]);
     }
     return {
-        data: data,
+        data: dataSingle !== null && dataSingle !== void 0 ? dataSingle : dataArray,
         error: error,
         loading: loading,
         fileUrl: fileUrl,

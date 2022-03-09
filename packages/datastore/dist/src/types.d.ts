@@ -13,9 +13,9 @@ export interface FileWithFileUrl extends File {
 export declare class StorageObject {
     key: string;
     identityId?: string;
-    level: StorageObjectLevel | keyof typeof StorageObjectLevel;
+    level: StorageObjectLevel;
     contentType: string;
 }
-export declare type Data<T> = Readonly<{
+export declare type Data<T extends Record<keyof T, any>> = Readonly<{
     id: string;
-} & Record<string, any>> & T;
+} & Record<string, StorageObject> & Record<string, File> & T>;
