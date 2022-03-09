@@ -1,10 +1,10 @@
-﻿import { DataStore } from "aws-amplify";
-import { useCallback, useState, useMemo } from "react";
+﻿import { DataStore } from 'aws-amplify';
+import { useCallback, useState, useMemo } from 'react';
 
-import { uploadFile } from "./storageUtils";
+import { uploadFile } from './storageUtils';
 
-import { extractStorageObjectKeyName } from "./extractStorageObjectKeyName";
-import { useDataStore } from "./DatastoreProvider";
+import { extractStorageObjectKeyName } from './extractStorageObjectKeyName';
+import { useDataStore } from './DatastoreProvider';
 
 export enum Operations {
   Delete,
@@ -40,14 +40,14 @@ const generateNewfileUrlUrl = async (
   };
 };
 
-export function useMutation(type: string, op: Operations) {
+export function useMutation<TData = any>(type: string, op: Operations) {
   const [loading, setLoading] = useState(false);
   const { Models, schema } = useDataStore();
   // @ts-ignore
   const Model = useMemo(() => Models?.[type], [type]);
 
   const mutate = useCallback(
-    async (original: any, updates?: any) => {
+    async (original: TData, updates?: Partial<TData>) => {
       setLoading(true);
       try {
         switch (op) {
@@ -74,7 +74,7 @@ export function useMutation(type: string, op: Operations) {
             if (!updates) {
               setLoading(false);
               throw Error(
-                "An update was performed however no updated model was provided."
+                'An update was performed however no updated model was provided.'
               );
             }
 
@@ -86,6 +86,7 @@ export function useMutation(type: string, op: Operations) {
             setLoading(false);
             return updateResponse;
           case Operations.Delete:
+            // @ts-ignore
             const deleteResponse = await DataStore.delete(original);
             setLoading(false);
 

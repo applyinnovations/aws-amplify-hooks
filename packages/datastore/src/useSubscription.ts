@@ -1,21 +1,23 @@
-﻿import { Predicates, DataStore } from "aws-amplify";
+﻿import { Predicates, DataStore } from 'aws-amplify';
 
-import { useState, useEffect, useCallback, useMemo } from "react";
+import { useState, useEffect, useCallback, useMemo } from 'react';
 
-import { getFileUrl } from "./storageUtils";
-import { extractStorageObjectKeyName } from "./extractStorageObjectKeyName";
+import { getFileUrl } from './storageUtils';
+import { extractStorageObjectKeyName } from './extractStorageObjectKeyName';
 
-import { useDataStore } from "./DatastoreProvider";
-import { FileUrl } from "./types";
+import { useDataStore } from './DatastoreProvider';
+import { FileUrl } from './types';
 
-export function useSubscription<TData = any>(type: string, id?: string) {
+type Data<T extends Record<string, any>> = Readonly<{ id: string } & T>;
+
+export function useSubscription<T>(type: string, id?: string) {
   const { Models, schema } = useDataStore();
-  const [data, setData] = useState<Array<TData>>([]);
+  const [data, setData] = useState<Data<T> | Data<T>[]>();
 
   const [fileUrl, setFileUrl] = useState<Array<FileUrl> | FileUrl | undefined>(
     undefined
   );
-  const [error, setError] = useState("");
+  const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
 
   // @ts-ignore
@@ -30,7 +32,7 @@ export function useSubscription<TData = any>(type: string, id?: string) {
           .then(async (d) => {
             setLoading(false);
             // @ts-ignore
-            let fileUrl: FileUrl = Array.isArray(d) ? [] : "";
+            let fileUrl: FileUrl = Array.isArray(d) ? [] : '';
 
             if (Array.isArray(d)) {
               // @ts-ignore
@@ -42,7 +44,7 @@ export function useSubscription<TData = any>(type: string, id?: string) {
                     schema,
                   });
 
-                  let urlString = "";
+                  let urlString = '';
                   if (fileField) {
                     urlString = await getFileUrl(dataItem[fileField]);
                   }
@@ -67,7 +69,7 @@ export function useSubscription<TData = any>(type: string, id?: string) {
                 fileUrl = [{ id: d.id, url: newFileUrl }];
               }
             }
-            // @ts-ignore
+            //@ts-ignore
             setData(d);
             setFileUrl(fileUrl);
           })
