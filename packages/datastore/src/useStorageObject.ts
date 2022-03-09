@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import { getFileUrl } from './storageUtils';
 import { StorageObject } from './types';
 
-export const useStorageObject = (storageObject?: StorageObject) => {
+export const useStorageObject = (storageObject?: StorageObject | null) => {
   const [fileUrl, setFileUrl] = useState<string>();
   const [mounted, setMounted] = useState(true);
   useEffect(() => {

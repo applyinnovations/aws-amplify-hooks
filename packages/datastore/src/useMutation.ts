@@ -30,10 +30,7 @@ const uploadAndLinkFile = async <T>({
   updates,
   file,
   fileKey,
-  storageProperties = {
-    contentType: 'application/octet-stream',
-    level: StorageObjectLevel.PUBLIC,
-  },
+  storageProperties,
 }: {
   updates?: Partial<T>;
   fileKey: keyof T;
@@ -43,6 +40,10 @@ const uploadAndLinkFile = async <T>({
   if (storageProperties && file) {
     const storageObject = await uploadFile({
       file,
+      ...{
+        contentType: 'application/octet-stream',
+        level: StorageObjectLevel.PUBLIC,
+      },
       ...storageProperties,
     });
     return {
@@ -72,11 +73,13 @@ const resolveFiles = async <T>({
   });
   let mutationPayload = updates;
   for (const fileKey of fileKeys) {
-    if (fileKey in files) {
+    const file = files[fileKey]?.file;
+    if (file) {
       mutationPayload = await uploadAndLinkFile<T>({
         updates: mutationPayload,
         fileKey,
-        ...files[fileKey],
+        file: file,
+        storageProperties: files[fileKey]?.storageProperties,
       });
     }
   }
