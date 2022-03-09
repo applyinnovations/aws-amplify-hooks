@@ -1,5 +1,7 @@
-﻿export type FileUrl = string;
-export type FileUrls<T> = Record<keyof T, FileUrl>;
+﻿export type Files<T> = Record<
+  keyof T,
+  { file: File; storageProperties?: StorageProperties }
+>;
 
 export enum StorageObjectLevel {
   PRIVATE = 'private',
@@ -21,9 +23,23 @@ export interface StorageObject extends StorageProperties {
   identityId?: string;
 }
 
-export type Model<T extends Record<keyof T, any>> = Readonly<
-  { id: string } & (
-    | (T & Record<keyof T, StorageObject> & Record<keyof T, File>)
-    | Record<keyof T, null>
-  )
+export type Model<T extends Partial<Record<keyof T, any>>> = Readonly<
+  { id: string } & T
 >;
+
+type Site = {
+  __typename: 'Site';
+  id: string;
+  name: string;
+  address: string;
+  link?: string | null;
+  notes?: string | null;
+  customSiteMessage?: string | null;
+  customLockedSiteMessage?: string | null;
+  logo?: StorageObject | null;
+  createdAt: string;
+  updatedAt: string;
+  _version: number;
+  _deleted?: boolean | null;
+  _lastChangedAt: number;
+};
