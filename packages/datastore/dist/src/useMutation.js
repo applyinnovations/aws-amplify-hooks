@@ -45,17 +45,6 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
         if (op[0] & 5) throw op[1]; return { value: op[0] ? op[1] : void 0, done: true };
     }
 };
-var __rest = (this && this.__rest) || function (s, e) {
-    var t = {};
-    for (var p in s) if (Object.prototype.hasOwnProperty.call(s, p) && e.indexOf(p) < 0)
-        t[p] = s[p];
-    if (s != null && typeof Object.getOwnPropertySymbols === "function")
-        for (var i = 0, p = Object.getOwnPropertySymbols(s); i < p.length; i++) {
-            if (e.indexOf(p[i]) < 0 && Object.prototype.propertyIsEnumerable.call(s, p[i]))
-                t[p[i]] = s[p[i]];
-        }
-    return t;
-};
 import { DataStore } from 'aws-amplify';
 import { useCallback, useState, useMemo } from 'react';
 import { uploadFile } from './storageUtils';
@@ -70,30 +59,30 @@ export var Operations;
 var diff = function (original, updates, updated) {
     for (var _i = 0, _a = Object.keys(updates); _i < _a.length; _i++) {
         var key = _a[_i];
-        if (key in original && original[key] !== updates[key]) {
-            updated[key] = updates[key];
+        var keyofT = key;
+        if (key in original && original[keyofT] !== updates[keyofT]) {
+            updated[keyofT] = updates[keyofT];
         }
     }
     return updated;
 };
-var uploadAndLinkFile = function (data, fileKeyName) { return __awaiter(void 0, void 0, void 0, function () {
-    var fileData, storageObject, storageProperties, rest;
+var uploadAndLinkFile = function (data, fileKeyName, storageProperties) { return __awaiter(void 0, void 0, void 0, function () {
+    var fileData, storageObject;
     var _a;
     return __generator(this, function (_b) {
         switch (_b.label) {
             case 0:
                 fileData = data[fileKeyName];
-                if (!data) return [3 /*break*/, 2];
+                if (!storageProperties) return [3 /*break*/, 2];
                 return [4 /*yield*/, uploadFile({
                         file: fileData,
-                        contentType: data.storageProperties.contentType,
-                        level: data.storageProperties.level,
+                        contentType: storageProperties.contentType,
+                        level: storageProperties.level,
                     })];
             case 1:
                 storageObject = _b.sent();
-                storageProperties = data.storageProperties, rest = __rest(data, ["storageProperties"]);
-                return [2 /*return*/, __assign(__assign({}, rest), (_a = {}, _a[fileKeyName] = storageObject, _a))];
-            case 2: throw Error('No file provided.');
+                return [2 /*return*/, __assign(__assign({}, data), (_a = {}, _a[fileKeyName] = storageObject, _a))];
+            case 2: throw Error('Please provide storage properties when uploading a file.');
         }
     });
 }); };
@@ -102,12 +91,14 @@ export function useMutation(type, op) {
     var _a = useState(false), loading = _a[0], setLoading = _a[1];
     var _b = useDataStore(), Models = _b.Models, schema = _b.schema;
     var Model = useMemo(function () { return Models === null || Models === void 0 ? void 0 : Models[type]; }, [type]);
-    var mutate = useCallback(function (original, updates) { return __awaiter(_this, void 0, void 0, function () {
+    var mutate = useCallback(function (original, updates, storageProperties) { return __awaiter(_this, void 0, void 0, function () {
         var _a, fileKeyName, mutationPayload, _b, createResponse, updateResponse, deleteResponse, e_1;
         return __generator(this, function (_c) {
             switch (_c.label) {
                 case 0:
                     setLoading(true);
+                    if (!original)
+                        throw Error('Mutation was attempted without providing any data.');
                     _c.label = 1;
                 case 1:
                     _c.trys.push([1, 12, , 13]);
@@ -125,7 +116,7 @@ export function useMutation(type, op) {
                         schema: schema,
                     });
                     if (!fileKeyName) return [3 /*break*/, 4];
-                    return [4 /*yield*/, uploadAndLinkFile(original, fileKeyName)];
+                    return [4 /*yield*/, uploadAndLinkFile(original, fileKeyName, storageProperties)];
                 case 3:
                     _b = _c.sent();
                     return [3 /*break*/, 5];

@@ -79,9 +79,7 @@ export function useMutation<T>(type: string, op: Operations) {
             const createResponse = await DataStore.save(
               new Model(mutationPayload)
             );
-
             setLoading(false);
-
             return createResponse;
 
           case Operations.Update:
@@ -99,6 +97,7 @@ export function useMutation<T>(type: string, op: Operations) {
             );
             setLoading(false);
             return updateResponse;
+
           case Operations.Delete:
             const deleteResponse = await DataStore.delete(original);
             setLoading(false);

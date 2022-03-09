@@ -10,12 +10,14 @@ export declare enum StorageObjectLevel {
 export interface FileWithFileUrl extends File {
     fileUrl?: string;
 }
-export declare class StorageObject {
-    key: string;
-    identityId?: string;
+export interface StorageProperties {
     level: StorageObjectLevel;
     contentType: string;
 }
-export declare type Data<T extends Record<keyof T, any>> = Readonly<{
+export interface StorageObject extends StorageProperties {
+    key: string;
+    identityId?: string;
+}
+export declare type Model<T extends Record<keyof T, any & StorageObject & File>> = Readonly<{
     id: string;
-} & Record<string, StorageObject> & Record<string, File> & T>;
+} & Record<keyof T, StorageObject> & Record<keyof T, File> & T>;
