@@ -16,10 +16,10 @@ export interface FileWithFileUrl extends File {
 export declare class StorageObject {
   key: string;
   identityId?: string;
-  level: StorageObjectLevel | keyof typeof StorageObjectLevel;
+  level: StorageObjectLevel;
   contentType: string;
 }
 
 export type Data<T extends Record<keyof T, any>> = Readonly<
-  { id: string } & Record<string, StorageObject> & T
+  { id: string } & Record<string, StorageObject> & Record<string, File> & T
 >;

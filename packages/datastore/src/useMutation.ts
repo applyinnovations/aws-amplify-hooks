@@ -26,20 +26,20 @@ const diff = <T>(
   return updated as Data<T>;
 };
 
-const generateNewfileUrl = async <T>(data: Data<T>, fileKeyName: string) => {
+const uploadAndLinkFile = async <T>(data: Data<T>, fileKeyName: string) => {
   const fileData = data[fileKeyName];
-
-  const storageObject = await uploadFile({
-    file: fileData,
-    contentType: data?.storageProperties?.contentType,
-    level: data?.storageProperties?.level,
-  });
-
-  const { storageProperties, ...rest } = data;
-  return {
-    ...rest,
-    [fileKeyName]: storageObject,
-  };
+  if (data) {
+    const storageObject = await uploadFile({
+      file: fileData,
+      contentType: data.storageProperties.contentType,
+      level: data.storageProperties.level,
+    });
+    const { storageProperties, ...rest } = data;
+    return {
+      ...rest,
+      [fileKeyName]: storageObject,
+    };
+  } else throw Error('No file provided.');
 };
 
 export function useMutation<T>(type: string, op: Operations) {
@@ -60,7 +60,7 @@ export function useMutation<T>(type: string, op: Operations) {
             });
 
             const mutationPayload = fileKeyName
-              ? await generateNewfileUrl(original, fileKeyName)
+              ? await uploadAndLinkFile(original, fileKeyName)
               : original;
 
             const createResponse = await DataStore.save(
@@ -92,7 +92,7 @@ export function useMutation<T>(type: string, op: Operations) {
             return deleteResponse;
         }
       } catch (e) {
-        console.log(e);
+        console.error(e);
         setLoading(false);
       }
     },
