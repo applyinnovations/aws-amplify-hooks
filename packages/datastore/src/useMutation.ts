@@ -1,10 +1,11 @@
-﻿import { DataStore } from "aws-amplify";
-import { useCallback, useState, useMemo } from "react";
+﻿import { DataStore } from 'aws-amplify';
+import { useCallback, useState, useMemo } from 'react';
 
-import { uploadFile } from "./storageUtils";
+import { uploadFile } from './storageUtils';
 
-import { extractStorageObjectKeyName } from "./extractStorageObjectKeyName";
-import { useDataStore } from "./DatastoreProvider";
+import { extractStorageObjectKeyName } from './extractStorageObjectKeyName';
+import { useDataStore } from './DatastoreProvider';
+import { Data } from './types';
 
 export enum Operations {
   Delete,
@@ -12,19 +13,20 @@ export enum Operations {
   Create,
 }
 
-const diff = (original: any, updates: any, updated: any) => {
+const diff = <T>(
+  original: Data<T>,
+  updates: Partial<Data<T>>,
+  updated: Record<string, any>
+) => {
   for (const key of Object.keys(updates)) {
     if (key in original && original[key] !== updates[key]) {
       updated[key] = updates[key];
     }
   }
-  return updated;
+  return updated as Data<T>;
 };
 
-const generateNewfileUrlUrl = async (
-  data: { [key: string]: any },
-  fileKeyName: string
-) => {
+const generateNewfileUrl = async <T>(data: Data<T>, fileKeyName: string) => {
   const fileData = data[fileKeyName];
 
   const storageObject = await uploadFile({
@@ -33,21 +35,20 @@ const generateNewfileUrlUrl = async (
     level: data?.storageProperties?.level,
   });
 
-  delete data?.storageProperties;
+  const { storageProperties, ...rest } = data;
   return {
-    ...data,
+    ...rest,
     [fileKeyName]: storageObject,
   };
 };
 
-export function useMutation(type: string, op: Operations) {
+export function useMutation<T>(type: string, op: Operations) {
   const [loading, setLoading] = useState(false);
   const { Models, schema } = useDataStore();
-  // @ts-ignore
   const Model = useMemo(() => Models?.[type], [type]);
 
   const mutate = useCallback(
-    async (original: any, updates?: any) => {
+    async (original: Data<T>, updates?: Partial<Data<T>>) => {
       setLoading(true);
       try {
         switch (op) {
@@ -59,7 +60,7 @@ export function useMutation(type: string, op: Operations) {
             });
 
             const mutationPayload = fileKeyName
-              ? await generateNewfileUrlUrl(original, fileKeyName)
+              ? await generateNewfileUrl(original, fileKeyName)
               : original;
 
             const createResponse = await DataStore.save(
@@ -74,7 +75,7 @@ export function useMutation(type: string, op: Operations) {
             if (!updates) {
               setLoading(false);
               throw Error(
-                "An update was performed however no updated model was provided."
+                'An update was performed however no updated model was provided.'
               );
             }
 
@@ -88,7 +89,6 @@ export function useMutation(type: string, op: Operations) {
           case Operations.Delete:
             const deleteResponse = await DataStore.delete(original);
             setLoading(false);
-
             return deleteResponse;
         }
       } catch (e) {

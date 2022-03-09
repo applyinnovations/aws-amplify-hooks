@@ -4,9 +4,9 @@
 }
 
 export enum StorageObjectLevel {
-  PRIVATE = "private",
-  PROTECTED = "protected",
-  PUBLIC = "public",
+  PRIVATE = 'private',
+  PROTECTED = 'protected',
+  PUBLIC = 'public',
 }
 
 export interface FileWithFileUrl extends File {
@@ -19,3 +19,5 @@ export declare class StorageObject {
   level: StorageObjectLevel | keyof typeof StorageObjectLevel;
   contentType: string;
 }
+
+export type Data<T> = Readonly<{ id: string } & Record<string, any>> & T;

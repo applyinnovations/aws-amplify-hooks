@@ -1,14 +1,15 @@
-﻿export const extractStorageObjectKeyName = ({
+﻿import { Data } from './types';
+
+export const extractStorageObjectKeyName = <T>({
   data,
   type,
   schema,
 }: {
-  data: { [key: string]: any };
+  data: T;
   type: string;
   schema: any;
 }) =>
   Object.keys(data).find(
     (key) =>
-      // @ts-ignore
-      schema?.models?.[type]?.fields?.[key]?.type?.nonModel === "StorageObject"
+      schema?.models?.[type]?.fields?.[key]?.type?.nonModel === 'StorageObject'
   );

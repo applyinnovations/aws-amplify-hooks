@@ -16,3 +16,6 @@ export declare class StorageObject {
     level: StorageObjectLevel | keyof typeof StorageObjectLevel;
     contentType: string;
 }
+export declare type Data<T> = Readonly<{
+    id: string;
+} & Record<string, any>> & T;
