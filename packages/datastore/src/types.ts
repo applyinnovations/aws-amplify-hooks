@@ -1,19 +1,15 @@
-﻿export type Files<T> = Partial<
+﻿import { StorageAccessLevel } from '@aws-amplify/storage';
+
+export type Files<T> = Partial<
   Record<keyof T, { file: File; storageProperties?: StorageProperties }>
 >;
-
-export enum StorageObjectLevel {
-  PRIVATE = 'private',
-  PROTECTED = 'protected',
-  PUBLIC = 'public',
-}
 
 export interface FileWithFileUrl extends File {
   fileUrl?: string;
 }
 
 export interface StorageProperties {
-  level: StorageObjectLevel;
+  level: StorageAccessLevel;
   contentType: string;
 }
 

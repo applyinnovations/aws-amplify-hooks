@@ -1,11 +1,12 @@
-import { StorageObject, StorageObjectLevel } from './types';
+import { StorageObject } from './types';
+import { StorageAccessLevel } from '@aws-amplify/storage';
 export declare const uploadFile: ({ file, level, contentType, }: {
     file: File;
     contentType: string;
-    level: StorageObjectLevel;
+    level: StorageAccessLevel;
 }) => Promise<{
     key: string;
-    level: StorageObjectLevel;
+    level: StorageAccessLevel;
     contentType: string;
     identityId: string;
 }>;

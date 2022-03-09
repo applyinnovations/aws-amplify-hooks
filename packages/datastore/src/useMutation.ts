@@ -3,7 +3,7 @@ import { useCallback, useState, useMemo } from 'react';
 import { uploadFile } from './storageUtils';
 import { extractStorageObjectKeyName } from './extractStorageObjectKeyName';
 import { useDataStore } from './DatastoreProvider';
-import { Files, Model, StorageObjectLevel, StorageProperties } from './types';
+import { Files, Model, StorageProperties } from './types';
 
 export enum Operations {
   Delete,
@@ -42,7 +42,7 @@ const uploadAndLinkFile = async <T>({
       file,
       ...{
         contentType: 'application/octet-stream',
-        level: StorageObjectLevel.PUBLIC,
+        level: 'public',
       },
       ...storageProperties,
     });

@@ -50,7 +50,6 @@ import { useCallback, useState, useMemo } from 'react';
 import { uploadFile } from './storageUtils';
 import { extractStorageObjectKeyName } from './extractStorageObjectKeyName';
 import { useDataStore } from './DatastoreProvider';
-import { StorageObjectLevel } from './types';
 export var Operations;
 (function (Operations) {
     Operations[Operations["Delete"] = 0] = "Delete";
@@ -80,7 +79,7 @@ var uploadAndLinkFile = function (_a) {
                     if (!(storageProperties && file)) return [3 /*break*/, 2];
                     return [4 /*yield*/, uploadFile(__assign(__assign({ file: file }, {
                             contentType: 'application/octet-stream',
-                            level: StorageObjectLevel.PUBLIC,
+                            level: 'public',
                         }), storageProperties))];
                 case 1:
                     storageObject = _c.sent();

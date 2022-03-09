@@ -1,6 +1,7 @@
 ﻿import { Storage, Auth } from 'aws-amplify';
-import { StorageObject, StorageObjectLevel } from './types';
+import { StorageObject } from './types';
 import { v4 as uuid } from 'uuid';
+import { StorageAccessLevel } from '@aws-amplify/storage';
 
 const SIX_HOURS_IN_MS = 6 * 60 * 60 * 1000; // 6 hours in seconds
 
@@ -11,7 +12,7 @@ export const uploadFile = async ({
 }: {
   file: File;
   contentType: string;
-  level: StorageObjectLevel;
+  level: StorageAccessLevel;
 }) => {
   const { name } = file;
   const [, , , extension] = /([^.]+)(\.(\w+))?$/.exec(name) ?? [];
@@ -40,15 +41,12 @@ export const getFileUrl = async ({
   key,
   contentType,
   identityId,
-  level = StorageObjectLevel.PUBLIC,
+  level,
 }: StorageObject): Promise<string> => {
   const result = await Storage.get(key, {
     contentType,
     level,
-    identityId:
-      level === StorageObjectLevel.PROTECTED && identityId
-        ? identityId
-        : undefined,
+    identityId: level === 'protected' && identityId ? identityId : undefined,
   });
   if (typeof result === 'string') {
     return result;
