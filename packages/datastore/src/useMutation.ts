@@ -1,8 +1,6 @@
 ﻿import { DataStore } from 'aws-amplify';
 import { useCallback, useState, useMemo } from 'react';
-
 import { uploadFile } from './storageUtils';
-
 import { extractStorageObjectKeyName } from './extractStorageObjectKeyName';
 import { useDataStore } from './DatastoreProvider';
 import { Data } from './types';

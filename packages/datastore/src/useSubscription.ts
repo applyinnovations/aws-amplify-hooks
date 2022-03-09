@@ -1,10 +1,7 @@
 ﻿import { Predicates, DataStore } from 'aws-amplify';
-
 import { useState, useEffect, useCallback, useMemo } from 'react';
-
 import { getFileUrl } from './storageUtils';
 import { extractStorageObjectKeyName } from './extractStorageObjectKeyName';
-
 import { useDataStore } from './DatastoreProvider';
 import { FileUrl, Data } from './types';
 
