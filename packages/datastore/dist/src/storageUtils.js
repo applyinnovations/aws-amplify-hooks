@@ -83,7 +83,9 @@ export var getFileUrl = function (_a) {
                 case 0: return [4 /*yield*/, Storage.get(key, {
                         contentType: contentType,
                         level: level,
-                        identityId: level === StorageObjectLevel.PROTECTED ? identityId : undefined,
+                        identityId: level === StorageObjectLevel.PROTECTED && identityId
+                            ? identityId
+                            : undefined,
                     })];
                 case 1:
                     result = _c.sent();

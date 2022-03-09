@@ -45,7 +45,10 @@ export const getFileUrl = async ({
   const result = await Storage.get(key, {
     contentType,
     level,
-    identityId: level === StorageObjectLevel.PROTECTED ? identityId : undefined,
+    identityId:
+      level === StorageObjectLevel.PROTECTED && identityId
+        ? identityId
+        : undefined,
   });
   if (typeof result === 'string') {
     return result;
