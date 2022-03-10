@@ -48,7 +48,6 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
 import { DataStore } from 'aws-amplify';
 import { useCallback, useState, useMemo } from 'react';
 import { uploadFile } from './storageUtils';
-import { extractStorageObjectKeyName } from './extractStorageObjectKeyName';
 import { useDataStore } from './DatastoreProvider';
 export var Operations;
 (function (Operations) {
@@ -88,22 +87,17 @@ var uploadAndLinkFile = function (_a) {
     });
 };
 var resolveFiles = function (_a) {
-    var updates = _a.updates, type = _a.type, schema = _a.schema, files = _a.files;
+    var updates = _a.updates, files = _a.files;
     return __awaiter(void 0, void 0, void 0, function () {
-        var fileKeys, mutationPayload, _i, fileKeys_1, fileKey, file;
+        var mutationPayload, fileKeys, _i, fileKeys_1, fileKey, file;
         return __generator(this, function (_b) {
             switch (_b.label) {
                 case 0:
                     console.debug(files);
                     if (!files)
                         return [2 /*return*/, updates];
-                    fileKeys = extractStorageObjectKeyName({
-                        updates: updates,
-                        type: type,
-                        schema: schema,
-                    });
-                    console.debug(fileKeys);
                     mutationPayload = updates;
+                    fileKeys = Object.keys(files);
                     _i = 0, fileKeys_1 = fileKeys;
                     _b.label = 1;
                 case 1:
@@ -133,7 +127,7 @@ var resolveFiles = function (_a) {
 export function useMutation(type, op) {
     var _this = this;
     var _a = useState(false), loading = _a[0], setLoading = _a[1];
-    var _b = useDataStore(), Models = _b.Models, schema = _b.schema;
+    var Models = useDataStore().Models;
     var Model = useMemo(function () { return Models === null || Models === void 0 ? void 0 : Models[type]; }, [type]);
     var mutate = useCallback(function (_a) {
         var original = _a.original, updates = _a.updates, files = _a.files;
@@ -157,8 +151,6 @@ export function useMutation(type, op) {
                         return [3 /*break*/, 10];
                     case 2: return [4 /*yield*/, resolveFiles({
                             updates: original,
-                            type: type,
-                            schema: schema,
                             files: files,
                         })];
                     case 3:
@@ -175,8 +167,6 @@ export function useMutation(type, op) {
                         }
                         return [4 /*yield*/, resolveFiles({
                                 updates: updates,
-                                type: type,
-                                schema: schema,
                                 files: files,
                             })];
                     case 6:
@@ -204,7 +194,7 @@ export function useMutation(type, op) {
                 }
             });
         });
-    }, [Model, schema]);
+    }, [Model]);
     return { mutate: mutate, loading: loading };
 }
 //# sourceMappingURL=useMutation.js.map
