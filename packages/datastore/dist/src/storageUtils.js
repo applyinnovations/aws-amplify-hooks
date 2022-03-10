@@ -35,7 +35,6 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
     }
 };
 import { Storage, Auth } from 'aws-amplify';
-import { StorageObjectLevel } from './types';
 import { v4 as uuid } from 'uuid';
 var SIX_HOURS_IN_MS = 6 * 60 * 60 * 1000; // 6 hours in seconds
 export var uploadFile = function (_a) {
@@ -75,20 +74,18 @@ export var uploadFile = function (_a) {
     });
 };
 export var getFileUrl = function (_a) {
-    var key = _a.key, contentType = _a.contentType, identityId = _a.identityId, _b = _a.level, level = _b === void 0 ? StorageObjectLevel.PUBLIC : _b;
+    var key = _a.key, contentType = _a.contentType, identityId = _a.identityId, level = _a.level;
     return __awaiter(void 0, void 0, void 0, function () {
         var result;
-        return __generator(this, function (_c) {
-            switch (_c.label) {
+        return __generator(this, function (_b) {
+            switch (_b.label) {
                 case 0: return [4 /*yield*/, Storage.get(key, {
                         contentType: contentType,
                         level: level,
-                        identityId: level === StorageObjectLevel.PROTECTED && identityId
-                            ? identityId
-                            : undefined,
+                        identityId: level === 'protected' && identityId ? identityId : undefined,
                     })];
                 case 1:
-                    result = _c.sent();
+                    result = _b.sent();
                     if (typeof result === 'string') {
                         return [2 /*return*/, result];
                     }
