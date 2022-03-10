@@ -1,7 +1,6 @@
 ﻿import { DataStore } from 'aws-amplify';
 import { useCallback, useState, useMemo } from 'react';
 import { uploadFile } from './storageUtils';
-import { extractStorageObjectKeyName } from './extractStorageObjectKeyName';
 import { useDataStore } from './DatastoreProvider';
 import { Files, Model, StorageAccessLevel } from './types';
 
@@ -50,24 +49,15 @@ const uploadAndLinkFile = async <T>({
 
 const resolveFiles = async <T>({
   updates,
-  type,
-  schema,
   files,
 }: {
   updates?: Partial<T>;
-  type: string;
-  schema: any;
   files?: Files<T>;
 }) => {
   console.debug(files);
   if (!files) return updates;
-  const fileKeys = extractStorageObjectKeyName({
-    updates: updates,
-    type,
-    schema,
-  });
-  console.debug(fileKeys);
   let mutationPayload = updates;
+  const fileKeys = Object.keys(files) as (keyof Files<T>)[];
   for (const fileKey of fileKeys) {
     const file = files[fileKey];
     console.debug(fileKey, file);
@@ -86,7 +76,7 @@ const resolveFiles = async <T>({
 
 export function useMutation<T>(type: string, op: Operations) {
   const [loading, setLoading] = useState(false);
-  const { Models, schema } = useDataStore();
+  const { Models } = useDataStore();
   const Model = useMemo(() => Models?.[type], [type]);
 
   const mutate = useCallback(
@@ -107,8 +97,6 @@ export function useMutation<T>(type: string, op: Operations) {
           case Operations.Create:
             const createPayload = await resolveFiles<T>({
               updates: original,
-              type,
-              schema,
               files,
             });
             const createResponse = await DataStore.save<Model<T>>(
@@ -126,8 +114,6 @@ export function useMutation<T>(type: string, op: Operations) {
             }
             const updatePayload = await resolveFiles<T>({
               updates,
-              type,
-              schema,
               files,
             });
             const newModel = Model.copyOf(original, (updated: T) =>
@@ -147,7 +133,7 @@ export function useMutation<T>(type: string, op: Operations) {
         setLoading(false);
       }
     },
-    [Model, schema]
+    [Model]
   );
 
   return { mutate, loading };
