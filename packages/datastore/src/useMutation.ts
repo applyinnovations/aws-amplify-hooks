@@ -3,7 +3,7 @@ import { useCallback, useState, useMemo } from 'react';
 import { uploadFile } from './storageUtils';
 import { extractStorageObjectKeyName } from './extractStorageObjectKeyName';
 import { useDataStore } from './DatastoreProvider';
-import { Files, Model, StorageProperties } from './types';
+import { Files, Model, StorageAccessLevel } from './types';
 
 export enum Operations {
   Delete,
@@ -30,28 +30,22 @@ const uploadAndLinkFile = async <T>({
   updates,
   file,
   fileKey,
-  storageProperties,
+  level,
 }: {
   updates?: Partial<T>;
   fileKey: keyof T;
   file: File;
-  storageProperties?: StorageProperties;
+  level: StorageAccessLevel;
 }) => {
-  if (storageProperties && file) {
-    const storageObject = await uploadFile({
-      file,
-      ...{
-        contentType: 'application/octet-stream',
-        level: 'public',
-      },
-      ...storageProperties,
-    });
-    return {
-      ...updates,
-      [fileKey]: storageObject,
-    };
-  } else
-    throw Error('Please provide storage properties when uploading a file.');
+  const storageObject = await uploadFile({
+    file,
+    level,
+    contentType: file.type || 'application/octet-stream',
+  });
+  return {
+    ...updates,
+    [fileKey]: storageObject,
+  };
 };
 
 const resolveFiles = async <T>({
@@ -73,13 +67,13 @@ const resolveFiles = async <T>({
   });
   let mutationPayload = updates;
   for (const fileKey of fileKeys) {
-    const file = files[fileKey]?.file;
-    if (file) {
+    const file = files[fileKey];
+    if (file?.file && file?.level) {
       mutationPayload = await uploadAndLinkFile<T>({
         updates: mutationPayload,
         fileKey,
-        file: file,
-        storageProperties: files[fileKey]?.storageProperties,
+        file: file.file,
+        level: file.level,
       });
     }
   }
@@ -98,7 +92,7 @@ export function useMutation<T>(type: string, op: Operations) {
       files,
     }: {
       original?: Model<T>;
-      updates?: Partial<Model<T>>;
+      updates?: Partial<T>;
       files?: Files<T>;
     }) => {
       setLoading(true);
@@ -107,7 +101,7 @@ export function useMutation<T>(type: string, op: Operations) {
       try {
         switch (op) {
           case Operations.Create:
-            const createPayload = await resolveFiles({
+            const createPayload = await resolveFiles<T>({
               updates: original,
               type,
               schema,
@@ -126,7 +120,7 @@ export function useMutation<T>(type: string, op: Operations) {
                 'An update was performed however no updated model or updated files were provided.'
               );
             }
-            const updatePayload = await resolveFiles({
+            const updatePayload = await resolveFiles<T>({
               updates,
               type,
               schema,
