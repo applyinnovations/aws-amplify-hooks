@@ -87,13 +87,15 @@ export function useMutation<T>(type: string, op: Operations) {
       files?: Files<T>;
     }) => {
       setLoading(true);
-      if (!original)
-        throw Error('Mutation was attempted without providing any data.');
       try {
         switch (op) {
           case Operations.Create:
+            if (!updates && !files)
+              throw Error(
+                'You must provide `updates` or `files` to create an object'
+              );
             const createPayload = await resolveFiles<T>({
-              updates: original,
+              updates,
               files,
             });
             const createResponse = await DataStore.save<Model<T>>(
@@ -103,10 +105,11 @@ export function useMutation<T>(type: string, op: Operations) {
             return createResponse;
 
           case Operations.Update:
+            if (!original)
+              throw Error('Update was attempted without providing original');
             if (!updates && !files) {
-              setLoading(false);
               throw Error(
-                'An update was performed however no updated model or updated files were provided.'
+                'An update was performed however no updated model or updated files were provided'
               );
             }
             const updatePayload = await resolveFiles<T>({
