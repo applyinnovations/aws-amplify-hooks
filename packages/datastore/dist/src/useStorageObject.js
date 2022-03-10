@@ -5,14 +5,6 @@ export var useStorageObject = function (storageObject) {
     var _b = useState(true), mounted = _b[0], setMounted = _b[1];
     var _c = useState(false), loading = _c[0], setLoading = _c[1];
     var _d = useState(), error = _d[0], setError = _d[1];
-    var orderedStorageObject = storageObject
-        ? {
-            key: storageObject === null || storageObject === void 0 ? void 0 : storageObject.key,
-            identityId: storageObject === null || storageObject === void 0 ? void 0 : storageObject.identityId,
-            level: storageObject === null || storageObject === void 0 ? void 0 : storageObject.level,
-            contentType: storageObject === null || storageObject === void 0 ? void 0 : storageObject.contentType,
-        }
-        : storageObject;
     useEffect(function () { return function () { return setMounted(false); }; }, []);
     useEffect(function () {
         if (storageObject) {
@@ -37,7 +29,7 @@ export var useStorageObject = function (storageObject) {
             setError('Missing storage object');
             setUrl(undefined);
         }
-    }, [orderedStorageObject]);
+    }, [storageObject === null || storageObject === void 0 ? void 0 : storageObject.key]);
     return {
         url: url,
         loading: loading,
