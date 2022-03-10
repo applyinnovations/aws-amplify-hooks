@@ -54,13 +54,11 @@ const resolveFiles = async <T>({
   updates?: Partial<T>;
   files?: Files<T>;
 }) => {
-  console.debug(files);
   if (!files) return updates;
   let mutationPayload = updates;
   const fileKeys = Object.keys(files) as (keyof Files<T>)[];
   for (const fileKey of fileKeys) {
     const file = files[fileKey];
-    console.debug(fileKey, file);
     if (file?.file && file?.level) {
       mutationPayload = await uploadAndLinkFile<T>({
         updates: mutationPayload,
@@ -68,7 +66,6 @@ const resolveFiles = async <T>({
         file: file.file,
         level: file.level,
       });
-      console.debug(fileKey, mutationPayload);
     }
   }
   return mutationPayload;
@@ -135,6 +132,5 @@ export function useMutation<T>(type: string, op: Operations) {
     },
     [Model]
   );
-
   return { mutate, loading };
 }
