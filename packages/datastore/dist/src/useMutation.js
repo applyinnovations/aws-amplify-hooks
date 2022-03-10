@@ -69,22 +69,20 @@ var diff = function (original, updates, updated) {
     return updated;
 };
 var uploadAndLinkFile = function (_a) {
-    var updates = _a.updates, file = _a.file, fileKey = _a.fileKey, storageProperties = _a.storageProperties;
+    var updates = _a.updates, file = _a.file, fileKey = _a.fileKey, level = _a.level;
     return __awaiter(void 0, void 0, void 0, function () {
         var storageObject;
         var _b;
         return __generator(this, function (_c) {
             switch (_c.label) {
-                case 0:
-                    if (!(storageProperties && file)) return [3 /*break*/, 2];
-                    return [4 /*yield*/, uploadFile(__assign(__assign({ file: file }, {
-                            contentType: 'application/octet-stream',
-                            level: 'public',
-                        }), storageProperties))];
+                case 0: return [4 /*yield*/, uploadFile({
+                        file: file,
+                        level: level,
+                        contentType: file.type || 'application/octet-stream',
+                    })];
                 case 1:
                     storageObject = _c.sent();
                     return [2 /*return*/, __assign(__assign({}, updates), (_b = {}, _b[fileKey] = storageObject, _b))];
-                case 2: throw Error('Please provide storage properties when uploading a file.');
             }
         });
     });
@@ -93,9 +91,8 @@ var resolveFiles = function (_a) {
     var updates = _a.updates, type = _a.type, schema = _a.schema, files = _a.files;
     return __awaiter(void 0, void 0, void 0, function () {
         var fileKeys, mutationPayload, _i, fileKeys_1, fileKey, file;
-        var _b, _c;
-        return __generator(this, function (_d) {
-            switch (_d.label) {
+        return __generator(this, function (_b) {
+            switch (_b.label) {
                 case 0:
                     if (!files)
                         return [2 /*return*/, updates];
@@ -106,21 +103,21 @@ var resolveFiles = function (_a) {
                     });
                     mutationPayload = updates;
                     _i = 0, fileKeys_1 = fileKeys;
-                    _d.label = 1;
+                    _b.label = 1;
                 case 1:
                     if (!(_i < fileKeys_1.length)) return [3 /*break*/, 4];
                     fileKey = fileKeys_1[_i];
-                    file = (_b = files[fileKey]) === null || _b === void 0 ? void 0 : _b.file;
-                    if (!file) return [3 /*break*/, 3];
+                    file = files[fileKey];
+                    if (!((file === null || file === void 0 ? void 0 : file.file) && (file === null || file === void 0 ? void 0 : file.level))) return [3 /*break*/, 3];
                     return [4 /*yield*/, uploadAndLinkFile({
                             updates: mutationPayload,
                             fileKey: fileKey,
-                            file: file,
-                            storageProperties: (_c = files[fileKey]) === null || _c === void 0 ? void 0 : _c.storageProperties,
+                            file: file.file,
+                            level: file.level,
                         })];
                 case 2:
-                    mutationPayload = _d.sent();
-                    _d.label = 3;
+                    mutationPayload = _b.sent();
+                    _b.label = 3;
                 case 3:
                     _i++;
                     return [3 /*break*/, 1];
