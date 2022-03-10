@@ -124,6 +124,8 @@ export function useMutation<T>(type: string, op: Operations) {
             return updateResponse;
 
           case Operations.Delete:
+            if (!original)
+              throw Error('You must provide `original` to delete an object');
             const deleteResponse = await DataStore.delete<Model<T>>(original);
             setLoading(false);
             return deleteResponse;
