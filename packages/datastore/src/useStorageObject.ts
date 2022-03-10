@@ -7,7 +7,9 @@ export const useStorageObject = (storageObject?: StorageObject | null) => {
   const [mounted, setMounted] = useState(true);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string>();
+  const serialisedStorageObject = JSON.stringify(storageObject);
   useEffect(() => {
+    console.log('storage object updated');
     if (storageObject) {
       setLoading(true);
       getFileUrl(storageObject)
@@ -20,7 +22,7 @@ export const useStorageObject = (storageObject?: StorageObject | null) => {
       setUrl(undefined);
     }
     return () => setMounted(false);
-  }, [storageObject]);
+  }, [serialisedStorageObject]);
   return {
     url,
     loading,
