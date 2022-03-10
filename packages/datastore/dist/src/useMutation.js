@@ -94,6 +94,7 @@ var resolveFiles = function (_a) {
         return __generator(this, function (_b) {
             switch (_b.label) {
                 case 0:
+                    console.debug(files);
                     if (!files)
                         return [2 /*return*/, updates];
                     fileKeys = extractStorageObjectKeyName({
@@ -101,6 +102,7 @@ var resolveFiles = function (_a) {
                         type: type,
                         schema: schema,
                     });
+                    console.debug(fileKeys);
                     mutationPayload = updates;
                     _i = 0, fileKeys_1 = fileKeys;
                     _b.label = 1;
@@ -108,6 +110,7 @@ var resolveFiles = function (_a) {
                     if (!(_i < fileKeys_1.length)) return [3 /*break*/, 4];
                     fileKey = fileKeys_1[_i];
                     file = files[fileKey];
+                    console.debug(fileKey, file);
                     if (!((file === null || file === void 0 ? void 0 : file.file) && (file === null || file === void 0 ? void 0 : file.level))) return [3 /*break*/, 3];
                     return [4 /*yield*/, uploadAndLinkFile({
                             updates: mutationPayload,
@@ -117,6 +120,7 @@ var resolveFiles = function (_a) {
                         })];
                 case 2:
                     mutationPayload = _b.sent();
+                    console.debug(fileKey, mutationPayload);
                     _b.label = 3;
                 case 3:
                     _i++;
