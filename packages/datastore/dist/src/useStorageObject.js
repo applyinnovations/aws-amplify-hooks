@@ -9,15 +9,34 @@ export var useStorageObject = function (storageObject) {
     useEffect(function () {
         console.log('storage object updated');
         if (storageObject) {
+            console.log('valid storage object', storageObject);
             setLoading(true);
             getFileUrl(storageObject)
-                .then(function (url) { return mounted && setUrl(url); })
-                .catch(function (e) { return mounted && setError(e.message); })
-                .finally(function () { return mounted && setLoading(false); });
+                .then(function (url) {
+                if (mounted) {
+                    console.log('got url', url);
+                    setUrl(url);
+                    setError(undefined);
+                }
+            })
+                .catch(function (e) {
+                if (mounted) {
+                    console.log('got error', e);
+                    setUrl(undefined);
+                    setError(e.message);
+                }
+            })
+                .finally(function () {
+                if (mounted) {
+                    setLoading(false);
+                    console.log('finished');
+                }
+            });
         }
         else {
+            console.log('Invalid storage object', storageObject);
             setLoading(false);
-            setError('No image found.');
+            setError('Missing storage object');
             setUrl(undefined);
         }
         return function () { return setMounted(false); };
