@@ -134,8 +134,6 @@ export function useMutation(type, op) {
                 switch (_c.label) {
                     case 0:
                         setLoading(true);
-                        if (!original)
-                            throw Error('Mutation was attempted without providing any data.');
                         _c.label = 1;
                     case 1:
                         _c.trys.push([1, 11, , 12]);
@@ -146,10 +144,13 @@ export function useMutation(type, op) {
                             case Operations.Delete: return [3 /*break*/, 8];
                         }
                         return [3 /*break*/, 10];
-                    case 2: return [4 /*yield*/, resolveFiles({
-                            updates: original,
-                            files: files,
-                        })];
+                    case 2:
+                        if (!updates && !files)
+                            throw Error('You must provide `updates` or `files` to create an object');
+                        return [4 /*yield*/, resolveFiles({
+                                updates: updates,
+                                files: files,
+                            })];
                     case 3:
                         createPayload = _c.sent();
                         return [4 /*yield*/, DataStore.save(new Model(createPayload))];
@@ -158,9 +159,10 @@ export function useMutation(type, op) {
                         setLoading(false);
                         return [2 /*return*/, createResponse];
                     case 5:
+                        if (!original)
+                            throw Error('Update was attempted without providing original');
                         if (!updates && !files) {
-                            setLoading(false);
-                            throw Error('An update was performed however no updated model or updated files were provided.');
+                            throw Error('An update was performed however no updated model or updated files were provided');
                         }
                         return [4 /*yield*/, resolveFiles({
                                 updates: updates,
@@ -176,7 +178,10 @@ export function useMutation(type, op) {
                         updateResponse = _c.sent();
                         setLoading(false);
                         return [2 /*return*/, updateResponse];
-                    case 8: return [4 /*yield*/, DataStore.delete(original)];
+                    case 8:
+                        if (!original)
+                            throw Error('You must provide `original` to delete an object');
+                        return [4 /*yield*/, DataStore.delete(original)];
                     case 9:
                         deleteResponse = _c.sent();
                         setLoading(false);
