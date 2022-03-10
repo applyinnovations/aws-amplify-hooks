@@ -1,4 +1,4 @@
-import { Files, StorageProperties } from './types';
+import { Files, StorageAccessLevel } from './types';
 export declare enum Operations {
     Delete = 0,
     Update = 1,
@@ -9,12 +9,10 @@ export declare function useMutation<T>(type: string, op: Operations): {
         original?: Readonly<{
             id: string;
         } & T> | undefined;
-        updates?: Partial<Readonly<{
-            id: string;
-        } & T>> | undefined;
-        files?: Partial<Record<keyof T, {
+        updates?: Partial<T> | undefined;
+        files?: Partial<Record<import("./types").FileKeys<T>, {
             file: File;
-            storageProperties?: StorageProperties | undefined;
+            level: StorageAccessLevel;
         }>> | undefined;
     }) => Promise<any>;
     loading: boolean;

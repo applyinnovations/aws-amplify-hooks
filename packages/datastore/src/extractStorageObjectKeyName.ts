@@ -1,4 +1,4 @@
-﻿import { Model } from './types';
+﻿import { FileKeys } from './types';
 
 export const extractStorageObjectKeyName = <T>({
   updates,
@@ -12,4 +12,4 @@ export const extractStorageObjectKeyName = <T>({
   Object.keys(updates || {}).filter(
     (key) =>
       schema?.models?.[type]?.fields?.[key]?.type?.nonModel === 'StorageObject'
-  ) as (keyof T)[];
+  ) as FileKeys<T>[];
