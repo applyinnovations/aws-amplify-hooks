@@ -7,6 +7,14 @@ export const useStorageObject = (storageObject?: StorageObject | null) => {
   const [mounted, setMounted] = useState(true);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string>();
+  const orderedStorageObject: typeof storageObject = storageObject
+    ? {
+        key: storageObject?.key,
+        identityId: storageObject?.identityId,
+        level: storageObject?.level,
+        contentType: storageObject?.contentType,
+      }
+    : storageObject;
   useEffect(() => () => setMounted(false), []);
   useEffect(() => {
     if (storageObject) {
@@ -30,7 +38,7 @@ export const useStorageObject = (storageObject?: StorageObject | null) => {
       setError('Missing storage object');
       setUrl(undefined);
     }
-  }, [storageObject]);
+  }, [orderedStorageObject]);
   return {
     url,
     loading,
