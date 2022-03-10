@@ -2,7 +2,7 @@
   "compilerOptions": {
     "module": "esnext",
     "target": "es5",
-    "lib": ["es2018"],
+    "lib": ["dom", "es2018"],
     "sourceMap": true,
     "allowJs": false,
     "jsx": "react",
