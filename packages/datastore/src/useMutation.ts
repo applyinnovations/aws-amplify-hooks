@@ -15,7 +15,7 @@ const diff = <T>(
   original: Model<T>,
   updates: Partial<T> | undefined,
   updated: Record<keyof T, any>
-) => {
+): T => {
   if (!updates) return original;
   for (const key of Object.keys(updates)) {
     const keyofT = key as keyof T;
@@ -23,7 +23,7 @@ const diff = <T>(
       updated[keyofT] = updates[keyofT];
     }
   }
-  return updated as T;
+  return updated;
 };
 
 const uploadAndLinkFile = async <T>({
@@ -59,15 +59,18 @@ const resolveFiles = async <T>({
   schema: any;
   files?: Files<T>;
 }) => {
+  console.debug(files);
   if (!files) return updates;
   const fileKeys = extractStorageObjectKeyName({
     updates: updates,
     type,
     schema,
   });
+  console.debug(fileKeys);
   let mutationPayload = updates;
   for (const fileKey of fileKeys) {
     const file = files[fileKey];
+    console.debug(fileKey, file);
     if (file?.file && file?.level) {
       mutationPayload = await uploadAndLinkFile<T>({
         updates: mutationPayload,
@@ -75,6 +78,7 @@ const resolveFiles = async <T>({
         file: file.file,
         level: file.level,
       });
+      console.debug(fileKey, mutationPayload);
     }
   }
   return mutationPayload;
@@ -107,7 +111,7 @@ export function useMutation<T>(type: string, op: Operations) {
               schema,
               files,
             });
-            const createResponse = await DataStore.save(
+            const createResponse = await DataStore.save<Model<T>>(
               new Model(createPayload)
             );
             setLoading(false);
@@ -126,15 +130,15 @@ export function useMutation<T>(type: string, op: Operations) {
               schema,
               files,
             });
-            const newModel = Model.copyOf(original, (updated: any) =>
+            const newModel = Model.copyOf(original, (updated: T) =>
               diff(original, updatePayload, updated)
             );
-            const updateResponse = await DataStore.save(newModel);
+            const updateResponse = await DataStore.save<Model<T>>(newModel);
             setLoading(false);
             return updateResponse;
 
           case Operations.Delete:
-            const deleteResponse = await DataStore.delete(original);
+            const deleteResponse = await DataStore.delete<Model<T>>(original);
             setLoading(false);
             return deleteResponse;
         }

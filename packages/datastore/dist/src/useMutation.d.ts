@@ -14,6 +14,8 @@ export declare function useMutation<T>(type: string, op: Operations): {
             file: File;
             level: StorageAccessLevel;
         }>> | undefined;
-    }) => Promise<any>;
+    }) => Promise<Readonly<{
+        id: string;
+    } & T> | undefined>;
     loading: boolean;
 };
