@@ -22,10 +22,10 @@ export function useSubscription<T>(
         (msg) => {
           const data = msg.items;
           setLoading(false);
-          if (Array.isArray(data)) {
-            setDataArray(data);
+          if (data.length === 1) {
+            setDataSingle(data[0]);
           } else {
-            setDataSingle(data);
+            setDataArray(data);
           }
         }
       );
