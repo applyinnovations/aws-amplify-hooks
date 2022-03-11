@@ -1,43 +1,32 @@
-﻿import { ProducerModelPredicate } from '@aws-amplify/datastore';
-import { PredicateAll } from '@aws-amplify/datastore/lib-esm/predicates';
+﻿import { DataStoreSnapshot, PersistentModel } from '@aws-amplify/datastore';
 import { DataStore } from 'aws-amplify';
-import { useState, useEffect, useMemo } from 'react';
-import { useDataStore } from './DatastoreProvider';
-import { Model } from './types';
+import { useState, useEffect } from 'react';
 
-export function useSubscription<T>(
-  type: string,
-  criteria?: ProducerModelPredicate<Model<T>> | typeof PredicateAll
-) {
-  const { Models } = useDataStore();
-  const [dataSingle, setDataSingle] = useState<Model<T>>();
-  const [dataArray, setDataArray] = useState<Model<T>[]>([]);
+type ObserveQuery<T extends PersistentModel> = typeof DataStore.observeQuery<T>;
+
+export const useSubscription = <T extends PersistentModel>(
+  ...params: Parameters<ObserveQuery<T>>
+) => {
+  const [data, setData] = useState<DataStoreSnapshot<T>['items']>();
   const [loading, setLoading] = useState(false);
-  const Model = useMemo(() => Models?.[type], [type, Models]);
 
   useEffect(() => {
     setLoading(true);
-    if (Model) {
-      const sub = DataStore.observeQuery<Model<T>>(Model, criteria).subscribe(
-        (msg) => {
-          const data = msg.items;
-          setLoading(false);
-          if (data.length === 1) {
-            setDataSingle(data[0]);
-          } else {
-            setDataArray(data);
-          }
-        }
-      );
-      return () => {
-        sub.unsubscribe();
-      };
-    }
-  }, [Model, criteria]);
+    const sub = DataStore.observeQuery<T>(...params).subscribe((msg) => {
+      const data = msg.items;
+      setData(data);
+    }, (error) => {
+      console.warn(error);
+    }, () => {
+      setLoading(false);
+    });
+    return () => {
+      sub.unsubscribe();
+    };
+  }, [params]);
 
   return {
-    dataSingle,
-    dataArray,
+    data,
     loading,
   };
-}
+};
