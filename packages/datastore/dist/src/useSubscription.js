@@ -13,11 +13,11 @@ export function useSubscription(type, criteria) {
             var sub_1 = DataStore.observeQuery(Model, criteria).subscribe(function (msg) {
                 var data = msg.items;
                 setLoading(false);
-                if (Array.isArray(data)) {
-                    setDataArray(data);
+                if (data.length === 1) {
+                    setDataSingle(data[0]);
                 }
                 else {
-                    setDataSingle(data);
+                    setDataArray(data);
                 }
             });
             return function () {
