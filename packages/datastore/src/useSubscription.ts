@@ -2,11 +2,9 @@
 import { DataStore } from 'aws-amplify';
 import { useState, useEffect } from 'react';
 
-type ObserveQuery<T extends PersistentModel> = typeof DataStore.observeQuery<T>;
-
-export const useSubscription = <T extends PersistentModel>(
-  ...params: Parameters<ObserveQuery<T>>
-) => {
+export function useSubscription<T extends PersistentModel>(
+  ...params: Parameters<typeof DataStore.observeQuery<T>>
+) {
   const [data, setData] = useState<DataStoreSnapshot<T>['items']>();
   const [loading, setLoading] = useState(false);
 

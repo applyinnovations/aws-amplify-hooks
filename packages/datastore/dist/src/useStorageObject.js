@@ -1,39 +1,43 @@
-import { useEffect, useState } from 'react';
-import { getFileUrl } from './storageUtils';
-export var useStorageObject = function (storageObject) {
-    var _a = useState(), url = _a[0], setUrl = _a[1];
-    var _b = useState(true), mounted = _b[0], setMounted = _b[1];
-    var _c = useState(false), loading = _c[0], setLoading = _c[1];
-    var _d = useState(), error = _d[0], setError = _d[1];
-    useEffect(function () { return function () { return setMounted(false); }; }, []);
-    useEffect(function () {
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.useStorageObject = void 0;
+const react_1 = require("react");
+const storageUtils_1 = require("./storageUtils");
+const useStorageObject = (storageObject) => {
+    const [url, setUrl] = (0, react_1.useState)();
+    const [mounted, setMounted] = (0, react_1.useState)(true);
+    const [loading, setLoading] = (0, react_1.useState)(false);
+    const [error, setError] = (0, react_1.useState)();
+    (0, react_1.useEffect)(() => () => setMounted(false), []);
+    (0, react_1.useEffect)(() => {
         if (storageObject) {
             setLoading(true);
-            getFileUrl(storageObject)
-                .then(function (url) {
+            (0, storageUtils_1.getFileUrl)(storageObject)
+                .then((url) => {
                 if (mounted) {
                     setUrl(url);
                     setError(undefined);
                 }
             })
-                .catch(function (e) {
+                .catch((e) => {
                 if (mounted) {
                     setUrl(undefined);
                     setError(e.message);
                 }
             })
-                .finally(function () { return mounted && setLoading(false); });
+                .finally(() => mounted && setLoading(false));
         }
         else {
             setLoading(false);
             setError('Missing storage object');
             setUrl(undefined);
         }
-    }, [storageObject === null || storageObject === void 0 ? void 0 : storageObject.key]);
+    }, [storageObject?.key]);
     return {
-        url: url,
-        loading: loading,
-        error: error,
+        url,
+        loading,
+        error,
     };
 };
+exports.useStorageObject = useStorageObject;
 //# sourceMappingURL=useStorageObject.js.map

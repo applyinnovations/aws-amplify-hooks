@@ -13,8 +13,7 @@
   },
   "devDependencies": {
     "@types/react": "17.0.29",
-    "@types/uuid": "8.3.1",
-    "typescript": "^4.4.4"
+    "@types/uuid": "8.3.1"
   },
   "peerDependencies": {
     "aws-amplify": "4.2.5",
