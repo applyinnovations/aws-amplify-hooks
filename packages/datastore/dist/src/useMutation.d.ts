@@ -8,7 +8,7 @@ export declare enum Operations {
 export declare function useMutation<T extends PersistentModel>(type: PersistentModelConstructor<T>, op: Operations): {
     mutate: ({ original, updates, files, }: {
         original?: T | undefined;
-        updates?: T | undefined;
+        updates?: Partial<T> | undefined;
         files?: Partial<Record<import("./types").FileKeys<T>, {
             file: File;
             level: StorageAccessLevel;
