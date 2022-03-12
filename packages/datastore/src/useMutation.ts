@@ -86,30 +86,19 @@ export function useMutation<T extends PersistentModel>(
       files,
     }: {
       original?: T;
-      updates?: ModelInit<
-        T,
-        {
-          readOnlyFields: 'createdAt' | 'updatedAt';
-        }
-      >;
+      updates?: Partial<T>;
       files?: Files<T>;
     }) => {
       setLoading(true);
       try {
         switch (op) {
           case Operations.Create:
-            if (!updates && !files)
-              throw Error(
-                'You must provide `updates` or `files` to create an object'
-              );
-            const createPayload = await resolveFiles<typeof updates>({
-              updates,
+            if (!original)
+              throw Error('You must provide `original` to create an object');
+            const createPayload = await resolveFiles<typeof original>({
+              updates: original,
               files,
             });
-            if (!createPayload)
-              throw Error(
-                'You must provide `updates` or `files` to create an object'
-              );
             const createResponse = await DataStore.save<T>(
               new type(createPayload)
             );
