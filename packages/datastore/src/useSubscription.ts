@@ -9,12 +9,19 @@ import { PredicateAll } from '@aws-amplify/datastore/lib-esm/predicates';
 import { DataStore } from 'aws-amplify';
 import { useState, useEffect } from 'react';
 
-export function useSubscription<T extends PersistentModel>(
-  modelConstructor: PersistentModelConstructor<T>,
-  criteria?: ProducerModelPredicate<T> | typeof PredicateAll,
-  paginationProducer?: ObserveQueryOptions<T>
-) {
+export function useSubscription<T extends PersistentModel>({
+  modelConstructor,
+  criteria,
+  paginationProducer,
+  onError,
+}: {
+  modelConstructor: PersistentModelConstructor<T>;
+  criteria?: ProducerModelPredicate<T> | typeof PredicateAll;
+  paginationProducer?: ObserveQueryOptions<T>;
+  onError?: (error: any) => void;
+}) {
   const [data, setData] = useState<DataStoreSnapshot<T>['items']>();
+  const [error, setError] = useState<any>();
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
@@ -27,9 +34,12 @@ export function useSubscription<T extends PersistentModel>(
       (msg) => {
         const data = msg.items;
         setData(data);
+        setError(undefined);
       },
       (error) => {
-        console.warn(error);
+        setError(error);
+        if (onError) onError(error);
+        console.error(error);
       },
       () => {
         setLoading(false);
@@ -38,11 +48,12 @@ export function useSubscription<T extends PersistentModel>(
     return () => {
       sub.unsubscribe();
     };
-  }, [modelConstructor, criteria, paginationProducer]);
+  }, [modelConstructor, criteria, paginationProducer, onError]);
 
   return {
     first: data?.[0],
     data,
     loading,
+    error,
   };
 }
