@@ -1,34 +1,29 @@
-import { DataStore } from 'aws-amplify';
-import { useState, useEffect, useMemo } from 'react';
-import { useDataStore } from './DatastoreProvider';
-export function useSubscription(type, criteria) {
-    var Models = useDataStore().Models;
-    var _a = useState(), dataSingle = _a[0], setDataSingle = _a[1];
-    var _b = useState([]), dataArray = _b[0], setDataArray = _b[1];
-    var _c = useState(false), loading = _c[0], setLoading = _c[1];
-    var Model = useMemo(function () { return Models === null || Models === void 0 ? void 0 : Models[type]; }, [type, Models]);
-    useEffect(function () {
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.useSubscription = void 0;
+const aws_amplify_1 = require("aws-amplify");
+const react_1 = require("react");
+function useSubscription(modelConstructor, criteria, paginationProducer) {
+    const [data, setData] = (0, react_1.useState)();
+    const [loading, setLoading] = (0, react_1.useState)(false);
+    (0, react_1.useEffect)(() => {
         setLoading(true);
-        if (Model) {
-            var sub_1 = DataStore.observeQuery(Model, criteria).subscribe(function (msg) {
-                var data = msg.items;
-                setLoading(false);
-                if (data.length === 1) {
-                    setDataSingle(data[0]);
-                }
-                else {
-                    setDataArray(data);
-                }
-            });
-            return function () {
-                sub_1.unsubscribe();
-            };
-        }
-    }, [Model, criteria]);
+        const sub = aws_amplify_1.DataStore.observeQuery(modelConstructor, criteria, paginationProducer).subscribe((msg) => {
+            const data = msg.items;
+            setData(data);
+        }, (error) => {
+            console.warn(error);
+        }, () => {
+            setLoading(false);
+        });
+        return () => {
+            sub.unsubscribe();
+        };
+    }, [modelConstructor, criteria, paginationProducer]);
     return {
-        dataSingle: dataSingle,
-        dataArray: dataArray,
-        loading: loading,
+        data,
+        loading,
     };
 }
+exports.useSubscription = useSubscription;
 //# sourceMappingURL=useSubscription.js.map

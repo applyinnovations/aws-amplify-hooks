@@ -15,7 +15,3 @@ export interface StorageObject {
   level: StorageAccessLevel;
   contentType: string;
 }
-
-export type Model<T extends Partial<Record<keyof T, any>>> = Readonly<
-  { id: string } & T
->;

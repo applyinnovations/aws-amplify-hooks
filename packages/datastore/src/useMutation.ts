@@ -1,8 +1,13 @@
 ﻿import { DataStore } from 'aws-amplify';
 import { useCallback, useState, useMemo } from 'react';
 import { uploadFile } from './storageUtils';
-import { useDataStore } from './DatastoreProvider';
-import { Files, Model, StorageAccessLevel } from './types';
+import { Files, StorageAccessLevel } from './types';
+import {
+  MutableModel,
+  PersistentModel,
+  PersistentModelConstructor,
+  PersistentModelMetaData,
+} from '@aws-amplify/datastore';
 
 export enum Operations {
   Delete,
@@ -10,18 +15,15 @@ export enum Operations {
   Create,
 }
 
-const diff = <T>(
-  original: Model<T>,
-  updates: Partial<T> | undefined,
-  updated: Record<keyof T, any>
-): T => {
-  if (!updates) return original;
-  for (const key of Object.keys(updates)) {
-    const keyofT = key as keyof T;
-    if (key in original && original[keyofT] !== updates[keyofT]) {
-      updated[keyofT] = updates[keyofT];
+const diff = <T>(original: T, updates: T, updated: MutableModel<T>) => {
+  const keys = Object.keys(updates) as (keyof typeof updates)[];
+  for (const key of keys) {
+    if (key in original && original[key] !== updates[key]) {
+      //@ts-ignore
+      updated[key] = updates[key];
     }
   }
+  console.log(updates, '=>', updated);
   return updated;
 };
 
@@ -31,7 +33,7 @@ const uploadAndLinkFile = async <T>({
   fileKey,
   level,
 }: {
-  updates?: Partial<T>;
+  updates: T;
   fileKey: keyof T;
   file: File;
   level: StorageAccessLevel;
@@ -51,7 +53,7 @@ const resolveFiles = async <T>({
   updates,
   files,
 }: {
-  updates?: Partial<T>;
+  updates: T;
   files?: Files<T>;
 }) => {
   if (!files) return updates;
@@ -71,19 +73,19 @@ const resolveFiles = async <T>({
   return mutationPayload;
 };
 
-export function useMutation<T>(type: string, op: Operations) {
+export function useMutation<T extends PersistentModel>(
+  type: PersistentModelConstructor<T>,
+  op: Operations
+) {
   const [loading, setLoading] = useState(false);
-  const { Models } = useDataStore();
-  const Model = useMemo(() => Models?.[type], [type]);
-
   const mutate = useCallback(
     async ({
       original,
       updates,
       files,
     }: {
-      original?: Model<T>;
-      updates?: Partial<T>;
+      original?: T;
+      updates?: T;
       files?: Files<T>;
     }) => {
       setLoading(true);
@@ -94,12 +96,16 @@ export function useMutation<T>(type: string, op: Operations) {
               throw Error(
                 'You must provide `updates` or `files` to create an object'
               );
-            const createPayload = await resolveFiles<T>({
+            const createPayload = await resolveFiles<typeof updates>({
               updates,
               files,
             });
-            const createResponse = await DataStore.save<Model<T>>(
-              new Model(createPayload)
+            if (!createPayload)
+              throw Error(
+                'You must provide `updates` or `files` to create an object'
+              );
+            const createResponse = await DataStore.save<T>(
+              new type(createPayload)
             );
             setLoading(false);
             return createResponse;
@@ -112,21 +118,21 @@ export function useMutation<T>(type: string, op: Operations) {
                 'An update was performed however no updated model or updated files were provided'
               );
             }
-            const updatePayload = await resolveFiles<T>({
+            const updatePayload = await resolveFiles<typeof updates>({
               updates,
               files,
             });
-            const newModel = Model.copyOf(original, (updated: T) =>
+            const newModel = type.copyOf(original, (updated) =>
               diff(original, updatePayload, updated)
             );
-            const updateResponse = await DataStore.save<Model<T>>(newModel);
+            const updateResponse = await DataStore.save<T>(newModel);
             setLoading(false);
             return updateResponse;
 
           case Operations.Delete:
             if (!original)
               throw Error('You must provide `original` to delete an object');
-            const deleteResponse = await DataStore.delete<Model<T>>(original);
+            const deleteResponse = await DataStore.delete<T>(original);
             setLoading(false);
             return deleteResponse;
         }
@@ -135,7 +141,7 @@ export function useMutation<T>(type: string, op: Operations) {
         setLoading(false);
       }
     },
-    [Model]
+    [type]
   );
   return { mutate, loading };
 }
