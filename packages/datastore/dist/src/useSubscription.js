@@ -21,6 +21,7 @@ function useSubscription(modelConstructor, criteria, paginationProducer) {
         };
     }, [modelConstructor, criteria, paginationProducer]);
     return {
+        first: data?.[0],
         data,
         loading,
     };
