@@ -3,6 +3,7 @@ import { useCallback, useState, useMemo } from 'react';
 import { uploadFile } from './storageUtils';
 import { Files, StorageAccessLevel } from './types';
 import {
+  ModelInit,
   MutableModel,
   PersistentModel,
   PersistentModelConstructor,
@@ -85,7 +86,12 @@ export function useMutation<T extends PersistentModel>(
       files,
     }: {
       original?: T;
-      updates?: T;
+      updates?: ModelInit<
+        T,
+        {
+          readOnlyFields: 'createdAt' | 'updatedAt';
+        }
+      >;
       files?: Files<T>;
     }) => {
       setLoading(true);
