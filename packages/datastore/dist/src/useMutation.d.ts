@@ -1,5 +1,5 @@
 import { Files, StorageAccessLevel } from './types';
-import { PersistentModel, PersistentModelConstructor } from '@aws-amplify/datastore';
+import { ModelInit, PersistentModel, PersistentModelConstructor } from '@aws-amplify/datastore';
 export declare enum Operations {
     Delete = 0,
     Update = 1,
@@ -8,7 +8,9 @@ export declare enum Operations {
 export declare function useMutation<T extends PersistentModel>(type: PersistentModelConstructor<T>, op: Operations): {
     mutate: ({ original, updates, files, }: {
         original?: T | undefined;
-        updates?: T | undefined;
+        updates?: ModelInit<T, {
+            readOnlyFields: 'createdAt' | 'updatedAt';
+        }> | undefined;
         files?: Partial<Record<import("./types").FileKeys<T>, {
             file: File;
             level: StorageAccessLevel;
