@@ -41,6 +41,7 @@ export function useSubscription<T extends PersistentModel>(
   }, [modelConstructor, criteria, paginationProducer]);
 
   return {
+    first: data?.[0],
     data,
     loading,
   };
