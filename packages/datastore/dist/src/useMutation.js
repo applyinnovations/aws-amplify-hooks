@@ -57,14 +57,12 @@ function useMutation(type, op) {
         try {
             switch (op) {
                 case Operations.Create:
-                    if (!updates && !files)
-                        throw Error('You must provide `updates` or `files` to create an object');
+                    if (!original)
+                        throw Error('You must provide `original` to create an object');
                     const createPayload = await resolveFiles({
-                        updates,
+                        updates: original,
                         files,
                     });
-                    if (!createPayload)
-                        throw Error('You must provide `updates` or `files` to create an object');
                     const createResponse = await aws_amplify_1.DataStore.save(new type(createPayload));
                     setLoading(false);
                     return createResponse;
