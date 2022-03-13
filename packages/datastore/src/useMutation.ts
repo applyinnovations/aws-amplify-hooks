@@ -24,7 +24,6 @@ const diff = <T>(original: T, updates: T, updated: MutableModel<T>) => {
       updated[key] = updates[key];
     }
   }
-  console.log(updates, '=>', updated);
   return updated;
 };
 
