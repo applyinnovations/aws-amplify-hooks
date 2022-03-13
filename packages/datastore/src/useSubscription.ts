@@ -7,17 +7,19 @@
 } from '@aws-amplify/datastore';
 import { PredicateAll } from '@aws-amplify/datastore/lib-esm/predicates';
 import { DataStore } from 'aws-amplify';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 
 export { PredicateAll };
 
 export function useSubscription<T extends PersistentModel>({
   model,
+  id,
   criteria,
   paginationProducer,
   onError,
 }: {
   model: PersistentModelConstructor<T>;
+  id?: T['id'];
   criteria?: ProducerModelPredicate<T> | typeof PredicateAll;
   paginationProducer?: ObserveQueryOptions<T>;
   onError?: (error: any) => void;
@@ -25,23 +27,23 @@ export function useSubscription<T extends PersistentModel>({
   const [data, setData] = useState<DataStoreSnapshot<T>['items']>();
   const [error, setError] = useState<any>();
   const [loading, setLoading] = useState(false);
+  if (id && criteria)
+    throw Error('Please provide only `id` or `criteria` not both');
+
+  const idCriteria: ProducerModelPredicate<T> | undefined = useCallback(
+    (d) => (id ? d.id('eq', id) : undefined),
+    [id]
+  );
 
   useEffect(() => {
-    console.debug('props updated', {
-      model,
-      criteria,
-      paginationProducer,
-      onError,
-    });
     setLoading(true);
     const sub = DataStore.observeQuery<T>(
       model,
-      criteria,
+      id ? idCriteria : criteria,
       paginationProducer
     ).subscribe(
       (msg) => {
         const data = msg.items;
-        console.debug('subscription updated', msg);
         setData(data);
         setError(undefined);
       },
@@ -55,7 +57,7 @@ export function useSubscription<T extends PersistentModel>({
       }
     );
     return () => sub.unsubscribe();
-  }, [model, criteria, paginationProducer, onError]);
+  }, [model, id, idCriteria, criteria, paginationProducer, onError]);
 
   return {
     first: data?.[0],
