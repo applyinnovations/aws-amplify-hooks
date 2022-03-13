@@ -17,8 +17,7 @@ function useSubscription({ model, id, criteria, paginationProducer, onError, }) 
     (0, react_1.useEffect)(() => {
         setLoading(true);
         const elapsedTime = performance.now() - startTime;
-        console.log(spamCount, elapsedTime, spamCount / elapsedTime);
-        if (spamCount > 5 && spamCount / elapsedTime > 0.5)
+        if (spamCount > 25 && spamCount / elapsedTime > 0.01)
             console.error(`The props for useSubscription are being updated too fast.` +
                 'Please use `useCallback` or `useMemo` to fix performance issues.');
         else {
