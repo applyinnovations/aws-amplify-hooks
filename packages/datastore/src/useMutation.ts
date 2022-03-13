@@ -93,14 +93,14 @@ export function useMutation<T extends PersistentModel>(
       try {
         switch (op) {
           case Operations.Create:
-            if (!original)
+            if (!create)
               throw Error('You must provide `create` to create an object');
             const createPayload = await resolveFiles<typeof create>({
               updates: create,
               files,
             });
             const createResponse = await DataStore.save<T>(
-              new type(createPayload!)
+              new type(createPayload)
             );
             setLoading(false);
             return createResponse;
