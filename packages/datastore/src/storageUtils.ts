@@ -45,7 +45,7 @@ export const getFileUrl = async ({
 }: StorageObject): Promise<string> => {
   const result = await Storage.get(key, {
     contentType,
-    level,
+    level: level.toLowerCase() as Lowercase<StorageObject['level']>,
     identityId: level === 'protected' && identityId ? identityId : undefined,
   });
   if (typeof result === 'string') {
