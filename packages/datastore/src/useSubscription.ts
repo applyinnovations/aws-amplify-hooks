@@ -27,6 +27,12 @@ export function useSubscription<T extends PersistentModel>({
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
+    console.debug('props updated', {
+      model,
+      criteria,
+      paginationProducer,
+      onError,
+    });
     setLoading(true);
     const sub = DataStore.observeQuery<T>(
       model,
@@ -35,6 +41,7 @@ export function useSubscription<T extends PersistentModel>({
     ).subscribe(
       (msg) => {
         const data = msg.items;
+        console.debug('subscription updated', msg);
         setData(data);
         setError(undefined);
       },
@@ -47,9 +54,7 @@ export function useSubscription<T extends PersistentModel>({
         setLoading(false);
       }
     );
-    return () => {
-      sub.unsubscribe();
-    };
+    return () => sub.unsubscribe();
   }, [model, criteria, paginationProducer, onError]);
 
   return {
