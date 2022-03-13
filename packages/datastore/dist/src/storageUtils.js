@@ -30,7 +30,7 @@ exports.uploadFile = uploadFile;
 const getFileUrl = async ({ key, contentType, identityId, level, }) => {
     const result = await aws_amplify_1.Storage.get(key, {
         contentType,
-        level,
+        level: level.toLowerCase(),
         identityId: level === 'protected' && identityId ? identityId : undefined,
     });
     if (typeof result === 'string') {

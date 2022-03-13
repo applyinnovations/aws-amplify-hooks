@@ -1,15 +1,17 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.useSubscription = void 0;
+exports.useSubscription = exports.PredicateAll = void 0;
+const predicates_1 = require("@aws-amplify/datastore/lib-esm/predicates");
+Object.defineProperty(exports, "PredicateAll", { enumerable: true, get: function () { return predicates_1.PredicateAll; } });
 const aws_amplify_1 = require("aws-amplify");
 const react_1 = require("react");
-function useSubscription({ modelConstructor, criteria, paginationProducer, onError, }) {
+function useSubscription({ model, criteria, paginationProducer, onError, }) {
     const [data, setData] = (0, react_1.useState)();
     const [error, setError] = (0, react_1.useState)();
     const [loading, setLoading] = (0, react_1.useState)(false);
     (0, react_1.useEffect)(() => {
         setLoading(true);
-        const sub = aws_amplify_1.DataStore.observeQuery(modelConstructor, criteria, paginationProducer).subscribe((msg) => {
+        const sub = aws_amplify_1.DataStore.observeQuery(model, criteria, paginationProducer).subscribe((msg) => {
             const data = msg.items;
             setData(data);
             setError(undefined);
@@ -24,7 +26,7 @@ function useSubscription({ modelConstructor, criteria, paginationProducer, onErr
         return () => {
             sub.unsubscribe();
         };
-    }, [modelConstructor, criteria, paginationProducer, onError]);
+    }, [model, criteria, paginationProducer, onError]);
     return {
         first: data?.[0],
         data,

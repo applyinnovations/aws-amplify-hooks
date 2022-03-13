@@ -12,6 +12,6 @@ export type Files<T> = Partial<
 export interface StorageObject {
   key: string;
   identityId?: string | null;
-  level: StorageAccessLevel;
+  level: StorageAccessLevel | Uppercase<StorageAccessLevel>;
   contentType: string;
 }
