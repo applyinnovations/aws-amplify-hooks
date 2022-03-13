@@ -27,6 +27,8 @@ export function useSubscription<T extends PersistentModel>({
   const [data, setData] = useState<DataStoreSnapshot<T>['items']>();
   const [error, setError] = useState<any>();
   const [loading, setLoading] = useState(false);
+  const [spamCount, setSpamCount] = useState(0);
+
   if (id && criteria)
     throw Error('Please provide only `id` or `criteria` not both');
 
@@ -34,6 +36,13 @@ export function useSubscription<T extends PersistentModel>({
     (d) => (id ? d.id('eq', id) : undefined),
     [id]
   );
+
+  setSpamCount((c) => c + 1);
+  if (spamCount > 10000 && spamCount % 1000)
+    console.error(
+      `The props for useSubscription are being updated too fast.` +
+        'Please use `useCallback` or `useMemo` to fix performance issues.'
+    );
 
   useEffect(() => {
     setLoading(true);
