@@ -1,5 +1,5 @@
 ﻿import { DataStore } from 'aws-amplify';
-import { useCallback, useState, useMemo } from 'react';
+import { useCallback, useState } from 'react';
 import { uploadFile } from './storageUtils';
 import { Files, StorageAccessLevel } from './types';
 import {
@@ -7,7 +7,6 @@ import {
   MutableModel,
   PersistentModel,
   PersistentModelConstructor,
-  PersistentModelMetaData,
 } from '@aws-amplify/datastore';
 
 export enum Operations {
@@ -24,7 +23,6 @@ const diff = <T>(original: T, updates: T, updated: MutableModel<T>) => {
       updated[key] = updates[key];
     }
   }
-  console.log(updates, '=>', updated);
   return updated;
 };
 
@@ -81,10 +79,12 @@ export function useMutation<T extends PersistentModel>(
   const [loading, setLoading] = useState(false);
   const mutate = useCallback(
     async ({
+      create,
       original,
       updates,
       files,
     }: {
+      create?: ModelInit<T>;
       original?: T;
       updates?: Partial<T>;
       files?: Files<T>;
@@ -94,23 +94,23 @@ export function useMutation<T extends PersistentModel>(
         switch (op) {
           case Operations.Create:
             if (!original)
-              throw Error('You must provide `original` to create an object');
-            const createPayload = await resolveFiles<typeof original>({
-              updates: original,
+              throw Error('You must provide `create` to create an object');
+            const createPayload = await resolveFiles<typeof create>({
+              updates: create,
               files,
             });
             const createResponse = await DataStore.save<T>(
-              new type(createPayload)
+              new type(createPayload!)
             );
             setLoading(false);
             return createResponse;
 
           case Operations.Update:
             if (!original)
-              throw Error('Update was attempted without providing original');
+              throw Error('You must provide `original` to update an object');
             if (!updates && !files) {
               throw Error(
-                'An update was performed however no updated model or updated files were provided'
+                'You must provide `updates` or `files` to update an object'
               );
             }
             const updatePayload = await resolveFiles<typeof updates>({

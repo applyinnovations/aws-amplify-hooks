@@ -18,7 +18,6 @@ const diff = (original, updates, updated) => {
             updated[key] = updates[key];
         }
     }
-    console.log(updates, '=>', updated);
     return updated;
 };
 const uploadAndLinkFile = async ({ updates, file, fileKey, level, }) => {
@@ -52,15 +51,15 @@ const resolveFiles = async ({ updates, files, }) => {
 };
 function useMutation(type, op) {
     const [loading, setLoading] = (0, react_1.useState)(false);
-    const mutate = (0, react_1.useCallback)(async ({ original, updates, files, }) => {
+    const mutate = (0, react_1.useCallback)(async ({ create, original, updates, files, }) => {
         setLoading(true);
         try {
             switch (op) {
                 case Operations.Create:
                     if (!original)
-                        throw Error('You must provide `original` to create an object');
+                        throw Error('You must provide `create` to create an object');
                     const createPayload = await resolveFiles({
-                        updates: original,
+                        updates: create,
                         files,
                     });
                     const createResponse = await aws_amplify_1.DataStore.save(new type(createPayload));
@@ -68,9 +67,9 @@ function useMutation(type, op) {
                     return createResponse;
                 case Operations.Update:
                     if (!original)
-                        throw Error('Update was attempted without providing original');
+                        throw Error('You must provide `original` to update an object');
                     if (!updates && !files) {
-                        throw Error('An update was performed however no updated model or updated files were provided');
+                        throw Error('You must provide `updates` or `files` to update an object');
                     }
                     const updatePayload = await resolveFiles({
                         updates,
