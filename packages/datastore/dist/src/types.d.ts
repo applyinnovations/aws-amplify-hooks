@@ -10,6 +10,6 @@ export declare type Files<T> = Partial<Record<FileKeys<T>, {
 export interface StorageObject {
     key: string;
     identityId?: string | null;
-    level: StorageAccessLevel;
+    level: StorageAccessLevel | Uppercase<StorageAccessLevel>;
     contentType: string;
 }
