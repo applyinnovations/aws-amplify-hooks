@@ -1,5 +1,5 @@
 ﻿import { DataStore } from 'aws-amplify';
-import { useCallback, useState, useMemo } from 'react';
+import { useCallback, useState } from 'react';
 import { uploadFile } from './storageUtils';
 import { Files, StorageAccessLevel } from './types';
 import {
@@ -7,7 +7,6 @@ import {
   MutableModel,
   PersistentModel,
   PersistentModelConstructor,
-  PersistentModelMetaData,
 } from '@aws-amplify/datastore';
 
 export enum Operations {
