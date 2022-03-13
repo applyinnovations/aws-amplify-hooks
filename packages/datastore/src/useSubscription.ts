@@ -42,9 +42,9 @@ export function useSubscription<T extends PersistentModel>({
     setLoading(true);
     const elapsedTime = performance.now() - startTime;
     if (spamCount > 25 && spamCount / elapsedTime > 0.01)
-      console.error(
-        `The props for useSubscription are being updated too fast.` +
-          'Please use `useCallback` or `useMemo` to fix performance issues.'
+      throw Error(
+        'The props for useSubscription are being updated too fast. ' +
+          'Please use `useCallback` or `useMemo` on props to fix performance issues.'
       );
     else {
       setSpamCount((c) => c + 1);

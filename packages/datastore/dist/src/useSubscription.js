@@ -18,8 +18,8 @@ function useSubscription({ model, id, criteria, paginationProducer, onError, }) 
         setLoading(true);
         const elapsedTime = performance.now() - startTime;
         if (spamCount > 25 && spamCount / elapsedTime > 0.01)
-            console.error(`The props for useSubscription are being updated too fast.` +
-                'Please use `useCallback` or `useMemo` to fix performance issues.');
+            throw Error('The props for useSubscription are being updated too fast. ' +
+                'Please use `useCallback` or `useMemo` on props to fix performance issues.');
         else {
             setSpamCount((c) => c + 1);
             const sub = aws_amplify_1.DataStore.observeQuery(model, id ? idCriteria : criteria, paginationProducer).subscribe((msg) => {
