@@ -28,6 +28,7 @@ export function useSubscription<T extends PersistentModel>({
   const [error, setError] = useState<any>();
   const [loading, setLoading] = useState(false);
   const [spamCount, setSpamCount] = useState(0);
+  const [startTime, setStartTime] = useState(performance.now());
 
   if (id && criteria)
     throw Error('Please provide only `id` or `criteria` not both');
@@ -39,32 +40,35 @@ export function useSubscription<T extends PersistentModel>({
 
   useEffect(() => {
     setLoading(true);
-    if (spamCount > 4000)
-      throw Error(
+    const elapsedTime = performance.now() - startTime;
+    if (spamCount > 50 && spamCount / elapsedTime > 0.5)
+      console.error(
         `The props for useSubscription are being updated too fast.` +
           'Please use `useCallback` or `useMemo` to fix performance issues.'
       );
-    setSpamCount((c) => c + 1);
-    const sub = DataStore.observeQuery<T>(
-      model,
-      id ? idCriteria : criteria,
-      paginationProducer
-    ).subscribe(
-      (msg) => {
-        const data = msg.items;
-        setData(data);
-        setError(undefined);
-      },
-      (error) => {
-        setError(error);
-        if (onError) onError(error);
-        console.error(error);
-      },
-      () => {
-        setLoading(false);
-      }
-    );
-    return () => sub.unsubscribe();
+    else {
+      setSpamCount((c) => c + 1);
+      const sub = DataStore.observeQuery<T>(
+        model,
+        id ? idCriteria : criteria,
+        paginationProducer
+      ).subscribe(
+        (msg) => {
+          const data = msg.items;
+          setData(data);
+          setError(undefined);
+        },
+        (error) => {
+          setError(error);
+          if (onError) onError(error);
+          console.error(error);
+        },
+        () => {
+          setLoading(false);
+        }
+      );
+      return () => sub.unsubscribe();
+    }
   }, [model, idCriteria, criteria, paginationProducer, onError]);
 
   return {
