@@ -7,17 +7,19 @@
 } from '@aws-amplify/datastore';
 import { PredicateAll } from '@aws-amplify/datastore/lib-esm/predicates';
 import { DataStore } from 'aws-amplify';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 
 export { PredicateAll };
 
 export function useSubscription<T extends PersistentModel>({
   model,
+  id,
   criteria,
   paginationProducer,
   onError,
 }: {
   model: PersistentModelConstructor<T>;
+  id?: T['id'];
   criteria?: ProducerModelPredicate<T> | typeof PredicateAll;
   paginationProducer?: ObserveQueryOptions<T>;
   onError?: (error: any) => void;
@@ -25,23 +27,32 @@ export function useSubscription<T extends PersistentModel>({
   const [data, setData] = useState<DataStoreSnapshot<T>['items']>();
   const [error, setError] = useState<any>();
   const [loading, setLoading] = useState(false);
+  const [spamCount, setSpamCount] = useState(0);
+
+  if (id && criteria)
+    throw Error('Please provide only `id` or `criteria` not both');
+
+  const idCriteria: ProducerModelPredicate<T> | undefined = useCallback(
+    (d) => (id ? d.id('eq', id) : undefined),
+    [id]
+  );
+
+  setSpamCount((c) => c + 1);
+  if (spamCount > 10000 && spamCount % 1000)
+    console.error(
+      `The props for useSubscription are being updated too fast.` +
+        'Please use `useCallback` or `useMemo` to fix performance issues.'
+    );
 
   useEffect(() => {
-    console.debug('props updated', {
-      model,
-      criteria,
-      paginationProducer,
-      onError,
-    });
     setLoading(true);
     const sub = DataStore.observeQuery<T>(
       model,
-      criteria,
+      id ? idCriteria : criteria,
       paginationProducer
     ).subscribe(
       (msg) => {
         const data = msg.items;
-        console.debug('subscription updated', msg);
         setData(data);
         setError(undefined);
       },
@@ -55,7 +66,7 @@ export function useSubscription<T extends PersistentModel>({
       }
     );
     return () => sub.unsubscribe();
-  }, [model, criteria, paginationProducer, onError]);
+  }, [model, id, idCriteria, criteria, paginationProducer, onError]);
 
   return {
     first: data?.[0],

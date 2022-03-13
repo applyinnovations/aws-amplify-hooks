@@ -5,21 +5,22 @@ const predicates_1 = require("@aws-amplify/datastore/lib-esm/predicates");
 Object.defineProperty(exports, "PredicateAll", { enumerable: true, get: function () { return predicates_1.PredicateAll; } });
 const aws_amplify_1 = require("aws-amplify");
 const react_1 = require("react");
-function useSubscription({ model, criteria, paginationProducer, onError, }) {
+function useSubscription({ model, id, criteria, paginationProducer, onError, }) {
     const [data, setData] = (0, react_1.useState)();
     const [error, setError] = (0, react_1.useState)();
     const [loading, setLoading] = (0, react_1.useState)(false);
+    const [spamCount, setSpamCount] = (0, react_1.useState)(0);
+    if (id && criteria)
+        throw Error('Please provide only `id` or `criteria` not both');
+    const idCriteria = (0, react_1.useCallback)((d) => (id ? d.id('eq', id) : undefined), [id]);
+    setSpamCount((c) => c + 1);
+    if (spamCount > 10000 && spamCount % 1000)
+        console.error(`The props for useSubscription are being updated too fast.` +
+            'Please use `useCallback` or `useMemo` to fix performance issues.');
     (0, react_1.useEffect)(() => {
-        console.debug('props updated', {
-            model,
-            criteria,
-            paginationProducer,
-            onError,
-        });
         setLoading(true);
-        const sub = aws_amplify_1.DataStore.observeQuery(model, criteria, paginationProducer).subscribe((msg) => {
+        const sub = aws_amplify_1.DataStore.observeQuery(model, id ? idCriteria : criteria, paginationProducer).subscribe((msg) => {
             const data = msg.items;
-            console.debug('subscription updated', msg);
             setData(data);
             setError(undefined);
         }, (error) => {
@@ -31,7 +32,7 @@ function useSubscription({ model, criteria, paginationProducer, onError, }) {
             setLoading(false);
         });
         return () => sub.unsubscribe();
-    }, [model, criteria, paginationProducer, onError]);
+    }, [model, id, idCriteria, criteria, paginationProducer, onError]);
     return {
         first: data?.[0],
         data,
