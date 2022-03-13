@@ -9,13 +9,15 @@ import { PredicateAll } from '@aws-amplify/datastore/lib-esm/predicates';
 import { DataStore } from 'aws-amplify';
 import { useState, useEffect } from 'react';
 
+export { PredicateAll };
+
 export function useSubscription<T extends PersistentModel>({
-  modelConstructor,
+  model,
   criteria,
   paginationProducer,
   onError,
 }: {
-  modelConstructor: PersistentModelConstructor<T>;
+  model: PersistentModelConstructor<T>;
   criteria?: ProducerModelPredicate<T> | typeof PredicateAll;
   paginationProducer?: ObserveQueryOptions<T>;
   onError?: (error: any) => void;
@@ -27,7 +29,7 @@ export function useSubscription<T extends PersistentModel>({
   useEffect(() => {
     setLoading(true);
     const sub = DataStore.observeQuery<T>(
-      modelConstructor,
+      model,
       criteria,
       paginationProducer
     ).subscribe(
@@ -48,7 +50,7 @@ export function useSubscription<T extends PersistentModel>({
     return () => {
       sub.unsubscribe();
     };
-  }, [modelConstructor, criteria, paginationProducer, onError]);
+  }, [model, criteria, paginationProducer, onError]);
 
   return {
     first: data?.[0],
