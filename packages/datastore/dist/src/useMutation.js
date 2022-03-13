@@ -56,7 +56,7 @@ function useMutation(type, op) {
         try {
             switch (op) {
                 case Operations.Create:
-                    if (!original)
+                    if (!create)
                         throw Error('You must provide `create` to create an object');
                     const createPayload = await resolveFiles({
                         updates: create,
