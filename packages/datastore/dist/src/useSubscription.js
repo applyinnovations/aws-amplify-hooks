@@ -13,12 +13,12 @@ function useSubscription({ model, id, criteria, paginationProducer, onError, }) 
     if (id && criteria)
         throw Error('Please provide only `id` or `criteria` not both');
     const idCriteria = (0, react_1.useCallback)((d) => (id ? d.id('eq', id) : undefined), [id]);
-    setSpamCount((c) => c + 1);
-    if (spamCount > 10000 && spamCount % 1000)
-        console.error(`The props for useSubscription are being updated too fast.` +
-            'Please use `useCallback` or `useMemo` to fix performance issues.');
     (0, react_1.useEffect)(() => {
         setLoading(true);
+        setSpamCount((c) => c + 1);
+        if (spamCount > 10000 && spamCount % 1000)
+            console.error(`The props for useSubscription are being updated too fast.` +
+                'Please use `useCallback` or `useMemo` to fix performance issues.');
         const sub = aws_amplify_1.DataStore.observeQuery(model, id ? idCriteria : criteria, paginationProducer).subscribe((msg) => {
             const data = msg.items;
             setData(data);
@@ -32,7 +32,7 @@ function useSubscription({ model, id, criteria, paginationProducer, onError, }) 
             setLoading(false);
         });
         return () => sub.unsubscribe();
-    }, [model, id, idCriteria, criteria, paginationProducer, onError]);
+    }, [model, idCriteria, criteria, paginationProducer, onError]);
     return {
         first: data?.[0],
         data,
