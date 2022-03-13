@@ -39,12 +39,12 @@ export function useSubscription<T extends PersistentModel>({
 
   useEffect(() => {
     setLoading(true);
-    setSpamCount((c) => c + 1);
-    if (spamCount > 10000 && spamCount % 1000)
-      console.error(
+    if (spamCount > 4000)
+      throw Error(
         `The props for useSubscription are being updated too fast.` +
           'Please use `useCallback` or `useMemo` to fix performance issues.'
       );
+    setSpamCount((c) => c + 1);
     const sub = DataStore.observeQuery<T>(
       model,
       id ? idCriteria : criteria,
