@@ -65,7 +65,7 @@ export function useSubscription<T extends PersistentModel>({
       }
     );
     return () => sub.unsubscribe();
-  }, [model, id, idCriteria, criteria, paginationProducer, onError]);
+  }, [model, idCriteria, criteria, paginationProducer, onError]);
 
   return {
     first: data?.[0],
