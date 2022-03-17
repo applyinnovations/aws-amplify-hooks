@@ -3,7 +3,7 @@ export { StorageAccessLevel } from '@aws-amplify/storage';
 
 export interface StorageObject {
   key: string;
-  identityId?: string | null | undefined;
+  identityId?: string | null;
   level: Uppercase<StorageAccessLevel> | StorageAccessLevel;
   contentType: string;
 }
