@@ -16,7 +16,7 @@ export interface GenericStorageObject {
 // }
 
 export type FileKeys<T> = {
-  [K in keyof T]: T[K] extends GenericStorageObject ? K : never;
+  [K in keyof T]: T[K] extends StorageObject ? K : never;
 }[keyof T];
 
 export type Files<T> = Partial<
