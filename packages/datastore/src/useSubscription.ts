@@ -57,13 +57,12 @@ export function useSubscription<T extends PersistentModel>({
           const data = msg.items;
           setData(data);
           setError(undefined);
+          setLoading(false);
         },
         (error) => {
           setError(error);
           if (onError) onError(error);
           console.error(error);
-        },
-        () => {
           setLoading(false);
         }
       );
