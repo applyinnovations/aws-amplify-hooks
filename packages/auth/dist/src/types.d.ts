@@ -43,6 +43,6 @@ export interface AuthContextValues<CustomUserAttributes = {}> {
         firstName?: string;
         lastName?: string;
         emailAddress?: string;
-    }, customUserAttributes: CustomUserAttributes) => Promise<void>;
+    }, customUserAttributes?: CustomUserAttributes) => Promise<void>;
 }
 export {};
