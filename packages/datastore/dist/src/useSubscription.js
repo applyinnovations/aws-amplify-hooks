@@ -26,12 +26,12 @@ function useSubscription({ model, id, criteria, paginationProducer, onError, }) 
                 const data = msg.items;
                 setData(data);
                 setError(undefined);
+                setLoading(false);
             }, (error) => {
                 setError(error);
                 if (onError)
                     onError(error);
                 console.error(error);
-            }, () => {
                 setLoading(false);
             });
             return () => sub.unsubscribe();
