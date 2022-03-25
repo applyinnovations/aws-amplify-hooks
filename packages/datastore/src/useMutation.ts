@@ -16,6 +16,10 @@ export enum Operations {
 }
 
 const diff = <T>(original: T, updates: T, updated: MutableModel<T>) => {
+  if (updates === undefined)
+    throw Error(
+      'This is likely a bug in useMutation. Either updates or files was accepted but lost during processing.'
+    );
   const keys = Object.keys(updates) as (keyof typeof updates)[];
   for (const key of keys) {
     if (key in original && original[key] !== updates[key]) {
@@ -39,8 +43,8 @@ const uploadAndLinkFile = async <T>({
 }) => {
   const storageObject = await uploadFile({
     file,
-    level,
-    contentType: file.type || 'application/octet-stream',
+    level: level ?? 'public',
+    contentType: file.type ?? 'application/octet-stream',
   });
   return {
     ...updates,
@@ -60,7 +64,7 @@ const resolveFiles = async <T>({
   const fileKeys = Object.keys(files) as (keyof Files<T>)[];
   for (const fileKey of fileKeys) {
     const file = files[fileKey];
-    if (file?.file && file?.level) {
+    if (file?.file) {
       mutationPayload = await uploadAndLinkFile<T>({
         updates: mutationPayload,
         fileKey,
