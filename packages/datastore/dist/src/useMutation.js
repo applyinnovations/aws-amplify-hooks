@@ -11,6 +11,8 @@ var Operations;
     Operations[Operations["Create"] = 2] = "Create";
 })(Operations = exports.Operations || (exports.Operations = {}));
 const diff = (original, updates, updated) => {
+    if (updates === undefined)
+        throw Error('This is likely a bug in useMutation. Either updates or files was accepted but lost during processing.');
     const keys = Object.keys(updates);
     for (const key of keys) {
         if (key in original && original[key] !== updates[key]) {
@@ -23,8 +25,8 @@ const diff = (original, updates, updated) => {
 const uploadAndLinkFile = async ({ updates, file, fileKey, level, }) => {
     const storageObject = await (0, storageUtils_1.uploadFile)({
         file,
-        level,
-        contentType: file.type || 'application/octet-stream',
+        level: level ?? 'public',
+        contentType: file.type ?? 'application/octet-stream',
     });
     return {
         ...updates,
@@ -38,7 +40,7 @@ const resolveFiles = async ({ updates, files, }) => {
     const fileKeys = Object.keys(files);
     for (const fileKey of fileKeys) {
         const file = files[fileKey];
-        if (file?.file && file?.level) {
+        if (file?.file) {
             mutationPayload = await uploadAndLinkFile({
                 updates: mutationPayload,
                 fileKey,
