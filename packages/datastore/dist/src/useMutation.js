@@ -1,9 +1,9 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.useMutation = exports.Operations = void 0;
-const aws_amplify_1 = require("aws-amplify");
 const react_1 = require("react");
 const storageUtils_1 = require("./storageUtils");
+const datastore_1 = require("@aws-amplify/datastore");
 var Operations;
 (function (Operations) {
     Operations[Operations["Delete"] = 0] = "Delete";
@@ -68,7 +68,7 @@ function useMutation(type, op) {
                         files,
                     });
                     payload = new type(createPayload);
-                    response = await aws_amplify_1.DataStore.save(payload);
+                    response = await datastore_1.DataStore.save(payload);
                     break;
                 case Operations.Update:
                     if (!original)
@@ -83,13 +83,13 @@ function useMutation(type, op) {
                     if (!updatePayload)
                         throw Error('The resulting update payload was undefined.');
                     payload = type.copyOf(original, (updated) => diff(original, updatePayload, updated));
-                    response = await aws_amplify_1.DataStore.save(payload);
+                    response = await datastore_1.DataStore.save(payload);
                     break;
                 case Operations.Delete:
                     if (!original)
                         throw Error('You must provide `original` to delete an object');
                     payload = original;
-                    response = await aws_amplify_1.DataStore.delete(payload);
+                    response = await datastore_1.DataStore.delete(payload);
                     break;
             }
         }
