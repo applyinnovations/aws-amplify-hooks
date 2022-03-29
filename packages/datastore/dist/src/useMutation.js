@@ -15,7 +15,7 @@ const diff = (original, updates, updated) => {
         throw Error('This is likely a bug in useMutation. Either updates or files was accepted but lost during processing.');
     const keys = Object.keys(updates);
     for (const key of keys) {
-        if (key in original && original[key] !== updates[key]) {
+        if (original[key] !== updates[key]) {
             //@ts-ignore
             updated[key] = updates[key];
         }
@@ -55,7 +55,8 @@ function useMutation(type, op) {
     const [loading, setLoading] = (0, react_1.useState)(false);
     const mutate = (0, react_1.useCallback)(async ({ create, original, updates, files, }) => {
         setLoading(true);
-        console.time(Operations[op]);
+        const timerName = 'Time taken';
+        console.time(timerName);
         let payload, response, error;
         try {
             switch (op) {
@@ -97,14 +98,14 @@ function useMutation(type, op) {
             error = e;
         }
         setLoading(false);
-        console.groupCollapsed(console.debug(`[${new Date().toUTCString()}] Mutation - ${Operations[op]}`));
+        console.groupCollapsed(`[MUTATION] ${Operations[op]} - ${new Date().toUTCString()}`);
         console.groupCollapsed('Payload');
         console.debug(payload);
         console.groupEnd();
         console.groupCollapsed(`%cResponse ${error ? 'ERROR' : 'SUCCESS'}`, error ? 'color:red' : 'color:green');
         console.debug(response);
         console.groupEnd();
-        console.timeEnd(Operations[op]);
+        console.timeEnd(timerName);
         console.groupEnd();
     }, [type]);
     return { mutate, loading };
