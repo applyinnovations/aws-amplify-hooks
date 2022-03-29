@@ -15,7 +15,11 @@ export enum Operations {
   Create,
 }
 
-const diff = <T>(original: T, updates: T, updated: MutableModel<T>) => {
+const diff = <T extends Record<string, any>>(
+  original: T,
+  updates: T,
+  updated: MutableModel<T>
+) => {
   if (updates === undefined)
     throw Error(
       'This is likely a bug in useMutation. Either updates or files was accepted but lost during processing.'
