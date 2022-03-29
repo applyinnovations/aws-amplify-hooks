@@ -15,7 +15,11 @@ export enum Operations {
   Create,
 }
 
-const diff = <T>(original: T, updates: T, updated: MutableModel<T>) => {
+const diff = <T extends Record<string, any>>(
+  original: T,
+  updates: Partial<T>,
+  updated: MutableModel<T>
+) => {
   if (updates === undefined)
     throw Error(
       'This is likely a bug in useMutation. Either updates or files was accepted but lost during processing.'
@@ -94,6 +98,8 @@ export function useMutation<T extends PersistentModel>(
       files?: Files<T>;
     }) => {
       setLoading(true);
+      console.time(Operations[op]);
+      let payload, response, error;
       try {
         switch (op) {
           case Operations.Create:
@@ -103,12 +109,9 @@ export function useMutation<T extends PersistentModel>(
               updates: create,
               files,
             });
-            const createResponse = await DataStore.save<T>(
-              new type(createPayload)
-            );
-            setLoading(false);
-            return createResponse;
-
+            payload = new type(createPayload);
+            response = await DataStore.save<T>(payload);
+            break;
           case Operations.Update:
             if (!original)
               throw Error('You must provide `original` to update an object');
@@ -121,24 +124,41 @@ export function useMutation<T extends PersistentModel>(
               updates,
               files,
             });
-            const newModel = type.copyOf(original, (updated) =>
-              diff(original, updatePayload, updated)
+            if (!updatePayload)
+              throw Error('The resulting update payload was undefined.');
+            payload = type.copyOf(original, (updated) =>
+              diff<T>(original, updatePayload, updated)
             );
-            const updateResponse = await DataStore.save<T>(newModel);
-            setLoading(false);
-            return updateResponse;
-
+            response = await DataStore.save<T>(payload);
+            break;
           case Operations.Delete:
             if (!original)
               throw Error('You must provide `original` to delete an object');
-            const deleteResponse = await DataStore.delete<T>(original);
-            setLoading(false);
-            return deleteResponse;
+            payload = original;
+            response = await DataStore.delete<T>(payload);
+            break;
         }
       } catch (e) {
         console.error(e);
-        setLoading(false);
+        error = e;
       }
+      setLoading(false);
+      console.groupCollapsed(
+        console.debug(
+          `[${new Date().toUTCString()}] Mutation - ${Operations[op]}`
+        )
+      );
+      console.groupCollapsed('Payload');
+      console.debug(payload);
+      console.groupEnd();
+      console.groupCollapsed(
+        `%cResponse ${error ? 'ERROR' : 'SUCCESS'}`,
+        error ? 'color:red' : 'color:green'
+      );
+      console.debug(response);
+      console.groupEnd();
+      console.timeEnd(Operations[op]);
+      console.groupEnd();
     },
     [type]
   );
