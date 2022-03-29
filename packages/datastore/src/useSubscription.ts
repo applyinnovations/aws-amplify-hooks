@@ -1,4 +1,5 @@
 ﻿import {
+  DataStore,
   DataStoreSnapshot,
   ObserveQueryOptions,
   PersistentModel,
@@ -6,7 +7,6 @@
   ProducerModelPredicate,
 } from '@aws-amplify/datastore';
 import { PredicateAll } from '@aws-amplify/datastore/lib-esm/predicates';
-import { DataStore } from 'aws-amplify';
 import { useState, useEffect, useCallback } from 'react';
 
 export { PredicateAll };
