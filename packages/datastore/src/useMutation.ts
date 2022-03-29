@@ -145,15 +145,16 @@ export function useMutation<T extends PersistentModel>(
       }
       setLoading(false);
       console.groupCollapsed(
-        `[MUTATION] ${Operations[op]} - ${new Date().toUTCString()}`
+        `[MUTATION] ${Operations[op]} - %c${
+          error ? 'ERROR' : 'SUCCESS'
+        }%c - ${new Date().toUTCString()}`,
+        error ? 'color:red' : 'color:green',
+        'color:black'
       );
-      console.groupCollapsed('Payload');
+      console.groupCollapsed(`Payload`);
       console.debug(payload);
       console.groupEnd();
-      console.groupCollapsed(
-        `%cResponse ${error ? 'ERROR' : 'SUCCESS'}`,
-        error ? 'color:red' : 'color:green'
-      );
+      console.groupCollapsed(`Response`);
       console.debug(response);
       console.groupEnd();
       console.timeEnd(timerName);
