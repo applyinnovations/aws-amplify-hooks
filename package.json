@@ -1,6 +1,6 @@
 {
   "name": "aws-amplify-hooks",
-  "version": "2.4.20",
+  "version": "2.4.21",
   "main": "index.js",
   "repository": "https://github.com/applyinnovations/aws-amplify-hooks.git",
   "license": "MIT",
