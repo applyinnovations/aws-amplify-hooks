@@ -94,6 +94,8 @@ export function useMutation<T extends PersistentModel>(
       files?: Files<T>;
     }) => {
       setLoading(true);
+      console.time(Operations[op]);
+      let payload, response, error;
       try {
         switch (op) {
           case Operations.Create:
@@ -103,12 +105,9 @@ export function useMutation<T extends PersistentModel>(
               updates: create,
               files,
             });
-            const createResponse = await DataStore.save<T>(
-              new type(createPayload)
-            );
-            setLoading(false);
-            return createResponse;
-
+            payload = new type(createPayload);
+            response = await DataStore.save<T>(payload);
+            break;
           case Operations.Update:
             if (!original)
               throw Error('You must provide `original` to update an object');
@@ -121,24 +120,39 @@ export function useMutation<T extends PersistentModel>(
               updates,
               files,
             });
-            const newModel = type.copyOf(original, (updated) =>
+            payload = type.copyOf(original, (updated) =>
               diff(original, updatePayload, updated)
             );
-            const updateResponse = await DataStore.save<T>(newModel);
-            setLoading(false);
-            return updateResponse;
-
+            response = await DataStore.save<T>(payload);
+            break;
           case Operations.Delete:
             if (!original)
               throw Error('You must provide `original` to delete an object');
-            const deleteResponse = await DataStore.delete<T>(original);
-            setLoading(false);
-            return deleteResponse;
+            payload = original;
+            response = await DataStore.delete<T>(payload);
+            break;
         }
       } catch (e) {
         console.error(e);
-        setLoading(false);
+        error = e;
       }
+      setLoading(false);
+      console.groupCollapsed(
+        console.debug(
+          `[${new Date().toUTCString()}] Mutation - ${Operations[op]}`
+        )
+      );
+      console.groupCollapsed('Payload');
+      console.debug(payload);
+      console.groupEnd();
+      console.groupCollapsed(
+        `%cResponse ${error ? 'ERROR' : 'SUCCESS'}`,
+        error ? 'color:red' : 'color:green'
+      );
+      console.debug(response);
+      console.groupEnd();
+      console.timeEnd(Operations[op]);
+      console.groupEnd();
     },
     [type]
   );
