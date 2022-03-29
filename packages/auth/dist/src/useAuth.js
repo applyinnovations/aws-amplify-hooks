@@ -45,7 +45,9 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
         if (op[0] & 5) throw op[1]; return { value: op[0] ? op[1] : void 0, done: true };
     }
 };
-import { Auth, DataStore, Hub } from 'aws-amplify';
+import { Auth } from '@aws-amplify/auth';
+import { DataStore } from '@aws-amplify/datastore';
+import { Hub } from '@aws-amplify/core';
 import { MD5 } from 'crypto-js';
 import { useState, useMemo, useEffect, useContext, createContext, useCallback, } from 'react';
 import { ANSWER_CHALLENGE_ERRORS, } from './types';

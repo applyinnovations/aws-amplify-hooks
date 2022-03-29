@@ -1,9 +1,9 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.useSubscription = exports.PredicateAll = void 0;
+const datastore_1 = require("@aws-amplify/datastore");
 const predicates_1 = require("@aws-amplify/datastore/lib-esm/predicates");
 Object.defineProperty(exports, "PredicateAll", { enumerable: true, get: function () { return predicates_1.PredicateAll; } });
-const aws_amplify_1 = require("aws-amplify");
 const react_1 = require("react");
 function useSubscription({ model, id, criteria, paginationProducer, onError, }) {
     const [data, setData] = (0, react_1.useState)();
@@ -22,7 +22,7 @@ function useSubscription({ model, id, criteria, paginationProducer, onError, }) 
                 'Please use `useCallback` or `useMemo` on props to fix performance issues.');
         else {
             setSpamCount((c) => c + 1);
-            const sub = aws_amplify_1.DataStore.observeQuery(model, id ? idCriteria : criteria, paginationProducer).subscribe((msg) => {
+            const sub = datastore_1.DataStore.observeQuery(model, id ? idCriteria : criteria, paginationProducer).subscribe((msg) => {
                 const data = msg.items;
                 setData(data);
                 setError(undefined);

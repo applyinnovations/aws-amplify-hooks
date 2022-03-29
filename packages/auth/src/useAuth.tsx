@@ -1,4 +1,6 @@
-﻿import { Auth, DataStore, Hub } from 'aws-amplify';
+﻿import { Auth } from '@aws-amplify/auth';
+import { DataStore } from '@aws-amplify/datastore';
+import { Hub } from '@aws-amplify/core';
 import { CognitoUser } from 'amazon-cognito-identity-js';
 import { MD5 } from 'crypto-js';
 

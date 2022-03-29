@@ -1,8 +1,8 @@
-﻿import { DataStore } from 'aws-amplify';
-import { useCallback, useState } from 'react';
+﻿import { useCallback, useState } from 'react';
 import { uploadFile } from './storageUtils';
 import { Files, StorageAccessLevel } from './types';
 import {
+  DataStore,
   ModelInit,
   MutableModel,
   PersistentModel,

@@ -1,7 +1,7 @@
-﻿import { Storage, Auth } from 'aws-amplify';
+﻿import { Auth } from '@aws-amplify/auth';
+import { Storage, StorageAccessLevel } from '@aws-amplify/storage';
 import { StorageObject } from './types';
 import { v4 as uuid } from 'uuid';
-import { StorageAccessLevel } from '@aws-amplify/storage';
 
 const SIX_HOURS_IN_MS = 6 * 60 * 60 * 1000; // 6 hours in seconds
 
