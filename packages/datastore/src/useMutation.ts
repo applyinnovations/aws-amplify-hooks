@@ -17,7 +17,7 @@ export enum Operations {
 
 const diff = <T extends Record<string, any>>(
   original: T,
-  updates: T,
+  updates: Partial<T>,
   updated: MutableModel<T>
 ) => {
   if (updates === undefined)
@@ -124,8 +124,10 @@ export function useMutation<T extends PersistentModel>(
               updates,
               files,
             });
+            if (!updatePayload)
+              throw Error('The resulting update payload was undefined.');
             payload = type.copyOf(original, (updated) =>
-              diff(original, updatePayload, updated)
+              diff<T>(original, updatePayload, updated)
             );
             response = await DataStore.save<T>(payload);
             break;

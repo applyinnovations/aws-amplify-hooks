@@ -16,6 +16,6 @@ export declare function useMutation<T extends PersistentModel>(type: PersistentM
             file: File;
             level: StorageAccessLevel;
         }>> | undefined;
-    }) => Promise<T | undefined>;
+    }) => Promise<void>;
     loading: boolean;
 };

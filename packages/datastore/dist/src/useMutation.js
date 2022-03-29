@@ -55,6 +55,8 @@ function useMutation(type, op) {
     const [loading, setLoading] = (0, react_1.useState)(false);
     const mutate = (0, react_1.useCallback)(async ({ create, original, updates, files, }) => {
         setLoading(true);
+        console.time(Operations[op]);
+        let payload, response, error;
         try {
             switch (op) {
                 case Operations.Create:
@@ -64,9 +66,9 @@ function useMutation(type, op) {
                         updates: create,
                         files,
                     });
-                    const createResponse = await aws_amplify_1.DataStore.save(new type(createPayload));
-                    setLoading(false);
-                    return createResponse;
+                    payload = new type(createPayload);
+                    response = await aws_amplify_1.DataStore.save(payload);
+                    break;
                 case Operations.Update:
                     if (!original)
                         throw Error('You must provide `original` to update an object');
@@ -77,22 +79,33 @@ function useMutation(type, op) {
                         updates,
                         files,
                     });
-                    const newModel = type.copyOf(original, (updated) => diff(original, updatePayload, updated));
-                    const updateResponse = await aws_amplify_1.DataStore.save(newModel);
-                    setLoading(false);
-                    return updateResponse;
+                    if (!updatePayload)
+                        throw Error('The resulting update payload was undefined.');
+                    payload = type.copyOf(original, (updated) => diff(original, updatePayload, updated));
+                    response = await aws_amplify_1.DataStore.save(payload);
+                    break;
                 case Operations.Delete:
                     if (!original)
                         throw Error('You must provide `original` to delete an object');
-                    const deleteResponse = await aws_amplify_1.DataStore.delete(original);
-                    setLoading(false);
-                    return deleteResponse;
+                    payload = original;
+                    response = await aws_amplify_1.DataStore.delete(payload);
+                    break;
             }
         }
         catch (e) {
             console.error(e);
-            setLoading(false);
+            error = e;
         }
+        setLoading(false);
+        console.groupCollapsed(console.debug(`[${new Date().toUTCString()}] Mutation - ${Operations[op]}`));
+        console.groupCollapsed('Payload');
+        console.debug(payload);
+        console.groupEnd();
+        console.groupCollapsed(`%cResponse ${error ? 'ERROR' : 'SUCCESS'}`, error ? 'color:red' : 'color:green');
+        console.debug(response);
+        console.groupEnd();
+        console.timeEnd(Operations[op]);
+        console.groupEnd();
     }, [type]);
     return { mutate, loading };
 }
