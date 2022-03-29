@@ -26,7 +26,7 @@ const diff = <T extends Record<string, any>>(
     );
   const keys = Object.keys(updates) as (keyof typeof updates)[];
   for (const key of keys) {
-    if (key in original && original[key] !== updates[key]) {
+    if (original[key] !== updates[key]) {
       //@ts-ignore
       updated[key] = updates[key];
     }
@@ -98,7 +98,8 @@ export function useMutation<T extends PersistentModel>(
       files?: Files<T>;
     }) => {
       setLoading(true);
-      console.time(Operations[op]);
+      const timerName = 'Time taken';
+      console.time(timerName);
       let payload, response, error;
       try {
         switch (op) {
@@ -144,9 +145,7 @@ export function useMutation<T extends PersistentModel>(
       }
       setLoading(false);
       console.groupCollapsed(
-        console.debug(
-          `[${new Date().toUTCString()}] Mutation - ${Operations[op]}`
-        )
+        `[MUTATION] ${Operations[op]} - ${new Date().toUTCString()}`
       );
       console.groupCollapsed('Payload');
       console.debug(payload);
@@ -157,7 +156,7 @@ export function useMutation<T extends PersistentModel>(
       );
       console.debug(response);
       console.groupEnd();
-      console.timeEnd(Operations[op]);
+      console.timeEnd(timerName);
       console.groupEnd();
     },
     [type]
