@@ -56,7 +56,7 @@ function useMutation(type, op) {
     const mutate = (0, react_1.useCallback)(async ({ create, original, updates, files, }) => {
         setLoading(true);
         const timerName = 'Time taken';
-        console.time(timerName);
+        // console.time(timerName);
         let payload, response, error;
         try {
             switch (op) {
