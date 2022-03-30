@@ -99,7 +99,7 @@ export function useMutation<T extends PersistentModel>(
     }) => {
       setLoading(true);
       const timerName = 'Time taken';
-      console.time(timerName);
+      // console.time(timerName);
       let payload, response, error;
       try {
         switch (op) {
