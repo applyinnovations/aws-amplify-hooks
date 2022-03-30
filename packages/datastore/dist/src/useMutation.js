@@ -98,15 +98,26 @@ function useMutation(type, op) {
             error = e;
         }
         setLoading(false);
-        console.groupCollapsed(`[MUTATION] ${Operations[op]} - %c${error ? 'ERROR' : 'SUCCESS'}%c - ${new Date().toUTCString()}`, error ? 'color:red' : 'color:green', 'color:black');
-        console.groupCollapsed(`Payload`);
-        console.debug(payload);
-        console.groupEnd();
-        console.groupCollapsed(`Response`);
-        console.debug(response);
-        console.groupEnd();
-        console.timeEnd(timerName);
-        console.groupEnd();
+        // console.groupCollapsed(
+        //   `[MUTATION] ${Operations[op]} - %c${
+        //     error ? 'ERROR' : 'SUCCESS'
+        //   }%c - ${new Date().toUTCString()}`,
+        //   error ? 'color:red' : 'color:green',
+        //   'color:black'
+        // );
+        // console.groupCollapsed(`Payload`);
+        // console.debug(payload);
+        // console.groupEnd();
+        // console.groupCollapsed(`Response`);
+        // console.debug(response);
+        // console.groupEnd();
+        // console.timeEnd(timerName);
+        // console.groupEnd();
+        console.log(`[MUTATION] ${Operations[op]} - %c${error ? 'ERROR' : 'SUCCESS'}%c - ${new Date().toUTCString()}`, error ? 'color:red' : 'color:green', 'color:black');
+        console.log(`Payload`);
+        console.log(payload);
+        console.log(`Response`);
+        console.log(response);
     }, [type]);
     return { mutate, loading };
 }
