@@ -5,34 +5,28 @@ const react_1 = require("react");
 const storageUtils_1 = require("./storageUtils");
 const useStorageObject = (storageObject) => {
     const [url, setUrl] = (0, react_1.useState)();
-    const [mounted, setMounted] = (0, react_1.useState)(true);
     const [loading, setLoading] = (0, react_1.useState)(false);
     const [error, setError] = (0, react_1.useState)();
-    (0, react_1.useEffect)(() => () => setMounted(false), []);
     (0, react_1.useEffect)(() => {
         if (storageObject) {
             setLoading(true);
             (0, storageUtils_1.getFileUrl)(storageObject)
                 .then((url) => {
-                if (mounted) {
-                    setUrl(url);
-                    setError(undefined);
-                }
+                setUrl(url);
+                setError(undefined);
             })
                 .catch((e) => {
-                if (mounted) {
-                    setUrl(undefined);
-                    setError(e.message);
-                }
+                setUrl(undefined);
+                setError(e.message);
             })
-                .finally(() => mounted && setLoading(false));
+                .finally(() => setLoading(false));
         }
         else {
             setLoading(false);
-            setError('Missing storage object');
+            setError('No storage object provided');
             setUrl(undefined);
         }
-    }, [storageObject?.key]);
+    }, [storageObject]);
     return {
         url,
         loading,
