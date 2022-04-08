@@ -10,9 +10,9 @@
     "build": "yarn build:auth && yarn build:datastore"
   },
   "devDependencies": {
-    "aws-amplify": "^4.2.5",
+    "aws-amplify": "^4.3.19",
     "lerna": "^4.0.0",
-    "react": "^17.0.2"
+    "react": "^18.0.0"
   },
   "workspaces": [
     "packages/*"
