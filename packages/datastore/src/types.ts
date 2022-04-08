@@ -9,9 +9,11 @@ export interface StorageObject {
 }
 
 export type FileKeys<T> = {
-  [K in keyof T]: T[K] extends StorageObject | undefined ? K : never;
+  [K in keyof T]: T[K] extends StorageObject[] | StorageObject | undefined
+    ? K
+    : never;
 }[keyof T];
 
-export type Files<T> = Partial<
-  Record<FileKeys<T>, { file: File; level: StorageAccessLevel }>
->;
+export type FileInput = { file: File; level: StorageAccessLevel };
+
+export type Files<T> = Partial<Record<FileKeys<T>, FileInput | FileInput[]>>;
