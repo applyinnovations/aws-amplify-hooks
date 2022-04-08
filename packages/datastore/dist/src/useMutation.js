@@ -22,31 +22,44 @@ const diff = (original, updates, updated) => {
     }
     return updated;
 };
-const uploadAndLinkFile = async ({ updates, file, fileKey, level, }) => {
-    const storageObject = await (0, storageUtils_1.uploadFile)({
-        file,
-        level: level ?? 'public',
-        contentType: file.type ?? 'application/octet-stream',
-    });
-    return {
-        ...updates,
-        [fileKey]: storageObject,
-    };
-};
 const resolveFiles = async ({ updates, files, }) => {
     if (!files)
         return updates;
     let mutationPayload = updates;
     const fileKeys = Object.keys(files);
     for (const fileKey of fileKeys) {
-        const file = files[fileKey];
-        if (file?.file) {
-            mutationPayload = await uploadAndLinkFile({
-                updates: mutationPayload,
-                fileKey,
-                file: file.file,
-                level: file.level,
-            });
+        const fileOrFileArray = files[fileKey];
+        if (fileOrFileArray) {
+            if (Array.isArray(fileOrFileArray)) {
+                const fileArray = fileOrFileArray;
+                const storageObjects = await Promise.all(fileArray.map(async (file) => {
+                    if (file?.file) {
+                        return await (0, storageUtils_1.uploadFile)({
+                            file: file?.file,
+                            level: file?.level,
+                            contentType: file?.file?.type,
+                        });
+                    }
+                }));
+                mutationPayload = {
+                    ...mutationPayload,
+                    [fileKey]: storageObjects.filter((s) => s),
+                };
+            }
+            else {
+                const file = fileOrFileArray;
+                if (file?.file) {
+                    const storageObject = await (0, storageUtils_1.uploadFile)({
+                        file: file?.file,
+                        level: file?.level,
+                        contentType: file?.file?.type,
+                    });
+                    mutationPayload = {
+                        ...mutationPayload,
+                        [fileKey]: storageObject,
+                    };
+                }
+            }
         }
     }
     return mutationPayload;
@@ -55,7 +68,7 @@ function useMutation(type, op) {
     const [loading, setLoading] = (0, react_1.useState)(false);
     const mutate = (0, react_1.useCallback)(async ({ create, original, updates, files, }) => {
         setLoading(true);
-        const timerName = 'Time taken';
+        // const timerName = 'Time taken';
         // console.time(timerName);
         let payload, response, error;
         try {

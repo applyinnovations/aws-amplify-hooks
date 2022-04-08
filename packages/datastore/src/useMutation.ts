@@ -1,6 +1,6 @@
 ﻿import { useCallback, useState } from 'react';
 import { uploadFile } from './storageUtils';
-import { Files, StorageAccessLevel } from './types';
+import { FileInput, Files, StorageAccessLevel } from './types';
 import {
   DataStore,
   ModelInit,
@@ -34,28 +34,6 @@ const diff = <T extends Record<string, any>>(
   return updated;
 };
 
-const uploadAndLinkFile = async <T>({
-  updates,
-  file,
-  fileKey,
-  level,
-}: {
-  updates: T;
-  fileKey: keyof T;
-  file: File;
-  level: StorageAccessLevel;
-}) => {
-  const storageObject = await uploadFile({
-    file,
-    level: level ?? 'public',
-    contentType: file.type ?? 'application/octet-stream',
-  });
-  return {
-    ...updates,
-    [fileKey]: storageObject,
-  };
-};
-
 const resolveFiles = async <T>({
   updates,
   files,
@@ -67,14 +45,39 @@ const resolveFiles = async <T>({
   let mutationPayload = updates;
   const fileKeys = Object.keys(files) as (keyof Files<T>)[];
   for (const fileKey of fileKeys) {
-    const file = files[fileKey];
-    if (file?.file) {
-      mutationPayload = await uploadAndLinkFile<T>({
-        updates: mutationPayload,
-        fileKey,
-        file: file.file,
-        level: file.level,
-      });
+    const fileOrFileArray = files[fileKey];
+    if (fileOrFileArray) {
+      if (Array.isArray(fileOrFileArray)) {
+        const fileArray = fileOrFileArray;
+        const storageObjects = await Promise.all(
+          fileArray.map(async (file) => {
+            if (file?.file) {
+              return await uploadFile({
+                file: file?.file,
+                level: file?.level,
+                contentType: file?.file?.type,
+              });
+            }
+          })
+        );
+        mutationPayload = {
+          ...mutationPayload,
+          [fileKey]: storageObjects.filter((s) => s),
+        };
+      } else {
+        const file = fileOrFileArray as FileInput;
+        if (file?.file) {
+          const storageObject = await uploadFile({
+            file: file?.file,
+            level: file?.level,
+            contentType: file?.file?.type,
+          });
+          mutationPayload = {
+            ...mutationPayload,
+            [fileKey]: storageObject,
+          };
+        }
+      }
     }
   }
   return mutationPayload;
@@ -98,7 +101,7 @@ export function useMutation<T extends PersistentModel>(
       files?: Files<T>;
     }) => {
       setLoading(true);
-      const timerName = 'Time taken';
+      // const timerName = 'Time taken';
       // console.time(timerName);
       let payload, response, error;
       try {
