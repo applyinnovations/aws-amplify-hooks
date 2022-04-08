@@ -29,34 +29,36 @@ const resolveFiles = async ({ updates, files, }) => {
     const fileKeys = Object.keys(files);
     for (const fileKey of fileKeys) {
         const fileOrFileArray = files[fileKey];
-        if (Array.isArray(fileOrFileArray)) {
-            const fileArray = fileOrFileArray;
-            const storageObjects = await Promise.all(fileArray.map(async (file) => {
+        if (fileOrFileArray) {
+            if (Array.isArray(fileOrFileArray)) {
+                const fileArray = fileOrFileArray;
+                const storageObjects = await Promise.all(fileArray.map(async (file) => {
+                    if (file?.file) {
+                        return await (0, storageUtils_1.uploadFile)({
+                            file: file?.file,
+                            level: file?.level,
+                            contentType: file?.file?.type,
+                        });
+                    }
+                }));
+                mutationPayload = {
+                    ...mutationPayload,
+                    [fileKey]: storageObjects.filter((s) => s),
+                };
+            }
+            else {
+                const file = fileOrFileArray;
                 if (file?.file) {
-                    return await (0, storageUtils_1.uploadFile)({
+                    const storageObject = await (0, storageUtils_1.uploadFile)({
                         file: file?.file,
                         level: file?.level,
                         contentType: file?.file?.type,
                     });
+                    mutationPayload = {
+                        ...mutationPayload,
+                        [fileKey]: storageObject,
+                    };
                 }
-            }));
-            mutationPayload = {
-                ...mutationPayload,
-                [fileKey]: storageObjects.filter((s) => s),
-            };
-        }
-        else {
-            const file = fileOrFileArray;
-            if (file?.file) {
-                const storageObject = await (0, storageUtils_1.uploadFile)({
-                    file: file?.file,
-                    level: file?.level,
-                    contentType: file?.file?.type,
-                });
-                mutationPayload = {
-                    ...mutationPayload,
-                    [fileKey]: storageObject,
-                };
             }
         }
     }
