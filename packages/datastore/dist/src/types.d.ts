@@ -7,9 +7,10 @@ export interface StorageObject {
     contentType: string;
 }
 export declare type FileKeys<T> = {
-    [K in keyof T]: T[K] extends StorageObject | undefined ? K : never;
+    [K in keyof T]: T[K] extends StorageObject[] | StorageObject | undefined ? K : never;
 }[keyof T];
-export declare type Files<T> = Partial<Record<FileKeys<T>, {
+export declare type FileInput = {
     file: File;
     level: StorageAccessLevel;
-}>>;
+};
+export declare type Files<T> = Partial<Record<FileKeys<T>, FileInput | FileInput[]>>;
