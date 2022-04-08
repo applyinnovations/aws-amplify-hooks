@@ -46,35 +46,37 @@ const resolveFiles = async <T>({
   const fileKeys = Object.keys(files) as (keyof Files<T>)[];
   for (const fileKey of fileKeys) {
     const fileOrFileArray = files[fileKey];
-    if (Array.isArray(fileOrFileArray)) {
-      const fileArray = fileOrFileArray as FileInput[];
-      const storageObjects = await Promise.all(
-        fileArray.map(async (file) => {
-          if (file?.file) {
-            return await uploadFile({
-              file: file?.file,
-              level: file?.level,
-              contentType: file?.file?.type,
-            });
-          }
-        })
-      );
-      mutationPayload = {
-        ...mutationPayload,
-        [fileKey]: storageObjects.filter((s) => s),
-      };
-    } else {
-      const file = fileOrFileArray as FileInput;
-      if (file?.file) {
-        const storageObject = await uploadFile({
-          file: file?.file,
-          level: file?.level,
-          contentType: file?.file?.type,
-        });
+    if (fileOrFileArray) {
+      if (Array.isArray(fileOrFileArray)) {
+        const fileArray = fileOrFileArray;
+        const storageObjects = await Promise.all(
+          fileArray.map(async (file) => {
+            if (file?.file) {
+              return await uploadFile({
+                file: file?.file,
+                level: file?.level,
+                contentType: file?.file?.type,
+              });
+            }
+          })
+        );
         mutationPayload = {
           ...mutationPayload,
-          [fileKey]: storageObject,
+          [fileKey]: storageObjects.filter((s) => s),
         };
+      } else {
+        const file = fileOrFileArray as FileInput;
+        if (file?.file) {
+          const storageObject = await uploadFile({
+            file: file?.file,
+            level: file?.level,
+            contentType: file?.file?.type,
+          });
+          mutationPayload = {
+            ...mutationPayload,
+            [fileKey]: storageObject,
+          };
+        }
       }
     }
   }
