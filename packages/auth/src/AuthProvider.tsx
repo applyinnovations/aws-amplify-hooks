@@ -1,8 +1,12 @@
-﻿import { AuthContextValuesParams } from "./types";
-import React from "react";
-import { AuthContext, authContextValues } from "./useAuth";
+﻿import { AuthContextValuesParams } from './types';
+import React from 'react';
+import { AuthContext, authContextValues } from './useAuth';
 
-export const AuthProvider: React.FC<AuthContextValuesParams> = ({
+interface AuthProviderProps extends AuthContextValuesParams {
+  children: JSX.Element | JSX.Element[];
+}
+
+export const AuthProvider: React.FC<AuthProviderProps> = ({
   onSessionStart,
   onSessionFailed,
   children,
