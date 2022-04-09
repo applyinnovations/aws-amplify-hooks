@@ -66,24 +66,13 @@ export function authContextValues(_a) {
     var onSessionStart = _a.onSessionStart, onSessionFailed = _a.onSessionFailed;
     var _b = useState(false), authenticated = _b[0], setAuthenticated = _b[1];
     var _c = useState(), cognitoUser = _c[0], setCognitoUser = _c[1];
-    var getUser = useCallback(function () { return __awaiter(_this, void 0, void 0, function () {
-        return __generator(this, function (_a) {
-            return [2 /*return*/, new Promise(function (res, rej) {
-                    Auth.currentAuthenticatedUser({
-                        bypassCache: false, // Optional, By default is false. If set to true, this call will send a request to Cognito to get the latest user data
-                    })
-                        .then(function (item) { return res(item); })
-                        .catch(rej);
-                })];
-        });
-    }); }, [Auth]);
     var handleSessionStart = useCallback(function () { return __awaiter(_this, void 0, void 0, function () {
         var userFetched;
         return __generator(this, function (_a) {
             switch (_a.label) {
                 case 0:
                     onSessionStart();
-                    return [4 /*yield*/, getUser()];
+                    return [4 /*yield*/, Auth.currentAuthenticatedUser()];
                 case 1:
                     userFetched = _a.sent();
                     setCognitoUser(userFetched);
@@ -91,7 +80,7 @@ export function authContextValues(_a) {
                     return [2 /*return*/];
             }
         });
-    }); }, [getUser, onSessionStart]);
+    }); }, [onSessionStart]);
     var handleSessionFailed = useCallback(function () { return __awaiter(_this, void 0, void 0, function () {
         return __generator(this, function (_a) {
             onSessionFailed();
@@ -129,7 +118,7 @@ export function authContextValues(_a) {
                 }
             });
         }); })();
-    });
+    }, []);
     var signInUser = useCallback(function (phone, password) { return __awaiter(_this, void 0, void 0, function () {
         var newUserData;
         return __generator(this, function (_a) {
