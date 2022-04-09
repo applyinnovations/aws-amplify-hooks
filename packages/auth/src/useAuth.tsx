@@ -38,24 +38,12 @@ export function authContextValues<CustomUserAttributes = any>({
   const [authenticated, setAuthenticated] = useState(false);
   const [cognitoUser, setCognitoUser] = useState<CognitoUser>();
 
-  const getUser = useCallback(
-    async (): Promise<any> =>
-      new Promise((res, rej) => {
-        Auth.currentAuthenticatedUser({
-          bypassCache: false, // Optional, By default is false. If set to true, this call will send a request to Cognito to get the latest user data
-        })
-          .then((item) => res(item))
-          .catch(rej);
-      }),
-    [Auth]
-  );
-
   const handleSessionStart = useCallback(async () => {
     onSessionStart();
-    const userFetched = await getUser();
+    const userFetched = await Auth.currentAuthenticatedUser();
     setCognitoUser(userFetched);
     setAuthenticated(true);
-  }, [getUser, onSessionStart]);
+  }, [onSessionStart]);
 
   const handleSessionFailed = useCallback(async () => {
     onSessionFailed();
@@ -86,7 +74,7 @@ export function authContextValues<CustomUserAttributes = any>({
       await Auth.currentAuthenticatedUser()
         .then(() => handleSessionStart())
         .catch((_) => handleSessionFailed()))();
-  });
+  }, []);
 
   const signInUser = useCallback(
     async (phone: string, password?: string) => {
