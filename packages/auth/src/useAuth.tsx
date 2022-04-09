@@ -18,21 +18,10 @@ import {
   AuthContextValues,
   AuthContextValuesParams,
   SignUpParams,
-  UserAttributes,
 } from './types';
 
-const DEFAULT_USER_DATA = {
-  phone_number: '',
-  given_name: '',
-  family_name: '',
-  email: '',
-} as UserAttributes;
-
 export const AuthContext = createContext<AuthContextValues>({
-  cognitoUser: {
-    attributes: DEFAULT_USER_DATA,
-  },
-  userAttributes: DEFAULT_USER_DATA,
+  cognitoUser: undefined,
   authenticated: false,
   signInUser: () => Promise.resolve(),
   resendSignUp: () => Promise.resolve(undefined),
@@ -40,20 +29,14 @@ export const AuthContext = createContext<AuthContextValues>({
   confirmSignUp: () => Promise.resolve({ success: false }),
   confirmSignIn: () => Promise.resolve({ success: false }),
   signOutUser: () => Promise.resolve(),
-  updateUserData: (_) => Promise.resolve(),
 });
-
-const getParamsWithDefaultValue = (field: string, value: string) =>
-  value ? { [field]: value } : {};
 
 export function authContextValues<CustomUserAttributes = any>({
   onSessionStart,
   onSessionFailed,
 }: AuthContextValuesParams): AuthContextValues<CustomUserAttributes> {
   const [authenticated, setAuthenticated] = useState(false);
-  const [cognitoUser, setCognitoUser] = useState({
-    attributes: DEFAULT_USER_DATA,
-  });
+  const [cognitoUser, setCognitoUser] = useState<CognitoUser>();
 
   const getUser = useCallback(
     async (): Promise<any> =>
@@ -103,7 +86,7 @@ export function authContextValues<CustomUserAttributes = any>({
       await Auth.currentAuthenticatedUser()
         .then(() => handleSessionStart())
         .catch((_) => handleSessionFailed()))();
-  }, []);
+  });
 
   const signInUser = useCallback(
     async (phone: string, password?: string) => {
@@ -192,24 +175,6 @@ export function authContextValues<CustomUserAttributes = any>({
     await DataStore.clear();
   }, [Auth]);
 
-  const updateUserData = useCallback(
-    async (data, customUserAttributes) => {
-      await Auth.updateUserAttributes(cognitoUser, {
-        ...getParamsWithDefaultValue('family_name', data.lastName),
-        ...getParamsWithDefaultValue('given_name', data.firstName),
-        ...getParamsWithDefaultValue('email', data.emailAddress),
-        ...customUserAttributes,
-      });
-      const newCognitoUser = await getUser();
-      setCognitoUser(newCognitoUser);
-    },
-    [Auth, cognitoUser]
-  );
-
-  const userAttributes = useMemo(() => {
-    return cognitoUser?.attributes;
-  }, [cognitoUser]);
-
   return useMemo(
     () => ({
       cognitoUser,
@@ -220,8 +185,6 @@ export function authContextValues<CustomUserAttributes = any>({
       signUpUser,
       confirmSignIn,
       signOutUser,
-      updateUserData,
-      userAttributes,
     }),
     [
       cognitoUser,
@@ -232,8 +195,6 @@ export function authContextValues<CustomUserAttributes = any>({
       signUpUser,
       confirmSignIn,
       signOutUser,
-      updateUserData,
-      userAttributes,
     ]
   );
 }

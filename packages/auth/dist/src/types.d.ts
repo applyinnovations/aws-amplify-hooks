@@ -7,16 +7,6 @@ export interface AuthContextValuesParams {
 export declare enum ANSWER_CHALLENGE_ERRORS {
     INCORRECT_CODE = "INCORRECT_CODE"
 }
-export interface UserAttributes {
-    given_name: string;
-    family_name: string;
-    email: string;
-    phone_number: string;
-    [key: string]: any;
-}
-interface UserData {
-    attributes: UserAttributes;
-}
 export interface ConfirmationResult {
     success: boolean;
     error?: ANSWER_CHALLENGE_ERRORS;
@@ -30,8 +20,7 @@ export interface SignUpParams {
     };
 }
 export interface AuthContextValues<CustomUserAttributes = {}> {
-    cognitoUser: UserData | CognitoUser;
-    userAttributes: UserAttributes | undefined;
+    cognitoUser?: CognitoUser;
     authenticated: boolean;
     signInUser: (phoneNumber: string, password?: string) => Promise<void>;
     signUpUser: (params: SignUpParams) => Promise<CognitoUser | undefined>;
@@ -39,10 +28,4 @@ export interface AuthContextValues<CustomUserAttributes = {}> {
     confirmSignUp: (phoneNumber: string, answer: string) => Promise<ConfirmationResult>;
     confirmSignIn: (answer: string) => Promise<ConfirmationResult>;
     signOutUser: () => Promise<void>;
-    updateUserData: (params: {
-        firstName?: string;
-        lastName?: string;
-        emailAddress?: string;
-    }, customUserAttributes?: CustomUserAttributes) => Promise<void>;
 }
-export {};
