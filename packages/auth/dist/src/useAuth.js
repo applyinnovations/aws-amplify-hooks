@@ -51,17 +51,8 @@ import { Hub } from '@aws-amplify/core';
 import { MD5 } from 'crypto-js';
 import { useState, useMemo, useEffect, useContext, createContext, useCallback, } from 'react';
 import { ANSWER_CHALLENGE_ERRORS, } from './types';
-var DEFAULT_USER_DATA = {
-    phone_number: '',
-    given_name: '',
-    family_name: '',
-    email: '',
-};
 export var AuthContext = createContext({
-    cognitoUser: {
-        attributes: DEFAULT_USER_DATA,
-    },
-    userAttributes: DEFAULT_USER_DATA,
+    cognitoUser: undefined,
     authenticated: false,
     signInUser: function () { return Promise.resolve(); },
     resendSignUp: function () { return Promise.resolve(undefined); },
@@ -69,19 +60,12 @@ export var AuthContext = createContext({
     confirmSignUp: function () { return Promise.resolve({ success: false }); },
     confirmSignIn: function () { return Promise.resolve({ success: false }); },
     signOutUser: function () { return Promise.resolve(); },
-    updateUserData: function (_) { return Promise.resolve(); },
 });
-var getParamsWithDefaultValue = function (field, value) {
-    var _a;
-    return value ? (_a = {}, _a[field] = value, _a) : {};
-};
 export function authContextValues(_a) {
     var _this = this;
     var onSessionStart = _a.onSessionStart, onSessionFailed = _a.onSessionFailed;
     var _b = useState(false), authenticated = _b[0], setAuthenticated = _b[1];
-    var _c = useState({
-        attributes: DEFAULT_USER_DATA,
-    }), cognitoUser = _c[0], setCognitoUser = _c[1];
+    var _c = useState(), cognitoUser = _c[0], setCognitoUser = _c[1];
     var getUser = useCallback(function () { return __awaiter(_this, void 0, void 0, function () {
         return __generator(this, function (_a) {
             return [2 /*return*/, new Promise(function (res, rej) {
@@ -145,7 +129,7 @@ export function authContextValues(_a) {
                 }
             });
         }); })();
-    }, []);
+    });
     var signInUser = useCallback(function (phone, password) { return __awaiter(_this, void 0, void 0, function () {
         var newUserData;
         return __generator(this, function (_a) {
@@ -253,24 +237,6 @@ export function authContextValues(_a) {
             }
         });
     }); }, [Auth]);
-    var updateUserData = useCallback(function (data, customUserAttributes) { return __awaiter(_this, void 0, void 0, function () {
-        var newCognitoUser;
-        return __generator(this, function (_a) {
-            switch (_a.label) {
-                case 0: return [4 /*yield*/, Auth.updateUserAttributes(cognitoUser, __assign(__assign(__assign(__assign({}, getParamsWithDefaultValue('family_name', data.lastName)), getParamsWithDefaultValue('given_name', data.firstName)), getParamsWithDefaultValue('email', data.emailAddress)), customUserAttributes))];
-                case 1:
-                    _a.sent();
-                    return [4 /*yield*/, getUser()];
-                case 2:
-                    newCognitoUser = _a.sent();
-                    setCognitoUser(newCognitoUser);
-                    return [2 /*return*/];
-            }
-        });
-    }); }, [Auth, cognitoUser]);
-    var userAttributes = useMemo(function () {
-        return cognitoUser === null || cognitoUser === void 0 ? void 0 : cognitoUser.attributes;
-    }, [cognitoUser]);
     return useMemo(function () { return ({
         cognitoUser: cognitoUser,
         authenticated: authenticated,
@@ -280,8 +246,6 @@ export function authContextValues(_a) {
         signUpUser: signUpUser,
         confirmSignIn: confirmSignIn,
         signOutUser: signOutUser,
-        updateUserData: updateUserData,
-        userAttributes: userAttributes,
     }); }, [
         cognitoUser,
         authenticated,
@@ -291,8 +255,6 @@ export function authContextValues(_a) {
         signUpUser,
         confirmSignIn,
         signOutUser,
-        updateUserData,
-        userAttributes,
     ]);
 }
 export var useAuth = function () { return useContext(AuthContext); };
