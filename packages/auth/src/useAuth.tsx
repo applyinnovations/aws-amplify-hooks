@@ -31,9 +31,6 @@ export const AuthContext = createContext<AuthContextValues>({
   signOutUser: () => Promise.resolve(),
 });
 
-const getParamsWithDefaultValue = (field: string, value: string) =>
-  value ? { [field]: value } : {};
-
 export function authContextValues<CustomUserAttributes = any>({
   onSessionStart,
   onSessionFailed,
@@ -89,7 +86,7 @@ export function authContextValues<CustomUserAttributes = any>({
       await Auth.currentAuthenticatedUser()
         .then(() => handleSessionStart())
         .catch((_) => handleSessionFailed()))();
-  }, []);
+  });
 
   const signInUser = useCallback(
     async (phone: string, password?: string) => {
