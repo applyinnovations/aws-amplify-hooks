@@ -185,6 +185,11 @@ export function authContextValues<CustomUserAttributes = any>({
     await DataStore.clear();
   }, [Auth]);
 
+  const userAttributes = useMemo(() => {
+    // @ts-ignore
+    return cognitoUser?.attributes;
+  }, [cognitoUser]);
+
   return useMemo(
     () => ({
       cognitoUser,
@@ -207,6 +212,7 @@ export function authContextValues<CustomUserAttributes = any>({
       confirmSignIn,
       signOutUser,
       updateUserData,
+      userAttributes,
     ]
   );
 }
