@@ -1,12 +1,12 @@
-﻿import { CognitoUser } from 'amazon-cognito-identity-js';
+﻿import { CognitoUser } from "amazon-cognito-identity-js";
 
 export type ProfileTypes =
-  | 'profile-1'
-  | 'profile-2'
-  | 'profile-3'
-  | 'profile-4'
-  | 'profile-5'
-  | 'profile-6';
+  | "profile-1"
+  | "profile-2"
+  | "profile-3"
+  | "profile-4"
+  | "profile-5"
+  | "profile-6";
 
 export interface AuthContextValuesParams {
   onSessionStart: () => void;
@@ -14,7 +14,7 @@ export interface AuthContextValuesParams {
 }
 
 export enum ANSWER_CHALLENGE_ERRORS {
-  INCORRECT_CODE = 'INCORRECT_CODE',
+  INCORRECT_CODE = "INCORRECT_CODE",
 }
 
 export interface ConfirmationResult {
@@ -43,4 +43,5 @@ export interface AuthContextValues<CustomUserAttributes = {}> {
   ) => Promise<ConfirmationResult>;
   confirmSignIn: (answer: string) => Promise<ConfirmationResult>;
   signOutUser: () => Promise<void>;
+  updateUserData: (data: object) => Promise<void>;
 }
