@@ -45,12 +45,12 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
         if (op[0] & 5) throw op[1]; return { value: op[0] ? op[1] : void 0, done: true };
     }
 };
-import { Auth } from '@aws-amplify/auth';
-import { DataStore } from '@aws-amplify/datastore';
-import { Hub } from '@aws-amplify/core';
-import { MD5 } from 'crypto-js';
-import { useState, useMemo, useEffect, useContext, createContext, useCallback, } from 'react';
-import { ANSWER_CHALLENGE_ERRORS, } from './types';
+import { Auth } from "@aws-amplify/auth";
+import { DataStore } from "@aws-amplify/datastore";
+import { Hub } from "@aws-amplify/core";
+import { MD5 } from "crypto-js";
+import { useState, useMemo, useEffect, useContext, createContext, useCallback, } from "react";
+import { ANSWER_CHALLENGE_ERRORS, } from "./types";
 export var AuthContext = createContext({
     cognitoUser: undefined,
     authenticated: false,
@@ -60,6 +60,8 @@ export var AuthContext = createContext({
     confirmSignUp: function () { return Promise.resolve({ success: false }); },
     confirmSignIn: function () { return Promise.resolve({ success: false }); },
     signOutUser: function () { return Promise.resolve(); },
+    updateUserData: function () { return Promise.resolve(); },
+    userAttributes: null,
 });
 export function authContextValues(_a) {
     var _this = this;
@@ -89,21 +91,21 @@ export function authContextValues(_a) {
         });
     }); }, [onSessionFailed]);
     useEffect(function () {
-        Hub.listen('auth', function (data) {
+        Hub.listen("auth", function (data) {
             switch (data.payload.event) {
-                case 'signIn':
-                    console.log('user signed in');
+                case "signIn":
+                    console.log("user signed in");
                     handleSessionStart();
                     break;
-                case 'signUp':
-                    console.log('user signed up');
+                case "signUp":
+                    console.log("user signed up");
                     break;
-                case 'signOut':
-                    console.log('user signed out');
+                case "signOut":
+                    console.log("user signed out");
                     handleSessionFailed();
                     break;
-                case 'signIn_failure':
-                    console.log('user sign in failed');
+                case "signIn_failure":
+                    console.log("user sign in failed");
                     handleSessionFailed();
                     break;
             }
@@ -151,6 +153,23 @@ export function authContextValues(_a) {
             });
         });
     }, []);
+    var updateUserData = useCallback(function (data) { return __awaiter(_this, void 0, void 0, function () {
+        var newCognitoUser;
+        return __generator(this, function (_a) {
+            switch (_a.label) {
+                case 0: return [4 /*yield*/, Auth.updateUserAttributes(cognitoUser, data)];
+                case 1:
+                    _a.sent();
+                    return [4 /*yield*/, Auth.currentAuthenticatedUser({
+                            bypassCache: false, // Optional, By default is false. If set to true, this call will send a request to Cognito to get the latest user data
+                        })];
+                case 2:
+                    newCognitoUser = _a.sent();
+                    setCognitoUser(newCognitoUser);
+                    return [2 /*return*/];
+            }
+        });
+    }); }, [Auth, cognitoUser]);
     var confirmSignUp = useCallback(function (phoneNumber, answer) { return __awaiter(_this, void 0, void 0, function () {
         var e_1;
         return __generator(this, function (_a) {
@@ -167,7 +186,7 @@ export function authContextValues(_a) {
                 case 3:
                     e_1 = _a.sent();
                     console.log(e_1);
-                    if (e_1 === 'No current user') {
+                    if (e_1 === "No current user") {
                         return [2 /*return*/, {
                                 success: false,
                                 error: ANSWER_CHALLENGE_ERRORS.INCORRECT_CODE,
@@ -202,7 +221,7 @@ export function authContextValues(_a) {
                 case 2:
                     e_2 = _a.sent();
                     console.error(e_2);
-                    if (e_2 === 'No current user') {
+                    if (e_2 === "No current user") {
                         return [2 /*return*/, {
                                 success: false,
                                 error: ANSWER_CHALLENGE_ERRORS.INCORRECT_CODE,
@@ -226,6 +245,10 @@ export function authContextValues(_a) {
             }
         });
     }); }, [Auth]);
+    var userAttributes = useMemo(function () {
+        // @ts-ignore
+        return cognitoUser === null || cognitoUser === void 0 ? void 0 : cognitoUser.attributes;
+    }, [cognitoUser]);
     return useMemo(function () { return ({
         cognitoUser: cognitoUser,
         authenticated: authenticated,
@@ -235,6 +258,8 @@ export function authContextValues(_a) {
         signUpUser: signUpUser,
         confirmSignIn: confirmSignIn,
         signOutUser: signOutUser,
+        updateUserData: updateUserData,
+        userAttributes: userAttributes,
     }); }, [
         cognitoUser,
         authenticated,
@@ -244,6 +269,8 @@ export function authContextValues(_a) {
         signUpUser,
         confirmSignIn,
         signOutUser,
+        updateUserData,
+        userAttributes,
     ]);
 }
 export var useAuth = function () { return useContext(AuthContext); };

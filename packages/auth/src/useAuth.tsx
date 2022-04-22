@@ -29,14 +29,14 @@ export const AuthContext = createContext<AuthContextValues>({
   confirmSignUp: () => Promise.resolve({ success: false }),
   confirmSignIn: () => Promise.resolve({ success: false }),
   signOutUser: () => Promise.resolve(),
-  updateUserData: () => Promise.resolve(),
+  updateUserAttributes: () => Promise.resolve(),
   userAttributes: null,
 });
 
-export function authContextValues<CustomUserAttributes = any>({
+export function authContextValues({
   onSessionStart,
   onSessionFailed,
-}: AuthContextValuesParams): AuthContextValues<CustomUserAttributes> {
+}: AuthContextValuesParams): AuthContextValues {
   const [authenticated, setAuthenticated] = useState(false);
   const [cognitoUser, setCognitoUser] = useState<CognitoUser>();
 
@@ -113,7 +113,7 @@ export function authContextValues<CustomUserAttributes = any>({
     []
   );
 
-  const updateUserData = useCallback(
+  const updateUserAttributes = useCallback(
     async (data) => {
       await Auth.updateUserAttributes(cognitoUser, data);
       const newCognitoUser = await Auth.currentAuthenticatedUser({
@@ -191,7 +191,7 @@ export function authContextValues<CustomUserAttributes = any>({
       signUpUser,
       confirmSignIn,
       signOutUser,
-      updateUserData,
+      updateUserAttributes,
       userAttributes,
     }),
     [
@@ -203,7 +203,7 @@ export function authContextValues<CustomUserAttributes = any>({
       signUpUser,
       confirmSignIn,
       signOutUser,
-      updateUserData,
+      updateUserAttributes,
       userAttributes,
     ]
   );
