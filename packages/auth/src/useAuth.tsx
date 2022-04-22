@@ -113,25 +113,15 @@ export function authContextValues<CustomUserAttributes = any>({
     []
   );
 
-  const getUser = useCallback(
-    async (): Promise<any> =>
-      new Promise((res, rej) => {
-        Auth.currentAuthenticatedUser({
-          bypassCache: false, // Optional, By default is false. If set to true, this call will send a request to Cognito to get the latest user data
-        })
-          .then((item) => res(item))
-          .catch(rej);
-      }),
-    [Auth]
-  );
-
   const updateUserData = useCallback(
     async (data) => {
       await Auth.updateUserAttributes(cognitoUser, data);
-      const newCognitoUser = await getUser();
+      const newCognitoUser = await Auth.currentAuthenticatedUser({
+        bypassCache: false, // Optional, By default is false. If set to true, this call will send a request to Cognito to get the latest user data
+      });
       setCognitoUser(newCognitoUser);
     },
-    [Auth, cognitoUser, getUser]
+    [Auth, cognitoUser]
   );
 
   const confirmSignUp = useCallback(
