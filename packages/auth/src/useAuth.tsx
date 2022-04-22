@@ -30,6 +30,7 @@ export const AuthContext = createContext<AuthContextValues>({
   confirmSignIn: () => Promise.resolve({ success: false }),
   signOutUser: () => Promise.resolve(),
   updateUserData: () => Promise.resolve(),
+  userAttributes: null,
 });
 
 export function authContextValues<CustomUserAttributes = any>({
@@ -201,6 +202,7 @@ export function authContextValues<CustomUserAttributes = any>({
       confirmSignIn,
       signOutUser,
       updateUserData,
+      userAttributes,
     }),
     [
       cognitoUser,

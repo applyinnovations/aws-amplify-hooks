@@ -1,4 +1,4 @@
-﻿import { CognitoUser } from "amazon-cognito-identity-js";
+﻿import { CognitoUser, CognitoUserAttribute } from "amazon-cognito-identity-js";
 
 export type ProfileTypes =
   | "profile-1"
@@ -43,5 +43,6 @@ export interface AuthContextValues<CustomUserAttributes = {}> {
   ) => Promise<ConfirmationResult>;
   confirmSignIn: (answer: string) => Promise<ConfirmationResult>;
   signOutUser: () => Promise<void>;
-  updateUserData: (data: object) => Promise<void>;
+  updateUserData: (data: CognitoUserAttribute) => Promise<void>;
+  userAttributes: CognitoUserAttribute | null;
 }
