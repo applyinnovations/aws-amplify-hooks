@@ -19,33 +19,33 @@ export interface SignUpParams {
   };
 }
 interface Address {
-  formatted: string;
-  street_address: string;
-  locality: string;
-  region: string;
-  postal_code: string;
-  country: string;
+  formatted?: string;
+  street_address?: string;
+  locality?: string;
+  region?: string;
+  postal_code?: string;
+  country?: string;
 }
 export interface UserAttributes {
-  email: string;
-  email_verified: boolean;
-  family_name: string;
-  given_name: string;
-  phone_number: string;
-  phone_number_verified: boolean;
-  address: Address;
-  birthdate: string;
-  gender: string;
-  locale: string;
-  middle_name: string;
-  name: string;
-  nickname: string;
-  picture: string;
-  preferred_username: string;
-  profile: string;
-  updated_at: number;
-  website: string;
-  zoneinfo: string;
+  email?: string;
+  email_verified?: boolean;
+  family_name?: string;
+  given_name?: string;
+  phone_number?: string;
+  phone_number_verified?: boolean;
+  address?: Address;
+  birthdate?: string;
+  gender?: string;
+  locale?: string;
+  middle_name?: string;
+  name?: string;
+  nickname?: string;
+  picture?: string;
+  preferred_username?: string;
+  profile?: string;
+  updated_at?: number;
+  website?: string;
+  zoneinfo?: string;
 }
 export interface AuthContextValues {
   cognitoUser?: CognitoUser;
@@ -59,7 +59,7 @@ export interface AuthContextValues {
   ) => Promise<ConfirmationResult>;
   confirmSignIn: (answer: string) => Promise<ConfirmationResult>;
   signOutUser: () => Promise<void>;
-  updateUserAttributes: (data: Partial<UserAttributes>) => Promise<void>;
+  updateUserAttributes: (data: UserAttributes) => Promise<void>;
   userAttributes: UserAttributes | null;
 }
 export {};
