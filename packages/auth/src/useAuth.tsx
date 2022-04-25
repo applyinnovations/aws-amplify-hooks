@@ -1,8 +1,8 @@
-﻿import { Auth } from '@aws-amplify/auth';
-import { DataStore } from '@aws-amplify/datastore';
-import { Hub } from '@aws-amplify/core';
-import { CognitoUser } from 'amazon-cognito-identity-js';
-import { MD5 } from 'crypto-js';
+﻿import { Auth } from "@aws-amplify/auth";
+import { DataStore } from "@aws-amplify/datastore";
+import { Hub } from "@aws-amplify/core";
+import { CognitoUser } from "amazon-cognito-identity-js";
+import { MD5 } from "crypto-js";
 
 import {
   useState,
@@ -11,14 +11,14 @@ import {
   useContext,
   createContext,
   useCallback,
-} from 'react';
+} from "react";
 
 import {
   ANSWER_CHALLENGE_ERRORS,
   AuthContextValues,
   AuthContextValuesParams,
   SignUpParams,
-} from './types';
+} from "./types";
 
 export const AuthContext = createContext<AuthContextValues>({
   cognitoUser: undefined,
@@ -29,12 +29,14 @@ export const AuthContext = createContext<AuthContextValues>({
   confirmSignUp: () => Promise.resolve({ success: false }),
   confirmSignIn: () => Promise.resolve({ success: false }),
   signOutUser: () => Promise.resolve(),
+  updateUserAttributes: () => Promise.resolve(),
+  userAttributes: null,
 });
 
-export function authContextValues<CustomUserAttributes = any>({
+export function authContextValues({
   onSessionStart,
   onSessionFailed,
-}: AuthContextValuesParams): AuthContextValues<CustomUserAttributes> {
+}: AuthContextValuesParams): AuthContextValues {
   const [authenticated, setAuthenticated] = useState(false);
   const [cognitoUser, setCognitoUser] = useState<CognitoUser>();
 
@@ -51,21 +53,21 @@ export function authContextValues<CustomUserAttributes = any>({
   }, [onSessionFailed]);
 
   useEffect(() => {
-    Hub.listen('auth', (data) => {
+    Hub.listen("auth", (data) => {
       switch (data.payload.event) {
-        case 'signIn':
-          console.log('user signed in');
+        case "signIn":
+          console.log("user signed in");
           handleSessionStart();
           break;
-        case 'signUp':
-          console.log('user signed up');
+        case "signUp":
+          console.log("user signed up");
           break;
-        case 'signOut':
-          console.log('user signed out');
+        case "signOut":
+          console.log("user signed out");
           handleSessionFailed();
           break;
-        case 'signIn_failure':
-          console.log('user sign in failed');
+        case "signIn_failure":
+          console.log("user sign in failed");
           handleSessionFailed();
           break;
       }
@@ -94,7 +96,6 @@ export function authContextValues<CustomUserAttributes = any>({
       phoneNumber,
       email,
       password,
-      customUserAttributes,
     }: SignUpParams): Promise<CognitoUser> => {
       const result = await Auth.signUp({
         username: phoneNumber,
@@ -103,12 +104,22 @@ export function authContextValues<CustomUserAttributes = any>({
         attributes: {
           email,
           phone_number: phoneNumber,
-          ...customUserAttributes,
         },
       });
       return result.user;
     },
     []
+  );
+
+  const updateUserAttributes = useCallback(
+    async (data) => {
+      await Auth.updateUserAttributes(cognitoUser, data);
+      const newCognitoUser = await Auth.currentAuthenticatedUser({
+        bypassCache: false, // Optional, By default is false. If set to true, this call will send a request to Cognito to get the latest user data
+      });
+      setCognitoUser(newCognitoUser);
+    },
+    [Auth, cognitoUser]
   );
 
   const confirmSignUp = useCallback(
@@ -119,7 +130,7 @@ export function authContextValues<CustomUserAttributes = any>({
         return { success: true };
       } catch (e) {
         console.log(e);
-        if (e === 'No current user') {
+        if (e === "No current user") {
           return {
             success: false,
             error: ANSWER_CHALLENGE_ERRORS.INCORRECT_CODE,
@@ -146,7 +157,7 @@ export function authContextValues<CustomUserAttributes = any>({
         return { success: true };
       } catch (e) {
         console.error(e);
-        if (e === 'No current user') {
+        if (e === "No current user") {
           return {
             success: false,
             error: ANSWER_CHALLENGE_ERRORS.INCORRECT_CODE,
@@ -163,6 +174,11 @@ export function authContextValues<CustomUserAttributes = any>({
     await DataStore.clear();
   }, [Auth]);
 
+  const userAttributes = useMemo(() => {
+    // @ts-ignore
+    return cognitoUser?.attributes;
+  }, [cognitoUser]);
+
   return useMemo(
     () => ({
       cognitoUser,
@@ -173,6 +189,8 @@ export function authContextValues<CustomUserAttributes = any>({
       signUpUser,
       confirmSignIn,
       signOutUser,
+      updateUserAttributes,
+      userAttributes,
     }),
     [
       cognitoUser,
@@ -183,6 +201,8 @@ export function authContextValues<CustomUserAttributes = any>({
       signUpUser,
       confirmSignIn,
       signOutUser,
+      updateUserAttributes,
+      userAttributes,
     ]
   );
 }
