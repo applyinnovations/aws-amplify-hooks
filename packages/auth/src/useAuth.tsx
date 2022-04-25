@@ -96,7 +96,6 @@ export function authContextValues({
       phoneNumber,
       email,
       password,
-      customUserAttributes,
     }: SignUpParams): Promise<CognitoUser> => {
       const result = await Auth.signUp({
         username: phoneNumber,
@@ -105,7 +104,6 @@ export function authContextValues({
         attributes: {
           email,
           phone_number: phoneNumber,
-          ...customUserAttributes,
         },
       });
       return result.user;
