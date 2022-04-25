@@ -1,5 +1,4 @@
-import { CognitoUser, CognitoUserAttribute } from "amazon-cognito-identity-js";
-export declare type ProfileTypes = "profile-1" | "profile-2" | "profile-3" | "profile-4" | "profile-5" | "profile-6";
+import { CognitoUser } from "amazon-cognito-identity-js";
 export interface AuthContextValuesParams {
     onSessionStart: () => void;
     onSessionFailed: () => void;
@@ -19,7 +18,36 @@ export interface SignUpParams {
         [key: string]: any;
     };
 }
-export interface AuthContextValues<CustomUserAttributes = {}> {
+interface Address {
+    formatted: string;
+    street_address: string;
+    locality: string;
+    region: string;
+    postal_code: string;
+    country: string;
+}
+export interface UserAttributes {
+    email: string;
+    email_verified: boolean;
+    family_name: string;
+    given_name: string;
+    phone_number: string;
+    phone_number_verified: boolean;
+    address: Address;
+    birthdate: string;
+    gender: string;
+    locale: string;
+    middle_name: string;
+    name: string;
+    nickname: string;
+    picture: string;
+    preferred_username: string;
+    profile: string;
+    updated_at: number;
+    website: string;
+    zoneinfo: string;
+}
+export interface AuthContextValues {
     cognitoUser?: CognitoUser;
     authenticated: boolean;
     signInUser: (phoneNumber: string, password?: string) => Promise<void>;
@@ -28,6 +56,7 @@ export interface AuthContextValues<CustomUserAttributes = {}> {
     confirmSignUp: (phoneNumber: string, answer: string) => Promise<ConfirmationResult>;
     confirmSignIn: (answer: string) => Promise<ConfirmationResult>;
     signOutUser: () => Promise<void>;
-    updateUserData: (data: CognitoUserAttribute) => Promise<void>;
-    userAttributes: CognitoUserAttribute | null;
+    updateUserAttributes: (data: Partial<UserAttributes>) => Promise<void>;
+    userAttributes: UserAttributes | null;
 }
+export {};

@@ -23,26 +23,35 @@ export interface SignUpParams {
   };
 }
 
+interface Address {
+  formatted: string;
+  street_address: string;
+  locality: string;
+  region: string;
+  postal_code: string;
+  country: string;
+}
+
 export interface UserAttributes {
-  address: string;
-  birthdate: string;
   email: string;
+  email_verified: boolean;
   family_name: string;
-  gender: string;
   given_name: string;
+  phone_number: string;
+  phone_number_verified: boolean;
+  address: Address;
+  birthdate: string;
+  gender: string;
   locale: string;
   middle_name: string;
   name: string;
   nickname: string;
-  phone_number: string;
   picture: string;
   preferred_username: string;
   profile: string;
-  updated_at: string;
+  updated_at: number;
   website: string;
   zoneinfo: string;
-  phone_number_verified: boolean;
-  email_verified: boolean;
 }
 
 export interface AuthContextValues {

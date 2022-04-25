@@ -60,7 +60,7 @@ export var AuthContext = createContext({
     confirmSignUp: function () { return Promise.resolve({ success: false }); },
     confirmSignIn: function () { return Promise.resolve({ success: false }); },
     signOutUser: function () { return Promise.resolve(); },
-    updateUserData: function () { return Promise.resolve(); },
+    updateUserAttributes: function () { return Promise.resolve(); },
     userAttributes: null,
 });
 export function authContextValues(_a) {
@@ -153,7 +153,7 @@ export function authContextValues(_a) {
             });
         });
     }, []);
-    var updateUserData = useCallback(function (data) { return __awaiter(_this, void 0, void 0, function () {
+    var updateUserAttributes = useCallback(function (data) { return __awaiter(_this, void 0, void 0, function () {
         var newCognitoUser;
         return __generator(this, function (_a) {
             switch (_a.label) {
@@ -258,7 +258,7 @@ export function authContextValues(_a) {
         signUpUser: signUpUser,
         confirmSignIn: confirmSignIn,
         signOutUser: signOutUser,
-        updateUserData: updateUserData,
+        updateUserAttributes: updateUserAttributes,
         userAttributes: userAttributes,
     }); }, [
         cognitoUser,
@@ -269,7 +269,7 @@ export function authContextValues(_a) {
         signUpUser,
         confirmSignIn,
         signOutUser,
-        updateUserData,
+        updateUserAttributes,
         userAttributes,
     ]);
 }
