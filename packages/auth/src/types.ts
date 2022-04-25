@@ -63,6 +63,6 @@ export interface AuthContextValues {
   ) => Promise<ConfirmationResult>;
   confirmSignIn: (answer: string) => Promise<ConfirmationResult>;
   signOutUser: () => Promise<void>;
-  updateUserAttributes: (data: Partial<UserAttributes>) => Promise<void>;
+  updateUserAttributes: (data: UserAttributes) => Promise<void>;
   userAttributes: UserAttributes | null;
 }
