@@ -1,29 +1,36 @@
-import { useEffect, useState } from 'react';
-import { getFileUrl } from './storageUtils';
-import { StorageObject } from './types';
+import { useCallback, useEffect, useState } from "react";
+import { getFileUrl } from "./storageUtils";
+import { StorageObject } from "./types";
 
 export const useStorageObject = (storageObject?: StorageObject | null) => {
   const [url, setUrl] = useState<string>();
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string>();
-  useEffect(() => {
+
+  const fetchURL = useCallback(async () => {
     if (storageObject) {
       setLoading(true);
-      getFileUrl(storageObject)
-        .then((url) => {
-          setUrl(url);
-          setError(undefined);
-        })
-        .catch((e: Error) => {
-          setUrl(undefined);
+      try {
+        const results = await getFileUrl(storageObject);
+        setUrl(results);
+        setError(undefined);
+        setLoading(true);
+      } catch (e: unknown) {
+        if (e instanceof Error && e?.message) {
           setError(e.message);
-        })
-        .finally(() => setLoading(false));
+        }
+        setUrl(undefined);
+
+        setLoading(true);
+      }
     } else {
-      setLoading(false);
-      setError('No storage object provided');
+      setError("No storage object provided");
       setUrl(undefined);
     }
+  }, [storageObject]);
+
+  useEffect(() => {
+    fetchURL();
   }, [storageObject]);
   return {
     url,
