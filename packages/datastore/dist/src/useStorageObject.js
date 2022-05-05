@@ -7,25 +7,30 @@ const useStorageObject = (storageObject) => {
     const [url, setUrl] = (0, react_1.useState)();
     const [loading, setLoading] = (0, react_1.useState)(false);
     const [error, setError] = (0, react_1.useState)();
-    (0, react_1.useEffect)(() => {
+    const fetchURL = (0, react_1.useCallback)(async () => {
         if (storageObject) {
             setLoading(true);
-            (0, storageUtils_1.getFileUrl)(storageObject)
-                .then((url) => {
-                setUrl(url);
+            try {
+                const results = await (0, storageUtils_1.getFileUrl)(storageObject);
+                setUrl(results);
                 setError(undefined);
-            })
-                .catch((e) => {
+                setLoading(true);
+            }
+            catch (e) {
+                if (e instanceof Error && e?.message) {
+                    setError(e.message);
+                }
                 setUrl(undefined);
-                setError(e.message);
-            })
-                .finally(() => setLoading(false));
+                setLoading(true);
+            }
         }
         else {
-            setLoading(false);
-            setError('No storage object provided');
+            setError("No storage object provided");
             setUrl(undefined);
         }
+    }, [storageObject]);
+    (0, react_1.useEffect)(() => {
+        fetchURL();
     }, [storageObject]);
     return {
         url,
