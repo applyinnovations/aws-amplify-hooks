@@ -28,9 +28,9 @@ const useStorageObject = (storageObject) => {
     const [url, setUrl] = (0, react_1.useState)();
     const [loading, setLoading] = (0, react_1.useState)(false);
     const [error, setError] = (0, react_1.useState)();
-    const oldvalue = (0, exports.usePrevious)(storageObject);
+    const prevStorageObject = (0, exports.usePrevious)(storageObject);
     (0, react_1.useEffect)(() => {
-        if (deepEqual(oldvalue, storageObject)) {
+        if (deepEqual(prevStorageObject, storageObject)) {
             return;
         }
         if (storageObject) {
@@ -51,7 +51,7 @@ const useStorageObject = (storageObject) => {
             setError("No storage object provided");
             setUrl(undefined);
         }
-    }, [storageObject]);
+    }, [storageObject, prevStorageObject]);
     return {
         url,
         loading,
