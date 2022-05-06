@@ -11,15 +11,29 @@ const usePrevious = (value) => {
     return ref.current;
 };
 exports.usePrevious = usePrevious;
+const sortObjectKeys = (unorderedObject) => {
+    return Object.keys(unorderedObject)
+        ?.sort()
+        .reduce((newObject, key) => {
+        newObject[key] = unorderedObject[key];
+        return newObject;
+    }, {});
+};
+const deepEqual = (valueA, valueB) => {
+    const stringValueA = JSON.stringify(sortObjectKeys(valueA || {}));
+    const stringValueB = JSON.stringify(sortObjectKeys(valueB || {}));
+    return stringValueA === stringValueB;
+};
 const useStorageObject = (storageObject) => {
     const [url, setUrl] = (0, react_1.useState)();
     const [loading, setLoading] = (0, react_1.useState)(false);
     const [error, setError] = (0, react_1.useState)();
     const oldvalue = (0, exports.usePrevious)(storageObject);
     (0, react_1.useEffect)(() => {
-        const strValueOld = JSON.stringify(oldvalue);
-        const strNewValue = JSON.stringify(storageObject);
-        if (strNewValue !== strValueOld && storageObject) {
+        if (deepEqual(oldvalue, storageObject)) {
+            return;
+        }
+        if (storageObject) {
             setLoading(true);
             (0, storageUtils_1.getFileUrl)(storageObject)
                 .then((result) => {
