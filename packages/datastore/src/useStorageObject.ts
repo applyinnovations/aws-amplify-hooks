@@ -37,10 +37,10 @@ export const useStorageObject = (storageObject?: StorageObject | null) => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string>();
 
-  const oldvalue = usePrevious(storageObject);
+  const prevStorageObject = usePrevious(storageObject);
 
   useEffect(() => {
-    if (deepEqual(oldvalue, storageObject)) {
+    if (deepEqual(prevStorageObject, storageObject)) {
       return;
     }
 
@@ -61,7 +61,7 @@ export const useStorageObject = (storageObject?: StorageObject | null) => {
       setError("No storage object provided");
       setUrl(undefined);
     }
-  }, [storageObject]);
+  }, [storageObject, prevStorageObject]);
 
   return {
     url,
