@@ -26,7 +26,7 @@ export function useSubscription<T extends PersistentModel>({
 }) {
   const [data, setData] = useState<DataStoreSnapshot<T>["items"]>();
   const [error, setError] = useState<any>();
-
+  const [loading, setLoading] = useState(false);
   const [spamCount, setSpamCount] = useState(0);
   const [startTime, setStartTime] = useState(performance.now());
 
@@ -39,6 +39,7 @@ export function useSubscription<T extends PersistentModel>({
   );
 
   useEffect(() => {
+    setLoading(true);
     const elapsedTime = performance.now() - startTime;
     if (spamCount > 25 && spamCount / elapsedTime > 0.01)
       throw Error(
@@ -56,18 +57,20 @@ export function useSubscription<T extends PersistentModel>({
           const data = msg.items;
           setData(data);
           setError(undefined);
+          setLoading(false);
         },
         (error) => {
           setError(error);
           if (onError) onError(error);
           console.error(error);
+          setLoading(false);
         }
       );
       return () => sub.unsubscribe();
     }
   }, [model, idCriteria, criteria, paginationProducer, onError]);
 
-  const loading = useMemo(() => {
+  const exists = useMemo(() => {
     return Boolean(!data?.length);
   }, [data]);
 
@@ -76,5 +79,6 @@ export function useSubscription<T extends PersistentModel>({
     data,
     loading,
     error,
+    exists,
   };
 }
