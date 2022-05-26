@@ -7,13 +7,11 @@
   "scripts": {
     "build:auth": "cd packages/auth && yarn build",
     "build:datastore": "cd packages/datastore && yarn build",
-    "prettier:format": "yarn prettier --write '**/*.{css,less,scss,html,ts,tsx,graphql,gql,json,js,jsx,md,yml,yaml}'",
     "build": "yarn build:auth && yarn build:datastore"
   },
   "devDependencies": {
     "aws-amplify": "^4.3.19",
     "lerna": "^4.0.0",
-    "prettier": "^2.6.2",
     "react": "^18.0.0"
   },
   "workspaces": [
