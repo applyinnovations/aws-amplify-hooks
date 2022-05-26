@@ -12,4 +12,5 @@ export declare function useSubscription<T extends PersistentModel>({ model, id, 
     data: T[] | undefined;
     loading: boolean;
     error: any;
+    exists: boolean;
 };
