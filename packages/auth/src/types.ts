@@ -56,7 +56,7 @@ export interface AuthContextValues {
   authenticated: boolean;
   signInUser: (phoneNumber: string, password?: string) => Promise<void>;
   signUpUser: (params: SignUpParams) => Promise<CognitoUser | undefined>;
-  resendSignUp: (phoneNumber: string, email: string) => Promise<void>;
+  resendSignUp: (phoneNumber: string) => Promise<void>;
   confirmSignUp: (
     phoneNumber: string,
     answer: string
