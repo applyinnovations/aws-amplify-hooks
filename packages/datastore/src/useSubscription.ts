@@ -7,7 +7,7 @@
   ProducerModelPredicate,
 } from "@aws-amplify/datastore";
 import { PredicateAll } from "@aws-amplify/datastore/lib-esm/predicates";
-import { Hub } from "@aws-amplify/core";
+import { Hub, HubCapsule } from "@aws-amplify/core";
 import { useState, useEffect, useCallback, useMemo } from "react";
 
 export { PredicateAll };
@@ -75,7 +75,7 @@ export function useSubscription<T extends PersistentModel>({
   }, [model, idCriteria, criteria, paginationProducer, onError]);
 
   useEffect(() => {
-    Hub.listen("datastore", async (hubData) => {
+    const listener = async (hubData: HubCapsule, listenerName?: string) => {
       const { event, data } = hubData.payload;
       if (event === "syncQueriesStarted") {
         setDataStoreSyncing(true);
@@ -83,7 +83,10 @@ export function useSubscription<T extends PersistentModel>({
       if (event === "syncQueriesReady") {
         setDataStoreSyncing(false);
       }
-    });
+    };
+    Hub.listen("datastore", listener);
+
+    return () => Hub.remove("datastore", listener);
   }, []);
 
   return {

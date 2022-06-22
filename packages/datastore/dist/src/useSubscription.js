@@ -42,7 +42,7 @@ function useSubscription({ model, id, criteria, paginationProducer, onError, }) 
         }
     }, [model, idCriteria, criteria, paginationProducer, onError]);
     (0, react_1.useEffect)(() => {
-        core_1.Hub.listen("datastore", async (hubData) => {
+        const listener = async (hubData, listenerName) => {
             const { event, data } = hubData.payload;
             if (event === "syncQueriesStarted") {
                 setDataStoreSyncing(true);
@@ -50,7 +50,9 @@ function useSubscription({ model, id, criteria, paginationProducer, onError, }) 
             if (event === "syncQueriesReady") {
                 setDataStoreSyncing(false);
             }
-        });
+        };
+        core_1.Hub.listen("datastore", listener);
+        return () => core_1.Hub.remove("datastore", listener);
     }, []);
     return {
         first: data?.[0],
