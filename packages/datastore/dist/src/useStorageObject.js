@@ -26,7 +26,7 @@ const deepEqual = (valueA, valueB) => {
 };
 const useStorageObject = (storageObject) => {
     const [url, setUrl] = (0, react_1.useState)();
-    const [loading, setLoading] = (0, react_1.useState)(false);
+    const [loading, setLoading] = (0, react_1.useState)(true);
     const [error, setError] = (0, react_1.useState)();
     const prevStorageObject = (0, exports.usePrevious)(storageObject);
     (0, react_1.useEffect)(() => {
