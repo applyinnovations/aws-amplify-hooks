@@ -34,7 +34,7 @@ const deepEqual = (
 };
 export const useStorageObject = (storageObject?: StorageObject | null) => {
   const [url, setUrl] = useState<string>();
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string>();
 
   const prevStorageObject = usePrevious(storageObject);
