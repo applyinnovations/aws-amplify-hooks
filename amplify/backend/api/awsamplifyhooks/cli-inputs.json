@@ -1,0 +1,14 @@
+{
+  "version": 1,
+  "serviceConfiguration": {
+    "apiName": "awsamplifyhooks",
+    "serviceName": "AppSync",
+    "gqlSchemaPath": "/Users/peterallanmaaladavid/aws-amplify-hooks/amplify/backend/api/awsamplifyhooks/schema.graphql",
+    "defaultAuthType": {
+      "mode": "API_KEY",
+      "expirationTime": 365,
+      "apiKeyExpirationDate": "2023-08-05T08:16:09.629Z",
+      "keyDescription": "awsamplifyhooksapikey"
+    }
+  }
+}

@@ -7,12 +7,15 @@
   "scripts": {
     "build:auth": "cd packages/auth && yarn build",
     "build:datastore": "cd packages/datastore && yarn build",
-    "build": "yarn build:auth && yarn build:datastore"
+    "build:appsync": "cd packages/appsync && yarn build",
+    "build:test": "cd packages/appsync && yarn build",
+    "build": "yarn build:auth && yarn build:datastore && yarn build:appsync && yarn build:test",
+    "start:test": "yarn workspace @aws-amplify-hooks/test start"
   },
   "devDependencies": {
     "aws-amplify": "^4.3.19",
     "lerna": "^4.0.0",
-    "react": "^18.0.0"
+    "react": "^17.0.0"
   },
   "workspaces": [
     "packages/*"

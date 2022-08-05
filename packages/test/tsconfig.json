@@ -1,0 +1,42 @@
+{
+  "$schema": "http://json.schemastore.org/tsconfig",
+  "exclude": [
+    "**/node_modules",
+    "coverage",
+    "**/.webpack",
+    "**/dist",
+    "**/build"
+  ],
+  "compilerOptions": {
+    "baseUrl": "./src",
+    "composite": true,
+    "allowJs": false,
+    "allowSyntheticDefaultImports": true,
+    "allowUmdGlobalAccess": false,
+    "allowUnreachableCode": false,
+    "charset": "utf8",
+    "checkJs": false,
+    "esModuleInterop": true,
+    "experimentalDecorators": true,
+    "forceConsistentCasingInFileNames": true,
+    "isolatedModules": false,
+    "jsx": "preserve",
+    "moduleResolution": "node",
+    "noEmit": true,
+    "noErrorTruncation": true,
+    "noFallthroughCasesInSwitch": true,
+    "noImplicitAny": true,
+    "noImplicitReturns": true,
+    "noStrictGenericChecks": false,
+    "noUnusedLocals": true,
+    "noUnusedParameters": true,
+    "pretty": true,
+    "resolveJsonModule": true,
+    "skipLibCheck": true,
+    "strict": true,
+    "sourceMap": false,
+    "target": "esnext",
+    "module": "ESNext",
+    "allowUnusedLabels": true
+  }
+}
