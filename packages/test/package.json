@@ -9,9 +9,9 @@
     "lint": "yarn eslint '**/*.{ts,tsx}'"
   },
   "dependencies": {
+    "aws-amplify": "^4.3.26",
     "react": "^17",
-    "react-dom": "^17",
-    "aws-amplify": "4.2.5"
+    "react-dom": "^17"
   },
   "devDependencies": {
     "@aws-amplify-hooks/appsync": "1.0.0",

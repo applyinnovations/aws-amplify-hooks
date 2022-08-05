@@ -4,6 +4,7 @@
   PersistentModelConstructor,
 } from "@aws-amplify/datastore";
 import { PredicateAll } from "@aws-amplify/datastore/lib-esm/predicates";
+import { API, graphqlOperation } from "aws-amplify";
 
 import { useState } from "react";
 
@@ -25,6 +26,10 @@ export function useSubscription<T extends PersistentModel>({
   const [data, setData] = useState<DataStoreSnapshot<T>["items"]>();
   const [error, setError] = useState<any>();
   const [loading, setLoading] = useState(true);
+
+  const operationName = model?.name;
+  // @ts-ignore
+  console.log("operationName", operationName);
   // const [spamCount, setSpamCount] = useState(0);
   // const [startTime, setStartTime] = useState(performance.now());
 
@@ -85,6 +90,12 @@ export function useSubscription<T extends PersistentModel>({
 
   //   return () => Hub.remove("datastore", listener);
   // }, []);
+  // const subscription = API.graphql(graphqlOperation(onCreateTodo)).subscribe({
+  //   next: (todoData) => {
+  //     console.log(todoData);
+  //     // Do something with the data
+  //   },
+  // });
 
   return {
     first: data?.[0],

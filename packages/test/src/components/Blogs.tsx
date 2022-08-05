@@ -1,7 +1,7 @@
 ﻿import React, { useCallback } from "react";
 import { API, graphqlOperation } from "aws-amplify";
 
-import { useSubscription } from "@aws-amplify-hooks/appsync";
+import { useSubscription } from "./useSubscription";
 
 import { Blog } from "../models";
 import { createBlog } from "../common/mutations";
@@ -28,7 +28,7 @@ export const Blogs: React.FC<BlogsProps> = () => {
     <div>
       <button onClick={oncreateBlog}>Create Blog</button>
       This is blogs
-      {[]}
+      {JSON.stringify(data)}
     </div>
   );
 };
