@@ -5,13 +5,17 @@
 } from "@aws-amplify/datastore";
 import { PredicateAll } from "@aws-amplify/datastore/lib-esm/predicates";
 import { API, graphqlOperation } from "aws-amplify";
-import * as sub from "../common/subscriptions";
-import * as queries from "../common/queries";
+// import * as sub from "../graphql/subscriptions";
+// import * as queries from "../graphql/queries";
 import { useCallback, useEffect, useMemo, useState } from "react";
+import { useAppSync } from "./AppsyncProvider";
 
 export { PredicateAll };
 
-const getQueries = (name: string) => {
+const getQueries = (
+  name: string,
+  { sub, queries }: { sub: string; queries: string }
+) => {
   const getQueryName = `get${name}`;
   const listQueryName = `list${name}s`;
   const onCreateQueryName = `onCreate${name}`;
@@ -42,44 +46,46 @@ const getQueries = (name: string) => {
 };
 export function useSubscription<T extends PersistentModel>({
   model,
-}: // id,
-// criteria,
-// paginationProducer,
-// onError,
-{
+}: {
   model: PersistentModelConstructor<T>;
-  id?: T["id"];
-  // criteria?: ProducerModelPredicate<T> | typeof PredicateAll;
-  // paginationProducer?: ObserveQueryOptions<T>;
-  onError?: (error: any) => void;
 }) {
-  const [data, setData] = useState<DataStoreSnapshot<T>["items"]>();
+  const [data, setData] = useState<any[]>();
   const [error, setError] = useState<any>();
   const [loading, setLoading] = useState(true);
+  const {
+    graphqlQueries: { sub, queries },
+  } = useAppSync();
 
-  const operation = useMemo(() => {
-    return `onCreate`;
-  }, [model]);
-
-  const { getOne, onCreate, onUpdate, list } = getQueries(model.name);
+  const { getOne, onCreate, onUpdate, list } = getQueries(model.name, {
+    sub,
+    queries,
+  });
 
   const getData = useCallback(async () => {
-    const results = await API.graphql({
+    const results = await API.graphql<typeof model[]>({
       query: list.query,
     });
 
-    setData(results?.data?.[list.name]);
+    // @ts-ignore
+    setData(results?.data?.[list.name]?.items);
   }, []);
   useEffect(() => {
     getData();
     const subscription = API.graphql(
       graphqlOperation(onCreate.query)
       // @ts-ignore
-    )?.subscribe({
-      next: (todoData: any) => {
-        setData(todoData);
+    ).subscribe({
+      next: (result: any, values: any) => {
+        const newData = result?.value?.data?.[onCreate.name];
+        console.log("this is the data", newData);
+        // setData(todoData);
         // Do something with the data
+        setData((currData) => {
+          return [...currData, newData];
+        });
       },
+
+      error: (error: any) => console.warn(error),
     });
 
     return () => subscription.unsubscribe();

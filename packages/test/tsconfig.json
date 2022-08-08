@@ -8,7 +8,7 @@
     "**/build"
   ],
   "compilerOptions": {
-    "baseUrl": "./src",
+    "baseUrl": "/",
     "composite": true,
     "allowJs": false,
     "allowSyntheticDefaultImports": true,

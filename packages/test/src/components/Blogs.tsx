@@ -4,12 +4,18 @@ import { API, graphqlOperation } from "aws-amplify";
 import { useSubscription } from "./useSubscription";
 
 import { Blog } from "../models";
-import { createBlog } from "../common/mutations";
+import { createBlog } from "../graphql/mutations";
+import * as queries from "../graphql/queries";
+import * as subscriptions from "../graphql/subscriptions";
 interface BlogsProps {}
 
 export const Blogs: React.FC<BlogsProps> = () => {
-  const { data } = useSubscription({
+  const { data = [] } = useSubscription({
     model: Blog,
+    queryPath: {
+      sub: subscriptions,
+      queries: queries,
+    },
   });
   const oncreateBlog = useCallback(async () => {
     try {
@@ -24,11 +30,12 @@ export const Blogs: React.FC<BlogsProps> = () => {
       console.log("mutation error", e);
     }
   }, []);
+  console.log("this is the data", data);
   return (
     <div>
       <button onClick={oncreateBlog}>Create Blog</button>
       This is blogs
-      {JSON.stringify(data)}
+      {data?.length && data?.map((item) => <div>{item.id}</div>)}
     </div>
   );
 };

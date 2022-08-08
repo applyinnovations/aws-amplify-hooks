@@ -9,7 +9,11 @@
     "lint": "yarn eslint '**/*.{ts,tsx}'"
   },
   "dependencies": {
+    "@apollo/client": "^3.6.9",
     "aws-amplify": "^4.3.26",
+    "aws-appsync": "^4.1.7",
+    "graphql": "^16.5.0",
+    "graphql-tag": "^2.12.6",
     "react": "^17",
     "react-dom": "^17"
   },

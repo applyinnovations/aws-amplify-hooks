@@ -12,16 +12,13 @@ module.exports = {
     historyApiFallback: true,
     proxy: {
       "/graphql": {
-        pathRewrite: function (path, req) {
-          return "http://192.168.1.6:20002/graphql";
-        },
-        logLevel: "debug" /*optional*/,
+        target: "http://192.168.1.6:20002/graphql",
+        pathRewrite: { "^/graphql": "" },
       },
       "/graphql/realtime": {
-        pathRewrite: function (path, req) {
-          return "http://192.168.1.6:20002/graphql";
-        },
-        logLevel: "debug" /*optional*/,
+        target: "ws://localhost:20002",
+        ws: true,
+        changeOrigin: true,
       },
     },
   },
