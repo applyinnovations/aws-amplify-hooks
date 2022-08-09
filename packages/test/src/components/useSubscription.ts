@@ -7,9 +7,10 @@ import { PredicateAll } from "@aws-amplify/datastore/lib-esm/predicates";
 import { API, graphqlOperation } from "aws-amplify";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { useAppSync } from "./AppsyncProvider";
-
+import inflect from "i";
 export { PredicateAll };
 
+const i = inflect();
 interface GetQueryResultItem {
   name: string;
   query: string;
@@ -82,36 +83,36 @@ const generateSubscription = ({
   onDataUpdate: { onCreate, onDelete, onUpdate },
 }: GenerateSubscriptionParams) => {
   const createSubscription = API.graphql(
-    graphqlOperation(createQuery.query, {})
+    graphqlOperation(createQuery.query, createQuery?.variables || {})
     // @ts-ignore
   ).subscribe({
     next: (result: any) => {
       const newData = result?.value?.data?.[createQuery.name];
-
+      console.log("new data created", createQuery.variables, newData);
       onCreate(newData);
     },
     error: (error: any) => console.warn(createQuery.name, error),
   });
 
   const updateSubscription = API.graphql(
-    graphqlOperation(updateQuery.query)
+    graphqlOperation(updateQuery.query, updateQuery?.variables || {})
     // @ts-ignore
   ).subscribe({
     next: (result: any) => {
       const newData = result?.value?.data?.[updateQuery.name];
-
+      console.log("new data updated", updateQuery.variables, newData);
       onUpdate(newData);
     },
     error: (error: any) => console.warn(updateQuery.name, error),
   });
 
   const deleteSubScription = API.graphql(
-    graphqlOperation(deleteQuery.query)
+    graphqlOperation(deleteQuery.query, deleteQuery?.variables || {})
     // @ts-ignore
   ).subscribe({
     next: (result: any) => {
       const newData = result?.value?.data?.[deleteQuery.name];
-
+      console.log("new data deleted", newData);
       onDelete(newData);
     },
     error: (error: any) => console.warn(deleteQuery.name, error),
@@ -149,38 +150,55 @@ export function useSubscription<T extends PersistentModel>({
     return results;
   }, [model.name, schema]);
 
+  const dataIds = useMemo(() => data?.map(({ id }) => id), [data]);
   useEffect(() => {
-    modelFields?.forEach((item) => {
-      const modelTypeName = item?.type?.model;
-      const baseQueryName = `${modelTypeName}By${model.name}Id`;
+    // needs fixing as it generates a new subscription everytime subsctription hits
+    // also need to do it in a recursive way
+    dataIds?.forEach((id) => {
+      modelFields?.forEach((item) => {
+        const modelTypeName = item?.type?.model;
+        const baseQueryName = `${modelTypeName}By${model.name}Id`;
 
-      const createQueryName = `onCreate${baseQueryName}`;
-      const updateQueryName = `onUpdate${baseQueryName}`;
-      const deleteQueryName = `onDelete${baseQueryName}`;
+        const createQueryName = `onCreate${baseQueryName}`;
+        const updateQueryName = `onUpdate${baseQueryName}`;
+        const deleteQueryName = `onDelete${baseQueryName}`;
 
-      // const subscriptions = generateSubscription({
-      //   queries: {
-      //     createQuery: {
-      //       name: createQueryName,
-      //       query: sub?.[createQueryName],
-      //     },
-      //     updateQuery: {
-      //       name: updateQueryName,
-      //       query: sub?.[updateQueryName],
-      //     },
-      //     deleteQuery: {
-      //       name: deleteQueryName,
-      //       query: sub?.[deleteQueryName],
-      //     },
-      //   },
-      //   onDataUpdate: {
-      //     onCreate: getData,
-      //     onUpdate: getData,
-      //     onDelete: getData,
-      //   },
-      // });
+        const underscore = `${model.name}_${item.name}_Id`;
+        const camelCasedId = i.camelize(underscore, false);
+
+        const subscriptions = generateSubscription({
+          queries: {
+            createQuery: {
+              name: createQueryName,
+              query: sub?.[createQueryName],
+              variables: {
+                [camelCasedId]: id,
+              },
+            },
+            updateQuery: {
+              name: updateQueryName,
+              query: sub?.[updateQueryName],
+              variables: {
+                [camelCasedId]: id,
+              },
+            },
+            deleteQuery: {
+              name: deleteQueryName,
+              query: sub?.[deleteQueryName],
+              variables: {
+                [camelCasedId]: id,
+              },
+            },
+          },
+          onDataUpdate: {
+            onCreate: getData,
+            onUpdate: getData,
+            onDelete: getData,
+          },
+        });
+      });
     });
-  }, [modelFields]);
+  }, [modelFields, dataIds]);
 
   const { getOne, onCreate, onUpdate, list, onDelete } = getQueries(
     model.name,
@@ -202,9 +220,9 @@ export function useSubscription<T extends PersistentModel>({
     getData();
     const subscriptions = generateSubscription({
       queries: {
-        createQuery: onCreate,
-        updateQuery: onUpdate,
-        deleteQuery: onDelete,
+        createQuery: { ...onCreate, variables: {} },
+        updateQuery: { ...onUpdate, variables: {} },
+        deleteQuery: { ...onDelete, variables: {} },
       },
       onDataUpdate: {
         onCreate: (newData) => setData((currData) => [...currData, newData]),
