@@ -14,6 +14,25 @@ export const createBlog = /* GraphQL */ `
         items {
           id
           title
+          blog {
+            id
+            name
+            posts {
+              nextToken
+            }
+            createdAt
+            updatedAt
+          }
+          comments {
+            items {
+              id
+              content
+              createdAt
+              updatedAt
+              postCommentsId
+            }
+            nextToken
+          }
           createdAt
           updatedAt
           blogPostsId
@@ -37,6 +56,25 @@ export const updateBlog = /* GraphQL */ `
         items {
           id
           title
+          blog {
+            id
+            name
+            posts {
+              nextToken
+            }
+            createdAt
+            updatedAt
+          }
+          comments {
+            items {
+              id
+              content
+              createdAt
+              updatedAt
+              postCommentsId
+            }
+            nextToken
+          }
           createdAt
           updatedAt
           blogPostsId
@@ -60,6 +98,25 @@ export const deleteBlog = /* GraphQL */ `
         items {
           id
           title
+          blog {
+            id
+            name
+            posts {
+              nextToken
+            }
+            createdAt
+            updatedAt
+          }
+          comments {
+            items {
+              id
+              content
+              createdAt
+              updatedAt
+              postCommentsId
+            }
+            nextToken
+          }
           createdAt
           updatedAt
           blogPostsId
@@ -83,6 +140,22 @@ export const createPost = /* GraphQL */ `
         id
         name
         posts {
+          items {
+            id
+            title
+            blog {
+              id
+              name
+              createdAt
+              updatedAt
+            }
+            comments {
+              nextToken
+            }
+            createdAt
+            updatedAt
+            blogPostsId
+          }
           nextToken
         }
         createdAt
@@ -91,6 +164,22 @@ export const createPost = /* GraphQL */ `
       comments {
         items {
           id
+          post {
+            id
+            title
+            blog {
+              id
+              name
+              createdAt
+              updatedAt
+            }
+            comments {
+              nextToken
+            }
+            createdAt
+            updatedAt
+            blogPostsId
+          }
           content
           createdAt
           updatedAt
@@ -116,6 +205,22 @@ export const updatePost = /* GraphQL */ `
         id
         name
         posts {
+          items {
+            id
+            title
+            blog {
+              id
+              name
+              createdAt
+              updatedAt
+            }
+            comments {
+              nextToken
+            }
+            createdAt
+            updatedAt
+            blogPostsId
+          }
           nextToken
         }
         createdAt
@@ -124,6 +229,22 @@ export const updatePost = /* GraphQL */ `
       comments {
         items {
           id
+          post {
+            id
+            title
+            blog {
+              id
+              name
+              createdAt
+              updatedAt
+            }
+            comments {
+              nextToken
+            }
+            createdAt
+            updatedAt
+            blogPostsId
+          }
           content
           createdAt
           updatedAt
@@ -149,6 +270,22 @@ export const deletePost = /* GraphQL */ `
         id
         name
         posts {
+          items {
+            id
+            title
+            blog {
+              id
+              name
+              createdAt
+              updatedAt
+            }
+            comments {
+              nextToken
+            }
+            createdAt
+            updatedAt
+            blogPostsId
+          }
           nextToken
         }
         createdAt
@@ -157,6 +294,22 @@ export const deletePost = /* GraphQL */ `
       comments {
         items {
           id
+          post {
+            id
+            title
+            blog {
+              id
+              name
+              createdAt
+              updatedAt
+            }
+            comments {
+              nextToken
+            }
+            createdAt
+            updatedAt
+            blogPostsId
+          }
           content
           createdAt
           updatedAt
@@ -183,10 +336,34 @@ export const createComment = /* GraphQL */ `
         blog {
           id
           name
+          posts {
+            items {
+              id
+              title
+              createdAt
+              updatedAt
+              blogPostsId
+            }
+            nextToken
+          }
           createdAt
           updatedAt
         }
         comments {
+          items {
+            id
+            post {
+              id
+              title
+              createdAt
+              updatedAt
+              blogPostsId
+            }
+            content
+            createdAt
+            updatedAt
+            postCommentsId
+          }
           nextToken
         }
         createdAt
@@ -213,10 +390,34 @@ export const updateComment = /* GraphQL */ `
         blog {
           id
           name
+          posts {
+            items {
+              id
+              title
+              createdAt
+              updatedAt
+              blogPostsId
+            }
+            nextToken
+          }
           createdAt
           updatedAt
         }
         comments {
+          items {
+            id
+            post {
+              id
+              title
+              createdAt
+              updatedAt
+              blogPostsId
+            }
+            content
+            createdAt
+            updatedAt
+            postCommentsId
+          }
           nextToken
         }
         createdAt
@@ -243,10 +444,34 @@ export const deleteComment = /* GraphQL */ `
         blog {
           id
           name
+          posts {
+            items {
+              id
+              title
+              createdAt
+              updatedAt
+              blogPostsId
+            }
+            nextToken
+          }
           createdAt
           updatedAt
         }
         comments {
+          items {
+            id
+            post {
+              id
+              title
+              createdAt
+              updatedAt
+              blogPostsId
+            }
+            content
+            createdAt
+            updatedAt
+            postCommentsId
+          }
           nextToken
         }
         createdAt

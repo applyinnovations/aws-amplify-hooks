@@ -12,6 +12,7 @@ import * as Models from "./models/index";
 import * as mutations from "./graphql/mutations";
 import * as queries from "./graphql/queries";
 import * as sub from "./graphql/subscriptions";
+import { schema } from "./models/schema";
 
 console.log("awsConfig", awsconfig);
 Amplify.configure({
@@ -28,6 +29,7 @@ function App() {
           queries,
           mutations,
         }}
+        schema={schema}
       >
         <Blogs />
       </AppsyncProvider>

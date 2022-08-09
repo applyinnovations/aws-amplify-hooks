@@ -1,7 +1,8 @@
 # This "input" configures a global authorization rule to enable public access to
 # all models in this schema. Learn more about authorization rules here: https://docs.amplify.aws/cli/graphql/authorization-rules
-input AMPLIFY { globalAuthRule: AuthRule = { allow: public } } # FOR TESTING ONLY!
-
+input AMPLIFY {
+  globalAuthRule: AuthRule = { allow: public }
+} # FOR TESTING ONLY!
 type Blog @model {
   id: ID!
   name: String!
@@ -19,4 +20,19 @@ type Comment @model {
   id: ID!
   post: Post @belongsTo
   content: String!
+}
+
+type Subscription {
+  onCreatePostByBlogId(blogPostsId: ID!): Post
+    @aws_subscribe(mutations: ["createPost"])
+  onUpdatePostByBlogId(blogPostsId: ID!): Post
+    @aws_subscribe(mutations: ["updatePost"])
+  onDeletePostByBlogId(blogPostsId: ID!): Post
+    @aws_subscribe(mutations: ["deletePost"])
+  onCreateCommentByPostId(postCommentsId: ID!): Comment
+    @aws_subscribe(mutations: ["createComment"])
+  onUpdateCommentByPostId(postCommentsId: ID!): Comment
+    @aws_subscribe(mutations: ["updateComment"])
+  onDeleteCommentByPostId(postCommentsId: ID!): Comment
+    @aws_subscribe(mutations: ["deleteComment"])
 }

@@ -5,13 +5,11 @@ interface GraphqlQueries {
   mutations: any;
   queries: any;
 }
-interface AppsyncProviderProps {
-  Models: any;
-  graphqlQueries: GraphqlQueries;
-}
+
 interface AppsyncContextValues {
   Models: any;
   graphqlQueries: GraphqlQueries;
+  schema: Object;
 }
 
 const AppsyncContext = createContext<AppsyncContextValues>({
@@ -21,11 +19,13 @@ const AppsyncContext = createContext<AppsyncContextValues>({
     mutations: {},
     queries: {},
   },
+  schema: {},
 });
 
-export const AppsyncProvider: React.FC<AppsyncProviderProps> = ({
+export const AppsyncProvider: React.FC<AppsyncContextValues> = ({
   Models,
   graphqlQueries,
+  schema,
   children,
 }) => {
   return (
@@ -33,6 +33,7 @@ export const AppsyncProvider: React.FC<AppsyncProviderProps> = ({
       value={{
         Models,
         graphqlQueries,
+        schema,
       }}
     >
       {children}

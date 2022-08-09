@@ -11,6 +11,25 @@ export const getBlog = /* GraphQL */ `
         items {
           id
           title
+          blog {
+            id
+            name
+            posts {
+              nextToken
+            }
+            createdAt
+            updatedAt
+          }
+          comments {
+            items {
+              id
+              content
+              createdAt
+              updatedAt
+              postCommentsId
+            }
+            nextToken
+          }
           createdAt
           updatedAt
           blogPostsId
@@ -33,6 +52,22 @@ export const listBlogs = /* GraphQL */ `
         id
         name
         posts {
+          items {
+            id
+            title
+            blog {
+              id
+              name
+              createdAt
+              updatedAt
+            }
+            comments {
+              nextToken
+            }
+            createdAt
+            updatedAt
+            blogPostsId
+          }
           nextToken
         }
         createdAt
@@ -51,6 +86,22 @@ export const getPost = /* GraphQL */ `
         id
         name
         posts {
+          items {
+            id
+            title
+            blog {
+              id
+              name
+              createdAt
+              updatedAt
+            }
+            comments {
+              nextToken
+            }
+            createdAt
+            updatedAt
+            blogPostsId
+          }
           nextToken
         }
         createdAt
@@ -59,6 +110,22 @@ export const getPost = /* GraphQL */ `
       comments {
         items {
           id
+          post {
+            id
+            title
+            blog {
+              id
+              name
+              createdAt
+              updatedAt
+            }
+            comments {
+              nextToken
+            }
+            createdAt
+            updatedAt
+            blogPostsId
+          }
           content
           createdAt
           updatedAt
@@ -85,10 +152,34 @@ export const listPosts = /* GraphQL */ `
         blog {
           id
           name
+          posts {
+            items {
+              id
+              title
+              createdAt
+              updatedAt
+              blogPostsId
+            }
+            nextToken
+          }
           createdAt
           updatedAt
         }
         comments {
+          items {
+            id
+            post {
+              id
+              title
+              createdAt
+              updatedAt
+              blogPostsId
+            }
+            content
+            createdAt
+            updatedAt
+            postCommentsId
+          }
           nextToken
         }
         createdAt
@@ -109,10 +200,34 @@ export const getComment = /* GraphQL */ `
         blog {
           id
           name
+          posts {
+            items {
+              id
+              title
+              createdAt
+              updatedAt
+              blogPostsId
+            }
+            nextToken
+          }
           createdAt
           updatedAt
         }
         comments {
+          items {
+            id
+            post {
+              id
+              title
+              createdAt
+              updatedAt
+              blogPostsId
+            }
+            content
+            createdAt
+            updatedAt
+            postCommentsId
+          }
           nextToken
         }
         createdAt
@@ -138,6 +253,25 @@ export const listComments = /* GraphQL */ `
         post {
           id
           title
+          blog {
+            id
+            name
+            posts {
+              nextToken
+            }
+            createdAt
+            updatedAt
+          }
+          comments {
+            items {
+              id
+              content
+              createdAt
+              updatedAt
+              postCommentsId
+            }
+            nextToken
+          }
           createdAt
           updatedAt
           blogPostsId
