@@ -88,79 +88,87 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({
     };
   }, []);
 
-  const signInOrCreateUser = async (
-    phone: string
-  ): Promise<SignInOrCreateResponse> => {
-    let user: CognitoUserWithAttributes | undefined;
-    let codeDeliveryDetails: CodeDeliveryDetails | undefined;
-    let error: undefined | string;
-    let action: SIGN_IN_OR_CREATE_ACTIONS = SIGN_IN_OR_CREATE_ACTIONS.SignUp;
+  const signInOrCreateUser = useCallback(
+    async (phone: string): Promise<SignInOrCreateResponse> => {
+      let user: CognitoUserWithAttributes | undefined;
+      let codeDeliveryDetails: CodeDeliveryDetails | undefined;
+      let error: undefined | string;
+      let action: SIGN_IN_OR_CREATE_ACTIONS = SIGN_IN_OR_CREATE_ACTIONS.SignUp;
 
-    // MFA is forced therefore we do not need a password
-    const hashedPassword = getPassword(phone);
-    try {
-      const signInUser = await Auth.signIn(phone, hashedPassword);
+      // MFA is forced therefore we do not need a password
+      const hashedPassword = getPassword(phone);
+      try {
+        const signInUser = await Auth.signIn(phone, hashedPassword);
 
-      // sign in have a different response so we just format it to be consistent
-      codeDeliveryDetails =
-        signInUser.challengeName === "SMS_MFA"
-          ? {
-              AttributeName: "phone_number",
-              DeliveryMedium:
-                signInUser.challengeParam.CODE_DELIVERY_DELIVERY_MEDIUM,
-              Destination: signInUser.challengeParam.CODE_DELIVERY_DESTINATION,
-            }
-          : undefined;
-      action = SIGN_IN_OR_CREATE_ACTIONS.SignIn;
+        // sign in have a different response so we just format it to be consistent
+        codeDeliveryDetails =
+          signInUser.challengeName === "SMS_MFA"
+            ? {
+                AttributeName: "phone_number",
+                DeliveryMedium:
+                  signInUser.challengeParam.CODE_DELIVERY_DELIVERY_MEDIUM,
+                Destination:
+                  signInUser.challengeParam.CODE_DELIVERY_DESTINATION,
+              }
+            : undefined;
+        action = SIGN_IN_OR_CREATE_ACTIONS.SignIn;
 
-      setCognitoUserSignIn(signInUser);
+        setCognitoUserSignIn(signInUser);
 
-      // only set authenticated if there is no MFA
-      // if there is MFA authenticated will be set after confirming the code
-      if (!codeDeliveryDetails) {
-        setAuthenticated(true);
+        // only set authenticated if there is no MFA
+        // if there is MFA authenticated will be set after confirming the code
+        if (!codeDeliveryDetails) {
+          setAuthenticated(true);
+        }
+
+        user =
+          (await Auth.currentAuthenticatedUser()) as CognitoUserWithAttributes;
+      } catch (err) {
+        const e = err as { code?: string; message?: string };
+        if (!e?.code) {
+          return {
+            action,
+            error: e.message || "Unknown Error",
+          };
+        }
+
+        error = e.code;
+
+        if (e.code === SIGN_IN_ERROR_CODES.UserNotFoundException) {
+          const result = await Auth.signUp({
+            username: phone,
+            password: hashedPassword,
+            attributes: {
+              phone_number: phone,
+            },
+          });
+
+          codeDeliveryDetails = result.codeDeliveryDetails;
+          user = result.user;
+        } else if (e.code === SIGN_IN_ERROR_CODES.UserNotConfirmedException) {
+          const result = await Auth.resendSignUp(phone);
+
+          codeDeliveryDetails = result.codeDeliveryDetails;
+        }
       }
 
-      user =
-        (await Auth.currentAuthenticatedUser()) as CognitoUserWithAttributes;
-    } catch (err) {
-      const e = err as { code?: string; message?: string };
-      if (!e?.code) {
-        return {
-          action,
-          error: e.message || "Unknown Error",
-        };
-      }
+      setCognitoUser(user);
 
-      error = e.code;
-
-      if (e.code === SIGN_IN_ERROR_CODES.UserNotFoundException) {
-        const result = await Auth.signUp({
-          username: phone,
-          password: hashedPassword,
-          attributes: {
-            phone_number: phone,
-          },
-        });
-
-        codeDeliveryDetails = result.codeDeliveryDetails;
-        user = result.user;
-      } else if (e.code === SIGN_IN_ERROR_CODES.UserNotConfirmedException) {
-        const result = await Auth.resendSignUp(phone);
-
-        codeDeliveryDetails = result.codeDeliveryDetails;
-      }
-    }
-
-    setCognitoUser(user);
-
-    return {
-      user,
-      codeDeliveryDetails: codeDeliveryDetails,
-      error,
-      action,
-    };
-  };
+      return {
+        user,
+        codeDeliveryDetails: codeDeliveryDetails,
+        error,
+        action,
+      };
+    },
+    [
+      Auth,
+      setAuthenticated,
+      setCognitoUser,
+      setCognitoUserSignIn,
+      SIGN_IN_OR_CREATE_ACTIONS,
+    ]
+  );
 
   const getPassword = (phoneNumber: string) => MD5(`${phoneNumber}`).toString();
 
