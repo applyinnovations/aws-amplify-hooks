@@ -57,17 +57,28 @@ export var AuthProvider = function (_a) {
     var _c = useState(), cognitoUser = _c[0], setCognitoUser = _c[1];
     var _d = useState(), cognitoUserSignIn = _d[0], setCognitoUserSignIn = _d[1];
     var handleSessionStart = useCallback(function () { return __awaiter(void 0, void 0, void 0, function () {
-        var user;
+        var user, e_1;
         return __generator(this, function (_a) {
             switch (_a.label) {
                 case 0:
                     onSessionStart();
-                    return [4 /*yield*/, Auth.currentAuthenticatedUser()];
+                    _a.label = 1;
                 case 1:
+                    _a.trys.push([1, 3, , 4]);
+                    return [4 /*yield*/, Auth.currentAuthenticatedUser({
+                            bypassCache: true,
+                        })];
+                case 2:
                     user = _a.sent();
                     setCognitoUser(user);
                     setAuthenticated(true);
-                    return [2 /*return*/];
+                    return [3 /*break*/, 4];
+                case 3:
+                    e_1 = _a.sent();
+                    onSessionFailed();
+                    setAuthenticated(false);
+                    return [3 /*break*/, 4];
+                case 4: return [2 /*return*/];
             }
         });
     }); }, [onSessionStart]);
@@ -217,7 +228,7 @@ export var AuthProvider = function (_a) {
         });
     }); }, [Auth, cognitoUser]);
     var confirmSignUp = useCallback(function (phoneNumber, answer) { return __awaiter(void 0, void 0, void 0, function () {
-        var user, updatedUser, e_1;
+        var user, updatedUser, e_2;
         return __generator(this, function (_a) {
             switch (_a.label) {
                 case 0:
@@ -241,14 +252,14 @@ export var AuthProvider = function (_a) {
                     setAuthenticated(true);
                     return [2 /*return*/, { success: true }];
                 case 6:
-                    e_1 = _a.sent();
-                    if (e_1 === "No current user") {
+                    e_2 = _a.sent();
+                    if (e_2 === "No current user") {
                         return [2 /*return*/, {
                                 success: false,
                                 error: ANSWER_CHALLENGE_ERRORS.INCORRECT_CODE,
                             }];
                     }
-                    throw e_1;
+                    throw e_2;
                 case 7: return [2 /*return*/];
             }
         });
@@ -264,7 +275,7 @@ export var AuthProvider = function (_a) {
         });
     }); }, [Auth]);
     var confirmSignIn = useCallback(function (answer) { return __awaiter(void 0, void 0, void 0, function () {
-        var user, e_2;
+        var user, e_3;
         return __generator(this, function (_a) {
             switch (_a.label) {
                 case 0:
@@ -279,15 +290,15 @@ export var AuthProvider = function (_a) {
                     setAuthenticated(true);
                     return [2 /*return*/, { success: true }];
                 case 3:
-                    e_2 = _a.sent();
-                    console.log("Sign In Error", e_2);
-                    if (e_2 === "No current user") {
+                    e_3 = _a.sent();
+                    console.log("Sign In Error", e_3);
+                    if (e_3 === "No current user") {
                         return [2 /*return*/, {
                                 success: false,
                                 error: ANSWER_CHALLENGE_ERRORS.INCORRECT_CODE,
                             }];
                     }
-                    throw e_2;
+                    throw e_3;
                 case 4: return [2 /*return*/];
             }
         });
