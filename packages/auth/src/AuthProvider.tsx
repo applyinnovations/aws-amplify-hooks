@@ -125,7 +125,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({
 
           // ensure SMS MFA is on set on user that have verified phone number
           if (
-            user.preferredMFA === "NOMFA" &&
+            user.preferredMFA === MFA_OPTIONS.NOMFA &&
             user.attributes?.phone_number_verified
           ) {
             await Auth.setPreferredMFA(signInUser, MFA_OPTIONS.SMS);
