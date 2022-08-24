@@ -1,4 +1,3 @@
-// @TODO Move this back to aws-amplify-hooks repo
 export var ANSWER_CHALLENGE_ERRORS;
 (function (ANSWER_CHALLENGE_ERRORS) {
     ANSWER_CHALLENGE_ERRORS["INCORRECT_CODE"] = "INCORRECT_CODE";
@@ -13,4 +12,9 @@ export var SIGN_IN_OR_CREATE_ACTIONS;
     SIGN_IN_OR_CREATE_ACTIONS["SignIn"] = "SignIn";
     SIGN_IN_OR_CREATE_ACTIONS["SignUp"] = "SignUp";
 })(SIGN_IN_OR_CREATE_ACTIONS || (SIGN_IN_OR_CREATE_ACTIONS = {}));
+export var MFA_OPTIONS;
+(function (MFA_OPTIONS) {
+    MFA_OPTIONS["NOMFA"] = "NOMFA";
+    MFA_OPTIONS["SMS"] = "SMS";
+})(MFA_OPTIONS || (MFA_OPTIONS = {}));
 //# sourceMappingURL=types.js.map

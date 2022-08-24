@@ -19,6 +19,11 @@ export enum SIGN_IN_OR_CREATE_ACTIONS {
   SignUp = "SignUp",
 }
 
+export enum MFA_OPTIONS {
+  NOMFA = "NOMFA",
+  SMS = "SMS",
+}
+
 export interface ConfirmationResult {
   success: boolean;
   error?: ANSWER_CHALLENGE_ERRORS;
@@ -73,6 +78,7 @@ export interface SignInOrCreateResponse {
 
 export type CognitoUserWithAttributes = CognitoUser & {
   attributes?: UserAttributes;
+  preferredMFA?: "NOMFA" | "SMS";
 };
 
 export interface AuthContextValues {

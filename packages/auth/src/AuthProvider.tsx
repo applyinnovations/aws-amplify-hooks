@@ -19,6 +19,7 @@ import {
   AuthContextValuesParams,
   CognitoUserWithAttributes,
   SignInOrCreateResponse,
+  MFA_OPTIONS,
 } from "./types";
 import { MD5 } from "crypto-js";
 
@@ -99,6 +100,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({
       const hashedPassword = getPassword(phone);
       try {
         const signInUser = await Auth.signIn(phone, hashedPassword);
+        console.log("user sign in user", signInUser);
 
         // sign in have a different response so we just format it to be consistent
         codeDeliveryDetails =
@@ -118,11 +120,21 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({
         // only set authenticated if there is no MFA
         // if there is MFA authenticated will be set after confirming the code
         if (!codeDeliveryDetails) {
-          setAuthenticated(true);
-        }
+          user =
+            (await Auth.currentAuthenticatedUser()) as CognitoUserWithAttributes;
 
-        user =
-          (await Auth.currentAuthenticatedUser()) as CognitoUserWithAttributes;
+          // ensure SMS MFA is on set on user that have verified phone number
+          if (
+            user.preferredMFA === "NOMFA" &&
+            user.attributes?.phone_number_verified
+          ) {
+            await Auth.setPreferredMFA(signInUser, MFA_OPTIONS.SMS);
+            // ask to sign in again with MFA enabled
+            return signInOrCreateUser(phone);
+          } else {
+            setAuthenticated(true);
+          }
+        }
       } catch (err) {
         const e = err as { code?: string; message?: string };
         console.log("Sign in error", e);
@@ -190,8 +202,9 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({
         await Auth.confirmSignUp(phoneNumber, answer);
         await Auth.signIn(phoneNumber, getPassword(phoneNumber));
         const user = await Auth.currentAuthenticatedUser();
-        await Auth.setPreferredMFA(user, "SMS");
-        setCognitoUser(user);
+        await Auth.setPreferredMFA(user, MFA_OPTIONS.SMS);
+        const updatedUser = await Auth.currentAuthenticatedUser();
+        setCognitoUser(updatedUser);
         setAuthenticated(true);
         return { success: true };
       } catch (e) {
@@ -237,7 +250,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({
   );
 
   const signOutUser = useCallback(
-    () => Promise.all([Auth.signOut(), DataStore.clear()]),
+    () => Promise.all([Auth.signOut(), DataStore.clear()]).then(() => {}),
     [Auth, DataStore]
   );
 

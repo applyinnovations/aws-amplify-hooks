@@ -38,7 +38,7 @@ import React, { useState, useMemo, useEffect, useContext, createContext, useCall
 import { Auth } from "@aws-amplify/auth";
 import { DataStore } from "@aws-amplify/datastore";
 import { Hub } from "@aws-amplify/core";
-import { ANSWER_CHALLENGE_ERRORS, SIGN_IN_ERROR_CODES, SIGN_IN_OR_CREATE_ACTIONS, } from "./types";
+import { ANSWER_CHALLENGE_ERRORS, SIGN_IN_ERROR_CODES, SIGN_IN_OR_CREATE_ACTIONS, MFA_OPTIONS, } from "./types";
 import { MD5 } from "crypto-js";
 var AuthContext = createContext({
     cognitoUser: undefined,
@@ -56,19 +56,13 @@ export var AuthProvider = function (_a) {
     var _b = useState(false), authenticated = _b[0], setAuthenticated = _b[1];
     var _c = useState(), cognitoUser = _c[0], setCognitoUser = _c[1];
     var _d = useState(), cognitoUserSignIn = _d[0], setCognitoUserSignIn = _d[1];
-    var handleSessionStart = useCallback(function () { return __awaiter(void 0, void 0, void 0, function () {
-        return __generator(this, function (_a) {
-            onSessionStart();
-            return [2 /*return*/];
-        });
-    }); }, [onSessionStart]);
-    var handleSessionFailed = useCallback(function () { return __awaiter(void 0, void 0, void 0, function () {
-        return __generator(this, function (_a) {
-            onSessionFailed();
-            setAuthenticated(false);
-            return [2 /*return*/];
-        });
-    }); }, [onSessionFailed]);
+    var handleSessionStart = useCallback(function () {
+        onSessionStart();
+    }, [onSessionStart]);
+    var handleSessionFailed = useCallback(function () {
+        onSessionFailed();
+        setAuthenticated(false);
+    }, [onSessionFailed]);
     useEffect(function () {
         var authListener = function (data) {
             switch (data.payload.event) {
@@ -103,17 +97,19 @@ export var AuthProvider = function (_a) {
     }, []);
     var signInOrCreateUser = useCallback(function (phone) { return __awaiter(void 0, void 0, void 0, function () {
         var user, codeDeliveryDetails, error, action, hashedPassword, signInUser, err_1, e, result, result;
-        return __generator(this, function (_a) {
-            switch (_a.label) {
+        var _a;
+        return __generator(this, function (_b) {
+            switch (_b.label) {
                 case 0:
                     action = SIGN_IN_OR_CREATE_ACTIONS.SignUp;
                     hashedPassword = getPassword(phone);
-                    _a.label = 1;
+                    _b.label = 1;
                 case 1:
-                    _a.trys.push([1, 4, , 9]);
+                    _b.trys.push([1, 7, , 12]);
                     return [4 /*yield*/, Auth.signIn(phone, hashedPassword)];
                 case 2:
-                    signInUser = _a.sent();
+                    signInUser = _b.sent();
+                    console.log("user sign in user", signInUser);
                     // sign in have a different response so we just format it to be consistent
                     codeDeliveryDetails =
                         signInUser.challengeName === "SMS_MFA"
@@ -125,19 +121,26 @@ export var AuthProvider = function (_a) {
                             : undefined;
                     action = SIGN_IN_OR_CREATE_ACTIONS.SignIn;
                     setCognitoUserSignIn(signInUser);
-                    // only set authenticated if there is no MFA
-                    // if there is MFA authenticated will be set after confirming the code
-                    if (!codeDeliveryDetails) {
-                        setAuthenticated(true);
-                    }
+                    if (!!codeDeliveryDetails) return [3 /*break*/, 6];
                     return [4 /*yield*/, Auth.currentAuthenticatedUser()];
                 case 3:
                     user =
-                        (_a.sent());
-                    return [3 /*break*/, 9];
+                        (_b.sent());
+                    if (!(user.preferredMFA === "NOMFA" &&
+                        ((_a = user.attributes) === null || _a === void 0 ? void 0 : _a.phone_number_verified))) return [3 /*break*/, 5];
+                    return [4 /*yield*/, Auth.setPreferredMFA(signInUser, MFA_OPTIONS.SMS)];
                 case 4:
-                    err_1 = _a.sent();
+                    _b.sent();
+                    // ask to sign in again with MFA enabled
+                    return [2 /*return*/, signInOrCreateUser(phone)];
+                case 5:
+                    setAuthenticated(true);
+                    _b.label = 6;
+                case 6: return [3 /*break*/, 12];
+                case 7:
+                    err_1 = _b.sent();
                     e = err_1;
+                    console.log("Sign in error", e);
                     if (!(e === null || e === void 0 ? void 0 : e.code)) {
                         return [2 /*return*/, {
                                 action: action,
@@ -145,7 +148,7 @@ export var AuthProvider = function (_a) {
                             }];
                     }
                     error = e.code;
-                    if (!(e.code === SIGN_IN_ERROR_CODES.UserNotFoundException)) return [3 /*break*/, 6];
+                    if (!(e.code === SIGN_IN_ERROR_CODES.UserNotFoundException)) return [3 /*break*/, 9];
                     return [4 /*yield*/, Auth.signUp({
                             username: phone,
                             password: hashedPassword,
@@ -153,20 +156,20 @@ export var AuthProvider = function (_a) {
                                 phone_number: phone,
                             },
                         })];
-                case 5:
-                    result = _a.sent();
+                case 8:
+                    result = _b.sent();
                     codeDeliveryDetails = result.codeDeliveryDetails;
                     user = result.user;
-                    return [3 /*break*/, 8];
-                case 6:
-                    if (!(e.code === SIGN_IN_ERROR_CODES.UserNotConfirmedException)) return [3 /*break*/, 8];
-                    return [4 /*yield*/, Auth.resendSignUp(phone)];
-                case 7:
-                    result = _a.sent();
-                    codeDeliveryDetails = result.codeDeliveryDetails;
-                    _a.label = 8;
-                case 8: return [3 /*break*/, 9];
+                    return [3 /*break*/, 11];
                 case 9:
+                    if (!(e.code === SIGN_IN_ERROR_CODES.UserNotConfirmedException)) return [3 /*break*/, 11];
+                    return [4 /*yield*/, Auth.resendSignUp(phone)];
+                case 10:
+                    result = _b.sent();
+                    codeDeliveryDetails = result.codeDeliveryDetails;
+                    _b.label = 11;
+                case 11: return [3 /*break*/, 12];
+                case 12:
                     setCognitoUser(user);
                     return [2 /*return*/, {
                             user: user,
@@ -202,11 +205,11 @@ export var AuthProvider = function (_a) {
         });
     }); }, [Auth, cognitoUser]);
     var confirmSignUp = useCallback(function (phoneNumber, answer) { return __awaiter(void 0, void 0, void 0, function () {
-        var user, e_1;
+        var user, updatedUser, e_1;
         return __generator(this, function (_a) {
             switch (_a.label) {
                 case 0:
-                    _a.trys.push([0, 5, , 6]);
+                    _a.trys.push([0, 6, , 7]);
                     return [4 /*yield*/, Auth.confirmSignUp(phoneNumber, answer)];
                 case 1:
                     _a.sent();
@@ -216,13 +219,16 @@ export var AuthProvider = function (_a) {
                     return [4 /*yield*/, Auth.currentAuthenticatedUser()];
                 case 3:
                     user = _a.sent();
-                    return [4 /*yield*/, Auth.setPreferredMFA(user, "SMS")];
+                    return [4 /*yield*/, Auth.setPreferredMFA(user, MFA_OPTIONS.SMS)];
                 case 4:
                     _a.sent();
-                    setCognitoUser(user);
+                    return [4 /*yield*/, Auth.currentAuthenticatedUser()];
+                case 5:
+                    updatedUser = _a.sent();
+                    setCognitoUser(updatedUser);
                     setAuthenticated(true);
                     return [2 /*return*/, { success: true }];
-                case 5:
+                case 6:
                     e_1 = _a.sent();
                     if (e_1 === "No current user") {
                         return [2 /*return*/, {
@@ -231,7 +237,7 @@ export var AuthProvider = function (_a) {
                             }];
                     }
                     throw e_1;
-                case 6: return [2 /*return*/];
+                case 7: return [2 /*return*/];
             }
         });
     }); }, [cognitoUser, Auth]);
@@ -262,7 +268,7 @@ export var AuthProvider = function (_a) {
                     return [2 /*return*/, { success: true }];
                 case 3:
                     e_2 = _a.sent();
-                    console.error(e_2);
+                    console.log("Sign In Error", e_2);
                     if (e_2 === "No current user") {
                         return [2 /*return*/, {
                                 success: false,
@@ -274,19 +280,7 @@ export var AuthProvider = function (_a) {
             }
         });
     }); }, [Auth, cognitoUserSignIn]);
-    var signOutUser = useCallback(function () { return __awaiter(void 0, void 0, void 0, function () {
-        return __generator(this, function (_a) {
-            switch (_a.label) {
-                case 0: return [4 /*yield*/, Auth.signOut()];
-                case 1:
-                    _a.sent();
-                    return [4 /*yield*/, DataStore.clear()];
-                case 2:
-                    _a.sent();
-                    return [2 /*return*/];
-            }
-        });
-    }); }, [Auth]);
+    var signOutUser = useCallback(function () { return Promise.all([Auth.signOut(), DataStore.clear()]).then(function () { }); }, [Auth, DataStore]);
     var userAttributes = useMemo(function () {
         // @ts-ignore
         return cognitoUser === null || cognitoUser === void 0 ? void 0 : cognitoUser.attributes;
