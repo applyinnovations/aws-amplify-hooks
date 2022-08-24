@@ -126,7 +126,7 @@ export var AuthProvider = function (_a) {
                 case 3:
                     user =
                         (_b.sent());
-                    if (!(user.preferredMFA === "NOMFA" &&
+                    if (!(user.preferredMFA === MFA_OPTIONS.NOMFA &&
                         ((_a = user.attributes) === null || _a === void 0 ? void 0 : _a.phone_number_verified))) return [3 /*break*/, 5];
                     return [4 /*yield*/, Auth.setPreferredMFA(signInUser, MFA_OPTIONS.SMS)];
                 case 4:
