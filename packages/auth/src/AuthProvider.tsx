@@ -13,10 +13,11 @@ import type { HubCallback } from "@aws-amplify/core";
 import { CognitoUser, CodeDeliveryDetails } from "amazon-cognito-identity-js";
 import {
   ANSWER_CHALLENGE_ERRORS,
+  SIGN_IN_ERROR_CODES,
+  SIGN_IN_OR_CREATE_ACTIONS,
   AuthContextValues,
   AuthContextValuesParams,
   CognitoUserWithAttributes,
-  SignInErrorCodes,
   SignInOrCreateResponse,
 } from "./types";
 import { MD5 } from "crypto-js";
@@ -58,9 +59,8 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({
   useEffect(() => {
     const authListener: HubCallback = (data) => {
       switch (data.payload.event) {
-        case "signIn":
+        case SIGN_IN_OR_CREATE_ACTIONS.SignIn:
           console.log("user signed in");
-          // handleSessionStart();
           break;
         case "signUp":
           console.log("user signed up");
@@ -78,8 +78,6 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({
 
     Hub.listen("auth", authListener);
     (async () => {
-      // @TODO remove automatic sign out
-      await Auth.signOut();
       Auth.currentAuthenticatedUser()
         .then(() => handleSessionStart())
         .catch((_) => handleSessionFailed());
@@ -96,7 +94,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({
     let user: CognitoUserWithAttributes | undefined;
     let codeDeliveryDetails: CodeDeliveryDetails | undefined;
     let error: undefined | string;
-    let action: "SignIn" | "SignUp" = "SignUp";
+    let action: SIGN_IN_OR_CREATE_ACTIONS = SIGN_IN_OR_CREATE_ACTIONS.SignUp;
 
     // MFA is forced therefore we do not need a password
     const hashedPassword = getPassword(phone);
@@ -113,7 +111,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({
               Destination: signInUser.challengeParam.CODE_DELIVERY_DESTINATION,
             }
           : undefined;
-      action = "SignIn";
+      action = SIGN_IN_OR_CREATE_ACTIONS.SignIn;
 
       setCognitoUserSignIn(signInUser);
 
@@ -136,7 +134,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({
 
       error = e.code;
 
-      if (e.code === SignInErrorCodes.UserNotFoundException) {
+      if (e.code === SIGN_IN_ERROR_CODES.UserNotFoundException) {
         const result = await Auth.signUp({
           username: phone,
           password: hashedPassword,
@@ -147,7 +145,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({
 
         codeDeliveryDetails = result.codeDeliveryDetails;
         user = result.user;
-      } else if (e.code === SignInErrorCodes.UserNotConfirmedException) {
+      } else if (e.code === SIGN_IN_ERROR_CODES.UserNotConfirmedException) {
         const result = await Auth.resendSignUp(phone);
 
         codeDeliveryDetails = result.codeDeliveryDetails;

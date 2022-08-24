@@ -11,9 +11,14 @@ export enum ANSWER_CHALLENGE_ERRORS {
   INCORRECT_CODE = "INCORRECT_CODE",
 }
 
-export enum SignInErrorCodes {
+export enum SIGN_IN_ERROR_CODES {
   UserNotFoundException = "UserNotFoundException",
   UserNotConfirmedException = "UserNotConfirmedException",
+}
+
+export enum SIGN_IN_OR_CREATE_ACTIONS {
+  SignIn = "SignIn",
+  SignUp = "SignUp",
 }
 
 export interface ConfirmationResult {
