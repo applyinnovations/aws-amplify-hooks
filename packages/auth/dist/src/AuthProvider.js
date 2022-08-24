@@ -56,9 +56,21 @@ export var AuthProvider = function (_a) {
     var _b = useState(false), authenticated = _b[0], setAuthenticated = _b[1];
     var _c = useState(), cognitoUser = _c[0], setCognitoUser = _c[1];
     var _d = useState(), cognitoUserSignIn = _d[0], setCognitoUserSignIn = _d[1];
-    var handleSessionStart = useCallback(function () {
-        onSessionStart();
-    }, [onSessionStart]);
+    var handleSessionStart = useCallback(function () { return __awaiter(void 0, void 0, void 0, function () {
+        var user;
+        return __generator(this, function (_a) {
+            switch (_a.label) {
+                case 0:
+                    onSessionStart();
+                    return [4 /*yield*/, Auth.currentAuthenticatedUser()];
+                case 1:
+                    user = _a.sent();
+                    setCognitoUser(user);
+                    setAuthenticated(true);
+                    return [2 /*return*/];
+            }
+        });
+    }); }, [onSessionStart]);
     var handleSessionFailed = useCallback(function () {
         onSessionFailed();
         setAuthenticated(false);
