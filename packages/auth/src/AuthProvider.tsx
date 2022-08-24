@@ -48,8 +48,11 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({
   const [cognitoUser, setCognitoUser] = useState<CognitoUserWithAttributes>();
   const [cognitoUserSignIn, setCognitoUserSignIn] = useState<CognitoUser>();
 
-  const handleSessionStart = useCallback(() => {
+  const handleSessionStart = useCallback(async () => {
     onSessionStart();
+    const user = await Auth.currentAuthenticatedUser();
+    setCognitoUser(user);
+    setAuthenticated(true);
   }, [onSessionStart]);
 
   const handleSessionFailed = useCallback(() => {
