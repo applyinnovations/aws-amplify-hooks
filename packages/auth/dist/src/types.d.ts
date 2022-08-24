@@ -1,4 +1,4 @@
-import { CognitoUser } from "amazon-cognito-identity-js";
+import { CognitoUser, CodeDeliveryDetails } from "amazon-cognito-identity-js";
 export interface AuthContextValuesParams {
     onSessionStart: () => void;
     onSessionFailed: () => void;
@@ -6,13 +6,24 @@ export interface AuthContextValuesParams {
 export declare enum ANSWER_CHALLENGE_ERRORS {
     INCORRECT_CODE = "INCORRECT_CODE"
 }
+export declare enum SIGN_IN_ERROR_CODES {
+    UserNotFoundException = "UserNotFoundException",
+    UserNotConfirmedException = "UserNotConfirmedException"
+}
+export declare enum SIGN_IN_OR_CREATE_ACTIONS {
+    SignIn = "SignIn",
+    SignUp = "SignUp"
+}
+export declare enum MFA_OPTIONS {
+    NOMFA = "NOMFA",
+    SMS = "SMS"
+}
 export interface ConfirmationResult {
     success: boolean;
     error?: ANSWER_CHALLENGE_ERRORS;
 }
 export interface SignUpParams {
     phoneNumber: string;
-    email: string;
     password?: string;
 }
 interface Address {
@@ -44,16 +55,28 @@ export interface UserAttributes {
     website?: string;
     zoneinfo?: string;
 }
+export interface AuthState {
+    needToConfirmMobileNumber: boolean;
+}
+export interface SignInOrCreateResponse {
+    user?: CognitoUserWithAttributes;
+    codeDeliveryDetails?: CodeDeliveryDetails;
+    error?: string;
+    action: "SignIn" | "SignUp";
+}
+export declare type CognitoUserWithAttributes = CognitoUser & {
+    attributes?: UserAttributes;
+    preferredMFA?: "NOMFA" | "SMS";
+};
 export interface AuthContextValues {
-    cognitoUser?: CognitoUser;
+    cognitoUser?: CognitoUserWithAttributes;
     authenticated: boolean;
-    signInUser: (phoneNumber: string, password?: string) => Promise<void>;
-    signUpUser: (params: SignUpParams) => Promise<CognitoUser | undefined>;
+    signInOrCreateUser: (phoneNumber: string, password?: string) => Promise<SignInOrCreateResponse>;
     resendSignUp: (phoneNumber: string) => Promise<void>;
     confirmSignUp: (phoneNumber: string, answer: string) => Promise<ConfirmationResult>;
     confirmSignIn: (answer: string) => Promise<ConfirmationResult>;
     signOutUser: () => Promise<void>;
     updateUserAttributes: (data: UserAttributes) => Promise<void>;
-    userAttributes: UserAttributes | null;
+    userAttributes?: UserAttributes | null;
 }
 export {};

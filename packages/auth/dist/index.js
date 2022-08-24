@@ -1,4 +1,3 @@
-export * from './src/types';
-export { AuthProvider } from './src/AuthProvider';
-export { useAuth } from './src/useAuth';
+export * from "./src/types";
+export { AuthProvider, useAuth } from "./src/AuthProvider";
 //# sourceMappingURL=index.js.map
