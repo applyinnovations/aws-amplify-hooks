@@ -47,11 +47,11 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({
   const [cognitoUser, setCognitoUser] = useState<CognitoUserWithAttributes>();
   const [cognitoUserSignIn, setCognitoUserSignIn] = useState<CognitoUser>();
 
-  const handleSessionStart = useCallback(async () => {
+  const handleSessionStart = useCallback(() => {
     onSessionStart();
   }, [onSessionStart]);
 
-  const handleSessionFailed = useCallback(async () => {
+  const handleSessionFailed = useCallback(() => {
     onSessionFailed();
     setAuthenticated(false);
   }, [onSessionFailed]);
@@ -125,6 +125,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({
           (await Auth.currentAuthenticatedUser()) as CognitoUserWithAttributes;
       } catch (err) {
         const e = err as { code?: string; message?: string };
+        console.log("Sign in error", e);
         if (!e?.code) {
           return {
             action,
@@ -156,7 +157,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({
 
       return {
         user,
-        codeDeliveryDetails: codeDeliveryDetails,
+        codeDeliveryDetails,
         error,
         action,
       };
@@ -222,7 +223,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({
         setAuthenticated(true);
         return { success: true };
       } catch (e) {
-        console.error(e);
+        console.log("Sign In Error", e);
         if (e === "No current user") {
           return {
             success: false,
@@ -235,10 +236,10 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({
     [Auth, cognitoUserSignIn]
   );
 
-  const signOutUser = useCallback(async () => {
-    await Auth.signOut();
-    await DataStore.clear();
-  }, [Auth]);
+  const signOutUser = useCallback(
+    () => Promise.all([Auth.signOut(), DataStore.clear()]),
+    [Auth, DataStore]
+  );
 
   const userAttributes = useMemo(() => {
     // @ts-ignore

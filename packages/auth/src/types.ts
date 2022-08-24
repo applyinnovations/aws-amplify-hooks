@@ -1,6 +1,4 @@
-﻿// @TODO Move this back to aws-amplify-hooks repo
-
-import { CognitoUser, CodeDeliveryDetails } from "amazon-cognito-identity-js";
+﻿import { CognitoUser, CodeDeliveryDetails } from "amazon-cognito-identity-js";
 
 export interface AuthContextValuesParams {
   onSessionStart: () => void;
