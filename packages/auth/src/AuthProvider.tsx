@@ -50,9 +50,16 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({
 
   const handleSessionStart = useCallback(async () => {
     onSessionStart();
-    const user = await Auth.currentAuthenticatedUser();
-    setCognitoUser(user);
-    setAuthenticated(true);
+    try {
+      const user = await Auth.currentAuthenticatedUser({
+        bypassCache: true,
+      });
+      setCognitoUser(user);
+      setAuthenticated(true);
+    } catch (e) {
+      onSessionFailed();
+      setAuthenticated(false);
+    }
   }, [onSessionStart]);
 
   const handleSessionFailed = useCallback(() => {
