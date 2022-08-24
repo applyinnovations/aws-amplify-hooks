@@ -38,7 +38,7 @@ import React, { useState, useMemo, useEffect, useContext, createContext, useCall
 import { Auth } from "@aws-amplify/auth";
 import { DataStore } from "@aws-amplify/datastore";
 import { Hub } from "@aws-amplify/core";
-import { ANSWER_CHALLENGE_ERRORS, SignInErrorCodes, } from "./types";
+import { ANSWER_CHALLENGE_ERRORS, SIGN_IN_ERROR_CODES, SIGN_IN_OR_CREATE_ACTIONS, } from "./types";
 import { MD5 } from "crypto-js";
 var AuthContext = createContext({
     cognitoUser: undefined,
@@ -72,9 +72,8 @@ export var AuthProvider = function (_a) {
     useEffect(function () {
         var authListener = function (data) {
             switch (data.payload.event) {
-                case "signIn":
+                case SIGN_IN_OR_CREATE_ACTIONS.SignIn:
                     console.log("user signed in");
-                    // handleSessionStart();
                     break;
                 case "signUp":
                     console.log("user signed up");
@@ -92,30 +91,22 @@ export var AuthProvider = function (_a) {
         Hub.listen("auth", authListener);
         (function () { return __awaiter(void 0, void 0, void 0, function () {
             return __generator(this, function (_a) {
-                switch (_a.label) {
-                    case 0: 
-                    // @TODO remove automatic sign out
-                    return [4 /*yield*/, Auth.signOut()];
-                    case 1:
-                        // @TODO remove automatic sign out
-                        _a.sent();
-                        Auth.currentAuthenticatedUser()
-                            .then(function () { return handleSessionStart(); })
-                            .catch(function (_) { return handleSessionFailed(); });
-                        return [2 /*return*/];
-                }
+                Auth.currentAuthenticatedUser()
+                    .then(function () { return handleSessionStart(); })
+                    .catch(function (_) { return handleSessionFailed(); });
+                return [2 /*return*/];
             });
         }); })();
         return function () {
             Hub.remove("auth", authListener);
         };
     }, []);
-    var signInOrCreateUser = function (phone) { return __awaiter(void 0, void 0, void 0, function () {
+    var signInOrCreateUser = useCallback(function (phone) { return __awaiter(void 0, void 0, void 0, function () {
         var user, codeDeliveryDetails, error, action, hashedPassword, signInUser, err_1, e, result, result;
         return __generator(this, function (_a) {
             switch (_a.label) {
                 case 0:
-                    action = "SignUp";
+                    action = SIGN_IN_OR_CREATE_ACTIONS.SignUp;
                     hashedPassword = getPassword(phone);
                     _a.label = 1;
                 case 1:
@@ -132,7 +123,7 @@ export var AuthProvider = function (_a) {
                                 Destination: signInUser.challengeParam.CODE_DELIVERY_DESTINATION,
                             }
                             : undefined;
-                    action = "SignIn";
+                    action = SIGN_IN_OR_CREATE_ACTIONS.SignIn;
                     setCognitoUserSignIn(signInUser);
                     // only set authenticated if there is no MFA
                     // if there is MFA authenticated will be set after confirming the code
@@ -154,7 +145,7 @@ export var AuthProvider = function (_a) {
                             }];
                     }
                     error = e.code;
-                    if (!(e.code === SignInErrorCodes.UserNotFoundException)) return [3 /*break*/, 6];
+                    if (!(e.code === SIGN_IN_ERROR_CODES.UserNotFoundException)) return [3 /*break*/, 6];
                     return [4 /*yield*/, Auth.signUp({
                             username: phone,
                             password: hashedPassword,
@@ -168,7 +159,7 @@ export var AuthProvider = function (_a) {
                     user = result.user;
                     return [3 /*break*/, 8];
                 case 6:
-                    if (!(e.code === SignInErrorCodes.UserNotConfirmedException)) return [3 /*break*/, 8];
+                    if (!(e.code === SIGN_IN_ERROR_CODES.UserNotConfirmedException)) return [3 /*break*/, 8];
                     return [4 /*yield*/, Auth.resendSignUp(phone)];
                 case 7:
                     result = _a.sent();
@@ -185,7 +176,13 @@ export var AuthProvider = function (_a) {
                         }];
             }
         });
-    }); };
+    }); }, [
+        Auth,
+        setAuthenticated,
+        setCognitoUser,
+        setCognitoUserSignIn,
+        SIGN_IN_OR_CREATE_ACTIONS,
+    ]);
     var getPassword = function (phoneNumber) { return MD5("" + phoneNumber).toString(); };
     var updateUserAttributes = useCallback(function (data) { return __awaiter(void 0, void 0, void 0, function () {
         var newCognitoUser;
