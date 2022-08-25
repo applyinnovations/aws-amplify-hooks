@@ -62,6 +62,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({
   }, [onSessionStart]);
 
   const handleSessionFailed = useCallback(() => {
+    setCognitoUser(undefined);
     setAuthenticated(false);
     onSessionFailed();
   }, [onSessionFailed]);
