@@ -80,6 +80,7 @@ export var AuthProvider = function (_a) {
         });
     }); }, [onSessionStart]);
     var handleSessionFailed = useCallback(function () {
+        setCognitoUser(undefined);
         setAuthenticated(false);
         onSessionFailed();
     }, [onSessionFailed]);
