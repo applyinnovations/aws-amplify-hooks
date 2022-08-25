@@ -61,30 +61,27 @@ export var AuthProvider = function (_a) {
         return __generator(this, function (_a) {
             switch (_a.label) {
                 case 0:
-                    onSessionStart();
-                    _a.label = 1;
-                case 1:
-                    _a.trys.push([1, 3, , 4]);
+                    _a.trys.push([0, 2, , 3]);
                     return [4 /*yield*/, Auth.currentAuthenticatedUser({
                             bypassCache: true,
                         })];
-                case 2:
+                case 1:
                     user = _a.sent();
                     setCognitoUser(user);
                     setAuthenticated(true);
-                    return [3 /*break*/, 4];
-                case 3:
+                    onSessionStart();
+                    return [3 /*break*/, 3];
+                case 2:
                     e_1 = _a.sent();
-                    onSessionFailed();
-                    setAuthenticated(false);
-                    return [3 /*break*/, 4];
-                case 4: return [2 /*return*/];
+                    handleSessionFailed();
+                    return [3 /*break*/, 3];
+                case 3: return [2 /*return*/];
             }
         });
     }); }, [onSessionStart]);
     var handleSessionFailed = useCallback(function () {
-        onSessionFailed();
         setAuthenticated(false);
+        onSessionFailed();
     }, [onSessionFailed]);
     useEffect(function () {
         var authListener = function (data) {
