@@ -5,9 +5,9 @@ import { StorageObject } from "./types";
 export const usePrevious = <T,>(value: T) => {
   const ref = useRef<T>();
 
-  useEffect(() => {
+  if (ref.current === undefined) {
     ref.current = value;
-  }, [value]);
+  }
 
   return ref.current;
 };

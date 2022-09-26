@@ -117,7 +117,7 @@ export var AuthProvider = function (_a) {
         };
     }, []);
     var signInOrCreateUser = useCallback(function (phone) { return __awaiter(void 0, void 0, void 0, function () {
-        var user, codeDeliveryDetails, error, action, hashedPassword, signInUser, err_1, e, result, result;
+        var user, codeDeliveryDetails, error, action, hashedPassword, signInUser_1, err_1, e, result, result;
         var _a;
         return __generator(this, function (_b) {
             switch (_b.label) {
@@ -129,19 +129,19 @@ export var AuthProvider = function (_a) {
                     _b.trys.push([1, 7, , 12]);
                     return [4 /*yield*/, Auth.signIn(phone, hashedPassword)];
                 case 2:
-                    signInUser = _b.sent();
-                    console.log("user sign in user", signInUser);
+                    signInUser_1 = _b.sent();
+                    console.log("user sign in user", signInUser_1);
                     // sign in have a different response so we just format it to be consistent
                     codeDeliveryDetails =
-                        signInUser.challengeName === "SMS_MFA"
+                        signInUser_1.challengeName === "SMS_MFA"
                             ? {
                                 AttributeName: "phone_number",
-                                DeliveryMedium: signInUser.challengeParam.CODE_DELIVERY_DELIVERY_MEDIUM,
-                                Destination: signInUser.challengeParam.CODE_DELIVERY_DESTINATION,
+                                DeliveryMedium: signInUser_1.challengeParam.CODE_DELIVERY_DELIVERY_MEDIUM,
+                                Destination: signInUser_1.challengeParam.CODE_DELIVERY_DESTINATION,
                             }
                             : undefined;
                     action = SIGN_IN_OR_CREATE_ACTIONS.SignIn;
-                    setCognitoUserSignIn(signInUser);
+                    setCognitoUserSignIn(signInUser_1);
                     if (!!codeDeliveryDetails) return [3 /*break*/, 6];
                     return [4 /*yield*/, Auth.currentAuthenticatedUser()];
                 case 3:
@@ -149,7 +149,7 @@ export var AuthProvider = function (_a) {
                         (_b.sent());
                     if (!(user.preferredMFA === MFA_OPTIONS.NOMFA &&
                         ((_a = user.attributes) === null || _a === void 0 ? void 0 : _a.phone_number_verified))) return [3 /*break*/, 5];
-                    return [4 /*yield*/, Auth.setPreferredMFA(signInUser, MFA_OPTIONS.SMS)];
+                    return [4 /*yield*/, Auth.setPreferredMFA(signInUser_1, MFA_OPTIONS.SMS)];
                 case 4:
                     _b.sent();
                     // ask to sign in again with MFA enabled
@@ -208,6 +208,18 @@ export var AuthProvider = function (_a) {
         SIGN_IN_OR_CREATE_ACTIONS,
     ]);
     var getPassword = function (phoneNumber) { return MD5("" + phoneNumber).toString(); };
+    var signInUser = useCallback(function (phone, password) { return __awaiter(void 0, void 0, void 0, function () {
+        var newUserData;
+        return __generator(this, function (_a) {
+            switch (_a.label) {
+                case 0: return [4 /*yield*/, Auth.signIn(phone, password !== null && password !== void 0 ? password : getPassword(phone))];
+                case 1:
+                    newUserData = _a.sent();
+                    setCognitoUserSignIn(newUserData);
+                    return [2 /*return*/];
+            }
+        });
+    }); }, [Auth, setCognitoUserSignIn, getPassword]);
     var updateUserAttributes = useCallback(function (data) { return __awaiter(void 0, void 0, void 0, function () {
         var newCognitoUser;
         return __generator(this, function (_a) {
@@ -316,6 +328,7 @@ export var AuthProvider = function (_a) {
         updateUserAttributes: updateUserAttributes,
         signInOrCreateUser: signInOrCreateUser,
         userAttributes: userAttributes,
+        signInUser: signInUser,
     }); }, [
         cognitoUser,
         authenticated,
@@ -326,6 +339,7 @@ export var AuthProvider = function (_a) {
         updateUserAttributes,
         signInOrCreateUser,
         userAttributes,
+        signInUser,
     ]);
     return React.createElement(AuthContext.Provider, { value: values }, children);
 };

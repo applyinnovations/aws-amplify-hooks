@@ -153,10 +153,7 @@ export var resolveFiles = function (files) { return __awaiter(void 0, void 0, vo
                     }); }))];
             case 1:
                 fileUploadReponses = _a.sent();
-                return [2 /*return*/, fileUploadReponses.reduce(
-                    // @TODO fix ts
-                    // @ts-expect-error
-                    function (acc, _a) {
+                return [2 /*return*/, fileUploadReponses.reduce(function (acc, _a) {
                         var _b;
                         var k = _a[0], v = _a[1];
                         return (__assign(__assign({}, acc), (_b = {}, _b[k] = v, _b)));

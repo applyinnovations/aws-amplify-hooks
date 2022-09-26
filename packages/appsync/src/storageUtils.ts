@@ -101,9 +101,7 @@ export const resolveFiles = async <
   );
 
   return fileUploadReponses.reduce(
-    // @TODO fix ts
-    // @ts-expect-error
-    (acc, [k, v]) => ({ ...acc, [k]: v }),
+    (acc, [k, v]) => ({ ...acc, [k as string]: v }),
     {} as R
   );
 };

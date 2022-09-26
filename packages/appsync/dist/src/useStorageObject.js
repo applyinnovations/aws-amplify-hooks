@@ -2,9 +2,9 @@ import { useEffect, useRef, useState } from "react";
 import { getFileUrl } from "./storageUtils";
 export var usePrevious = function (value) {
     var ref = useRef();
-    useEffect(function () {
+    if (ref.current === undefined) {
         ref.current = value;
-    }, [value]);
+    }
     return ref.current;
 };
 var sortObjectKeys = function (unorderedObject) {
