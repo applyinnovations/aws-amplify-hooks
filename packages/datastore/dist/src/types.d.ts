@@ -1,14 +1,9 @@
-import { StorageAccessLevel } from "@aws-amplify/storage";
-export { StorageAccessLevel } from "@aws-amplify/storage";
-export declare enum StorageObjectLevel {
-    private = "private",
-    protected = "protected",
-    public = "public"
-}
+import { StorageAccessLevel } from '@aws-amplify/storage';
+export { StorageAccessLevel } from '@aws-amplify/storage';
 export interface StorageObject {
     key: string;
     identityId?: string | null;
-    level: StorageObjectLevel;
+    level: Uppercase<StorageAccessLevel> | StorageAccessLevel;
     contentType: string;
 }
 export declare type GetKeys<T, J> = {
