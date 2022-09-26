@@ -13,6 +13,8 @@ import {
   QueryHookOptions,
   MutationHookOptions,
   ApolloProvider,
+  useApolloClient,
+  SubscriptionHookOptions,
 } from "@apollo/client";
 import { Files } from "./types";
 import { resolveFiles } from "./storageUtils";
@@ -23,9 +25,9 @@ export interface GraphqlProviderProps {
 }
 
 export const createAppSyncHooks = <
-  QT extends Record<string, { variables: any; data: any }>,
-  MT extends Record<string, { variables: any; data: any }>,
-  ST extends Record<string, { data: any }>
+  QT extends Record<string, { variables?: any; data: any }>,
+  MT extends Record<string, { variables?: any; data: any }>,
+  ST extends Record<string, { variables?: any; data: any }>
 >({
   queries,
   mutations,
@@ -33,6 +35,7 @@ export const createAppSyncHooks = <
   url,
   region,
   type,
+  refetchSubscriptions,
 }: {
   queries: Record<keyof QT, string>;
   mutations: Record<keyof MT, string>;
@@ -40,6 +43,9 @@ export const createAppSyncHooks = <
   url: string;
   type: "AMAZON_COGNITO_USER_POOLS";
   region: string;
+  refetchSubscriptions?: Partial<
+    Record<keyof ST, (keyof QT)[] | "all" | "active">
+  >;
 }) => {
   const buildClient = ({ token }: { token?: string }) => {
     const auth = {
@@ -65,11 +71,50 @@ export const createAppSyncHooks = <
     });
   };
 
+  const RefetchSubscription: React.FC<{
+    mutation: keyof ST;
+    include: "all" | "active" | (keyof QT)[];
+  }> = ({ mutation, include }) => {
+    const client = useApolloClient();
+    useSubscription(mutation, {
+      onSubscriptionData: () => {
+        client.refetchQueries({
+          include: include as "all" | "active" | string[],
+        });
+      },
+    });
+    return null;
+  };
+
+  const RefetchSubscriptions: React.FC = () => {
+    return (
+      <>
+        {refetchSubscriptions
+          ? Object.entries(refetchSubscriptions).map(([mutation, include]) =>
+              include ? (
+                <RefetchSubscription
+                  mutation={mutation}
+                  key={mutation}
+                  include={include}
+                />
+              ) : null
+            )
+          : null}
+      </>
+    );
+  };
+
   const GraphqlProvider: React.FC<
     React.PropsWithChildren<GraphqlProviderProps>
   > = ({ token, children }) => {
     const client = buildClient({ token });
-    return <ApolloProvider client={client}>{children}</ApolloProvider>;
+
+    return (
+      <ApolloProvider client={client}>
+        <RefetchSubscriptions />
+        {children}
+      </ApolloProvider>
+    );
   };
 
   const GraphqlWrapper: React.FC<React.PropsWithChildren<{}>> = ({
@@ -87,8 +132,14 @@ export const createAppSyncHooks = <
     return <GraphqlProvider token={token}>{children}</GraphqlProvider>;
   };
 
-  const useSubscription = <T extends keyof ST>(subscription: T) =>
-    useSubscriptionApollo<ST[T]["data"]>(gql(subscriptions[subscription]));
+  const useSubscription = <T extends keyof ST>(
+    subscription: T,
+    options: SubscriptionHookOptions<ST[T]["variables"]>
+  ) =>
+    useSubscriptionApollo<ST[T]["data"]>(
+      gql(subscriptions[subscription]),
+      options
+    );
 
   const useQuery = <T extends keyof QT>(
     query: T,
