@@ -195,6 +195,17 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({
 
   const getPassword = (phoneNumber: string) => MD5(`${phoneNumber}`).toString();
 
+  const signInUser = useCallback(
+    async (phone: string, password?: string) => {
+      const newUserData = await Auth.signIn(
+        phone,
+        password ?? getPassword(phone)
+      );
+      setCognitoUserSignIn(newUserData);
+    },
+    [Auth, setCognitoUserSignIn, getPassword]
+  );
+
   const updateUserAttributes = useCallback(
     async (data) => {
       await Auth.updateUserAttributes(cognitoUser, data);
@@ -280,6 +291,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({
       updateUserAttributes,
       signInOrCreateUser,
       userAttributes,
+      signInUser,
     }),
     [
       cognitoUser,
@@ -291,6 +303,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({
       updateUserAttributes,
       signInOrCreateUser,
       userAttributes,
+      signInUser,
     ]
   );
 

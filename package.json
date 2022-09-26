@@ -1,13 +1,14 @@
 {
   "name": "aws-amplify-hooks",
-  "version": "4.0.1",
+  "version": "4.1.0",
   "main": "index.js",
   "repository": "https://github.com/applyinnovations/aws-amplify-hooks.git",
   "license": "MIT",
   "scripts": {
     "build:auth": "cd packages/auth && yarn build",
     "build:datastore": "cd packages/datastore && yarn build",
-    "build": "yarn build:auth && yarn build:datastore"
+    "build:appsync": "cd packages/appsync && yarn build",
+    "build": "yarn build:auth && yarn build:datastore && yarn build:appsync"
   },
   "devDependencies": {
     "aws-amplify": "^4.3.19",

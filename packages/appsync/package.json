@@ -1,0 +1,25 @@
+{
+  "name": "@aws-amplify-hooks/appsync",
+  "version": "0.0.1",
+  "license": "MIT",
+  "scripts": {
+    "build": "rm -rf dist/ && tsc",
+    "prepublish": "npm run build"
+  },
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "dependencies": {
+    "@apollo/client": "^3.6.9",
+    "aws-appsync-auth-link": "^3.0.7",
+    "aws-appsync-subscription-link": "^3.1.0",
+    "aws-amplify": "^4.3.26",
+    "uuid": "8.3.2"
+  },
+  "devDependencies": {
+    "@types/react": "18.0.0",
+    "@types/uuid": "8.3.1"
+  },
+  "peerDependencies": {
+    "react": "18.0.0"
+  }
+}
