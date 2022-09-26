@@ -10,7 +10,7 @@ export enum StorageObjectLevel {
 export interface StorageObject {
   key: string;
   identityId?: string | null;
-  level: StorageObjectLevel;
+  level: Uppercase<StorageAccessLevel> | StorageAccessLevel;
   contentType: string;
 }
 
