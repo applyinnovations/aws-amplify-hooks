@@ -1,5 +1,5 @@
-﻿import { StorageAccessLevel } from "@aws-amplify/storage";
-export { StorageAccessLevel } from "@aws-amplify/storage";
+﻿import { StorageAccessLevel } from '@aws-amplify/storage';
+export { StorageAccessLevel } from '@aws-amplify/storage';
 
 export enum StorageObjectLevel {
   private = "private",
