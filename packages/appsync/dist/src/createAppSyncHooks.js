@@ -59,11 +59,11 @@ var __rest = (this && this.__rest) || function (s, e) {
 import React, { useEffect, useState } from "react";
 import { createAuthLink } from "aws-appsync-auth-link";
 import { createSubscriptionHandshakeLink } from "aws-appsync-subscription-link";
-import { gql, ApolloClient, InMemoryCache, HttpLink, ApolloLink, useQuery as useQueryApollo, useMutation as useMutationApollo, useSubscription as useSubscriptionApollo, ApolloProvider, useApolloClient, } from "@apollo/client";
+import { gql, ApolloClient, InMemoryCache, HttpLink, ApolloLink, useQuery as useQueryApollo, useMutation as useMutationApollo, useSubscription as useSubscriptionApollo, ApolloProvider, } from "@apollo/client";
 import { resolveFiles } from "./storageUtils";
 import { Auth } from "aws-amplify";
 export var createAppSyncHooks = function (_a) {
-    var queries = _a.queries, mutations = _a.mutations, subscriptions = _a.subscriptions, url = _a.url, region = _a.region, type = _a.type, refetchSubscriptions = _a.refetchSubscriptions;
+    var queries = _a.queries, mutations = _a.mutations, subscriptions = _a.subscriptions, url = _a.url, region = _a.region, type = _a.type;
     var buildClient = function (_a) {
         var token = _a.token;
         var auth = {
@@ -83,26 +83,6 @@ export var createAppSyncHooks = function (_a) {
             cache: new InMemoryCache(),
         });
     };
-    var RefetchSubscription = function (_a) {
-        var mutation = _a.mutation, include = _a.include;
-        var client = useApolloClient();
-        useSubscription(mutation, {
-            onSubscriptionData: function () {
-                client.refetchQueries({
-                    include: include,
-                });
-            },
-        });
-        return null;
-    };
-    var RefetchSubscriptions = function () {
-        return (React.createElement(React.Fragment, null, refetchSubscriptions
-            ? Object.entries(refetchSubscriptions).map(function (_a) {
-                var mutation = _a[0], include = _a[1];
-                return include ? (React.createElement(RefetchSubscription, { mutation: mutation, key: mutation, include: include })) : null;
-            })
-            : null));
-    };
     var GraphqlProvider = function (_a) {
         var token = _a.token, children = _a.children;
         var client = buildClient({ token: token });
@@ -118,12 +98,10 @@ export var createAppSyncHooks = function (_a) {
                 setToken((_a = data === null || data === void 0 ? void 0 : data.accessToken) === null || _a === void 0 ? void 0 : _a.jwtToken);
             });
         }, []);
-        return (React.createElement(GraphqlProvider, { token: token },
-            React.createElement(RefetchSubscriptions, null),
-            children));
+        return React.createElement(GraphqlProvider, { token: token }, children);
     };
-    var useSubscription = function (subscription, options) {
-        return useSubscriptionApollo(gql(subscriptions[subscription]), options);
+    var useSubscription = function (subscription) {
+        return useSubscriptionApollo(gql(subscriptions[subscription]));
     };
     var useQuery = function (query, options) {
         if (options === void 0) { options = {}; }
