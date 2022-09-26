@@ -27,7 +27,7 @@ export declare type FileKeys<T> = GetKeys<
 
 export declare type FileArrayKeys<T> = GetKeys<
   T,
-  StorageObjectInput[] | null | undefined
+  Array<StorageObjectInput | null> | null | undefined
 >;
 
 export declare type FileInput = {

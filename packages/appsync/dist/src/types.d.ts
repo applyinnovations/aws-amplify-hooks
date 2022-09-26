@@ -15,7 +15,7 @@ export declare type GetKeys<T, J> = NonNullable<{
     [K in keyof T]: T[K] extends J ? K : never;
 }[keyof T]>;
 export declare type FileKeys<T> = GetKeys<T, StorageObjectInput | null | undefined>;
-export declare type FileArrayKeys<T> = GetKeys<T, StorageObjectInput[] | null | undefined>;
+export declare type FileArrayKeys<T> = GetKeys<T, Array<StorageObjectInput | null> | null | undefined>;
 export declare type FileInput = {
     file: File;
     level: StorageAccessLevel;

@@ -11,4 +11,4 @@ export declare const uploadFile: ({ file, level, contentType, }: {
     identityId: string;
 }>;
 export declare const getFileUrl: ({ key, contentType, identityId, level, }: StorageObjectInput) => Promise<string>;
-export declare const resolveFiles: <T extends Record<string, StorageObjectInput | StorageObjectInput[] | null | undefined>, R extends Partial<Record<NonNullable<{ [K in keyof T]: T[K] extends StorageObjectInput | null | undefined ? K : never; }[keyof T]> & NonNullable<{ [K_1 in keyof T]: T[K_1] extends StorageObjectInput[] | null | undefined ? K_1 : never; }[keyof T]>, StorageObjectInput | StorageObjectInput[]>> = {}>(files?: Files<T> | undefined) => Promise<R>;
+export declare const resolveFiles: <T extends Record<string, StorageObjectInput | StorageObjectInput[] | null | undefined>, R extends Partial<Record<NonNullable<{ [K in keyof T]: T[K] extends StorageObjectInput | null | undefined ? K : never; }[keyof T]> & NonNullable<{ [K_1 in keyof T]: T[K_1] extends (StorageObjectInput | null)[] | null | undefined ? K_1 : never; }[keyof T]>, StorageObjectInput | StorageObjectInput[]>> = {}>(files?: Files<T> | undefined) => Promise<R>;
