@@ -1,12 +1,6 @@
 ﻿import { StorageAccessLevel } from '@aws-amplify/storage';
 export { StorageAccessLevel } from '@aws-amplify/storage';
 
-export enum StorageObjectLevel {
-  private = "private",
-  protected = "protected",
-  public = "public",
-}
-
 export interface StorageObject {
   key: string;
   identityId?: string | null;
