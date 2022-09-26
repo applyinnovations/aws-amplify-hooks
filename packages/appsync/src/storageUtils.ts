@@ -1,6 +1,6 @@
 import { Auth } from "@aws-amplify/auth";
 import { Storage, StorageAccessLevel } from "@aws-amplify/storage";
-import { Files, StorageObject } from "./types";
+import { Files, StorageObjectInput } from "./types";
 import { v4 as uuid } from "uuid";
 
 const SIX_HOURS_IN_MS = 6 * 60 * 60 * 1000; // 6 hours in ms
@@ -42,10 +42,10 @@ export const getFileUrl = async ({
   contentType,
   identityId,
   level,
-}: StorageObject): Promise<string> => {
+}: StorageObjectInput): Promise<string> => {
   const result = await Storage.get(key, {
     contentType,
-    level: level.toLowerCase() as Lowercase<StorageObject["level"]>,
+    level: level.toLowerCase() as Lowercase<StorageObjectInput["level"]>,
     identityId: level === "protected" && identityId ? identityId : undefined,
   });
   if (typeof result === "string") {
@@ -55,9 +55,12 @@ export const getFileUrl = async ({
 };
 
 export const resolveFiles = async <
-  T extends Record<string, StorageObject[] | StorageObject | null | undefined>,
+  T extends Record<
+    string,
+    StorageObjectInput[] | StorageObjectInput | null | undefined
+  >,
   R extends Partial<
-    Record<keyof Files<T>, StorageObject | StorageObject[]>
+    Record<keyof Files<T>, StorageObjectInput | StorageObjectInput[]>
   > = {}
 >(
   files?: Files<T>

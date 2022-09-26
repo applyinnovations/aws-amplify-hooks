@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import { getFileUrl } from "./storageUtils";
-import { StorageObject } from "./types";
+import { StorageObjectInput } from "./types";
 
 export const usePrevious = <T,>(value: T) => {
   const ref = useRef<T>();
@@ -24,15 +24,15 @@ const sortObjectKeys = (unorderedObject: KeyValuePair) => {
 };
 
 const deepEqual = (
-  valueA?: StorageObject | null,
-  valueB?: StorageObject | null
+  valueA?: StorageObjectInput | null,
+  valueB?: StorageObjectInput | null
 ): boolean => {
   const stringValueA = JSON.stringify(sortObjectKeys(valueA || {}));
   const stringValueB = JSON.stringify(sortObjectKeys(valueB || {}));
 
   return stringValueA === stringValueB;
 };
-export const useStorageObject = (storageObject?: StorageObject | null) => {
+export const useStorageObject = (storageObject?: StorageObjectInput | null) => {
   const [url, setUrl] = useState<string>();
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string>();

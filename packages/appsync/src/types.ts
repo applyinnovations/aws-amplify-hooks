@@ -14,13 +14,6 @@ export enum StorageObjectLevel {
   public = "public",
 }
 
-export interface StorageObject {
-  key: string;
-  identityId?: string | null;
-  level: StorageObjectLevel;
-  contentType: string;
-}
-
 export declare type GetKeys<T, J> = NonNullable<
   {
     [K in keyof T]: T[K] extends J ? K : never;

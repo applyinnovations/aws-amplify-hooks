@@ -2,7 +2,7 @@ export { createAppSyncHooks } from "./src/createAppSyncHooks";
 export { useStorageObject } from "./src/useStorageObject";
 export type {
   StorageObjectLevel,
-  StorageObject,
+  StorageObjectInput,
   Files,
   FileInput,
 } from "./src/types";
