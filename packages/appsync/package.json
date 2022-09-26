@@ -1,10 +1,13 @@
 {
   "name": "@aws-amplify-hooks/appsync",
-  "version": "0.0.2",
+  "version": "0.0.3",
   "license": "MIT",
   "scripts": {
     "build": "rm -rf dist/ && tsc",
     "prepublish": "npm run build"
+  },
+  "bin": {
+    "typegen": "./bin/typegen"
   },
   "main": "dist/index.js",
   "types": "dist/index.d.ts",

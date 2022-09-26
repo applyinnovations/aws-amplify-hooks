@@ -1,0 +1,141 @@
+#!/usr/bin/env node
+
+const readline = require("readline");
+const events = require("events");
+const fs = require("fs");
+
+const apiPath = process.argv[2];
+
+if (!apiPath) {
+  throw new Error("Pass path to api.ts");
+}
+
+const path = require("path");
+
+const FILE_PATH = path.join(process.cwd(), apiPath);
+
+const QUERY_REGEX = /export type (((List|Get|Sync).*)Query) =/;
+const QUERY_VARIABLES_REGEX =
+  /export type (((List|Get|Sync).*)QueryVariables) =/;
+const MUTATION_REGEX = /export type (((Create|Update|Delete).*)Mutation) =/;
+const MUTATION_VARIABLES_REGEX =
+  /export type (((Create|Update|Delete).*)MutationVariables) =/;
+const SUBSCRIPTION_REGEX =
+  /export type (((OnCreate|OnUpdate|OnDelete).*)Subscription) =/;
+const SUBSCRIPTION_VARIABLES_REGEX =
+  /export type (((OnCreate|OnUpdate|OnDelete).*)SubscriptionVariables) =/;
+
+const allFileContents = fs.readFileSync(FILE_PATH, "utf-8");
+allFileContents.split();
+
+const queryTypes = {};
+const mutationTypes = {};
+const subscriptionTypes = {};
+
+(async () => {
+  try {
+    const rl = readline.createInterface({
+      input: fs.createReadStream(FILE_PATH),
+      crlfDelay: Infinity,
+    });
+
+    rl.on("line", (line) => {
+      setIfMatch({
+        accumulator: queryTypes,
+        field: "data",
+        str: line,
+        regex: QUERY_REGEX,
+      });
+      setIfMatch({
+        accumulator: queryTypes,
+        field: "variables",
+        str: line,
+        regex: QUERY_VARIABLES_REGEX,
+      });
+      setIfMatch({
+        accumulator: mutationTypes,
+        field: "data",
+        str: line,
+        regex: MUTATION_REGEX,
+      });
+      setIfMatch({
+        accumulator: mutationTypes,
+        field: "variables",
+        str: line,
+        regex: MUTATION_VARIABLES_REGEX,
+      });
+      setIfMatch({
+        accumulator: subscriptionTypes,
+        field: "data",
+        str: line,
+        regex: SUBSCRIPTION_REGEX,
+      });
+      setIfMatch({
+        accumulator: subscriptionTypes,
+        field: "variables",
+        str: line,
+        regex: SUBSCRIPTION_VARIABLES_REGEX,
+      });
+    });
+
+    await events.once(rl, "close");
+
+    // write queries
+    let content = "export type Queries = {\n";
+    Object.entries(queryTypes).forEach(([key, value]) => {
+      content += `  ${key}: {
+    data: ${value.data || "never"}
+    variables: ${value.variables || "never"}
+  }\n`;
+    });
+    content += "};";
+
+    // write mutations
+    content += "\n\nexport type Mutations = {\n";
+    Object.entries(mutationTypes).forEach(([key, value]) => {
+      content += `  ${key}: {
+    data: ${value.data || "never"}
+    variables: ${value.variables || "never"}
+  }\n`;
+    });
+    content += "};";
+
+    // write subscription
+    content += "\n\nexport type Subscriptions = {\n";
+    Object.entries(subscriptionTypes).forEach(([key, value]) => {
+      content += `  ${key}: {
+    data: ${value.data || "never"}
+    variables: ${value.variables || "undefined"}
+  }\n`;
+    });
+    content += "};";
+
+    fs.appendFileSync(FILE_PATH, content);
+    console.log("Done! Queries and Mutations type generated.");
+  } catch (err) {
+    console.error(err);
+  }
+})();
+
+const getMatchVariable = (str, regex) => {
+  const match = str.match(regex);
+  if (!match) return [];
+
+  const key = match[2]
+    ? match[2].charAt(0).toLocaleLowerCase() + match[2].slice(1)
+    : undefined;
+
+  if (!key) return [];
+
+  return [key, match[1]];
+};
+
+const setIfMatch = ({ accumulator, field, regex, str }) => {
+  const [key, value] = getMatchVariable(str, regex);
+  if (key && value) {
+    accumulator[key] = {
+      ...(accumulator[key] || {}),
+      [field]: value,
+    };
+  }
+};
