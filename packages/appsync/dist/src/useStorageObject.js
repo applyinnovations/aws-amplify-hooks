@@ -2,7 +2,7 @@ import { useEffect, useRef, useState } from "react";
 import { getFileUrl } from "./storageUtils";
 export var usePrevious = function (value) {
     var ref = useRef();
-    if (ref.current === undefined) {
+    if (ref.current) {
         ref.current = value;
     }
     return ref.current;

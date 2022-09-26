@@ -5,7 +5,7 @@ import { StorageObject } from "./types";
 export const usePrevious = <T,>(value: T) => {
   const ref = useRef<T>();
 
-  if (ref.current === undefined) {
+  if (ref.current) {
     ref.current = value;
   }
 

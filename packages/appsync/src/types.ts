@@ -1,3 +1,13 @@
+import { StorageAccessLevel } from "@aws-amplify/storage";
+export { StorageAccessLevel } from "@aws-amplify/storage";
+
+export type StorageObjectInput = {
+  key: string;
+  identityId?: string | null;
+  level: StorageObjectLevel;
+  contentType: string;
+};
+
 export enum StorageObjectLevel {
   private = "private",
   protected = "protected",
@@ -17,11 +27,14 @@ export declare type GetKeys<T, J> = NonNullable<
   }[keyof T]
 >;
 
-export declare type FileKeys<T> = GetKeys<T, StorageObject | null | undefined>;
+export declare type FileKeys<T> = GetKeys<
+  T,
+  StorageObjectInput | null | undefined
+>;
 
 export declare type FileArrayKeys<T> = GetKeys<
   T,
-  StorageObject[] | null | undefined
+  StorageObjectInput[] | null | undefined
 >;
 
 export declare type FileInput = {
