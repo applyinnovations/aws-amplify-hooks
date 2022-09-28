@@ -16,4 +16,4 @@ export var buildClient = function (_a) {
         cache: cache,
     });
 };
-//# sourceMappingURL=client.js.map
+//# sourceMappingURL=buildClient.js.map
