@@ -118,16 +118,12 @@ export const createAppSyncHooks = <
         ? await resolveFiles<MT[T]["variables"]["input"]>(f)
         : {};
 
-      const joinedInput = {
-        ...(opts.variables?.input || {}),
-        ...resolvedFiles,
-      };
-
       return m({
         ...opts,
         variables: {
           input: {
-            ...joinedInput,
+            ...(opts.variables?.input || {}),
+            ...resolvedFiles,
           },
         },
       });
