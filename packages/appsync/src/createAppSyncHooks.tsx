@@ -1,12 +1,7 @@
-import React, { useEffect, useState } from "react";
-import { createAuthLink } from "aws-appsync-auth-link";
-import { createSubscriptionHandshakeLink } from "aws-appsync-subscription-link";
+import React from "react";
 import {
   gql,
   ApolloClient,
-  InMemoryCache,
-  HttpLink,
-  ApolloLink,
   useQuery as useQueryApollo,
   useMutation as useMutationApollo,
   useSubscription as useSubscriptionApollo,
@@ -18,10 +13,9 @@ import {
 } from "@apollo/client";
 import { Files } from "./types";
 import { resolveFiles } from "./storageUtils";
-import { Auth } from "aws-amplify";
 
 export interface GraphqlProviderProps {
-  token?: string;
+  client: ApolloClient<any>;
 }
 
 export const createAppSyncHooks = <
@@ -32,45 +26,15 @@ export const createAppSyncHooks = <
   queries,
   mutations,
   subscriptions,
-  url,
-  region,
-  type,
   refetchSubscriptions,
 }: {
   queries: Record<keyof QT, string>;
   mutations: Record<keyof MT, string>;
   subscriptions: Record<keyof ST, string>;
-  url: string;
-  type: "AMAZON_COGNITO_USER_POOLS";
-  region: string;
   refetchSubscriptions?: Partial<
     Record<keyof ST, (keyof QT)[] | "all" | "active">
   >;
 }) => {
-  const buildClient = ({ token }: { token?: string }) => {
-    const auth = {
-      type,
-      jwtToken: () => token || "",
-    };
-
-    const httpLink = ApolloLink.from([
-      createAuthLink({
-        url,
-        region,
-        auth,
-      }),
-      createSubscriptionHandshakeLink(
-        { url, region, auth },
-        new HttpLink({ uri: url })
-      ),
-    ]);
-
-    return new ApolloClient({
-      link: httpLink,
-      cache: new InMemoryCache(),
-    });
-  };
-
   const RefetchSubscription: React.FC<{
     mutation: keyof ST;
     include: "all" | "active" | (keyof QT)[];
@@ -106,30 +70,13 @@ export const createAppSyncHooks = <
 
   const GraphqlProvider: React.FC<
     React.PropsWithChildren<GraphqlProviderProps>
-  > = ({ token, children }) => {
-    const client = buildClient({ token });
-
+  > = ({ client, children }) => {
     return (
       <ApolloProvider client={client}>
         <RefetchSubscriptions />
         {children}
       </ApolloProvider>
     );
-  };
-
-  const GraphqlWrapper: React.FC<React.PropsWithChildren<{}>> = ({
-    children,
-  }) => {
-    const [token, setToken] = useState<string>();
-
-    useEffect(() => {
-      Auth.currentSession().then((data) => {
-        // @ts-expect-error
-        setToken(data?.accessToken?.jwtToken);
-      });
-    }, []);
-
-    return <GraphqlProvider token={token}>{children}</GraphqlProvider>;
   };
 
   const useSubscription = <T extends keyof ST>(
@@ -190,7 +137,7 @@ export const createAppSyncHooks = <
   };
 
   return {
-    GraphqlWrapper,
+    GraphqlProvider,
     useQuery,
     useMutation,
     useSubscription,

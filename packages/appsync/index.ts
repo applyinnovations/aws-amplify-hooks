@@ -6,3 +6,5 @@ export type {
   Files,
   FileInput,
 } from "./src/types";
+export { buildClient } from "./src/client";
+export type { BuildClientOptions } from "./src/client";

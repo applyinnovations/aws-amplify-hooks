@@ -1,8 +1,8 @@
 import React from "react";
-import { QueryHookOptions, MutationHookOptions, SubscriptionHookOptions } from "@apollo/client";
+import { ApolloClient, QueryHookOptions, MutationHookOptions, SubscriptionHookOptions } from "@apollo/client";
 import { Files } from "./types";
 export interface GraphqlProviderProps {
-    token?: string;
+    client: ApolloClient<any>;
 }
 export declare const createAppSyncHooks: <QT extends Record<string, {
     variables?: any;
@@ -13,18 +13,13 @@ export declare const createAppSyncHooks: <QT extends Record<string, {
 }>, ST extends Record<string, {
     variables?: any;
     data: any;
-}>>({ queries, mutations, subscriptions, url, region, type, refetchSubscriptions, }: {
+}>>({ queries, mutations, subscriptions, refetchSubscriptions, }: {
     queries: Record<keyof QT, string>;
     mutations: Record<keyof MT, string>;
     subscriptions: Record<keyof ST, string>;
-    url: string;
-    type: "AMAZON_COGNITO_USER_POOLS";
-    region: string;
     refetchSubscriptions?: Partial<Record<keyof ST, (keyof QT)[] | "all" | "active">> | undefined;
 }) => {
-    GraphqlWrapper: React.FC<{
-        children?: React.ReactNode;
-    }>;
+    GraphqlProvider: React.FC<React.PropsWithChildren<GraphqlProviderProps>>;
     useQuery: <T extends keyof QT>(query: T, options?: QueryHookOptions<QT[T]["data"], QT[T]["variables"]>) => import("@apollo/client").QueryResult<QT[T]["data"], QT[T]["variables"]>;
     useMutation: <T_1 extends keyof MT, F = Files<MT[T_1]["variables"]["input"]>>(mutation: T_1) => readonly [({ files: f, ...opts }: MutationHookOptions<MT[T_1]["data"], MT[T_1]["variables"], import("@apollo/client").DefaultContext, import("@apollo/client").ApolloCache<any>> & {
         files?: F | undefined;

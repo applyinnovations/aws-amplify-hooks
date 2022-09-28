@@ -56,33 +56,11 @@ var __rest = (this && this.__rest) || function (s, e) {
         }
     return t;
 };
-import React, { useEffect, useState } from "react";
-import { createAuthLink } from "aws-appsync-auth-link";
-import { createSubscriptionHandshakeLink } from "aws-appsync-subscription-link";
-import { gql, ApolloClient, InMemoryCache, HttpLink, ApolloLink, useQuery as useQueryApollo, useMutation as useMutationApollo, useSubscription as useSubscriptionApollo, ApolloProvider, useApolloClient, } from "@apollo/client";
+import React from "react";
+import { gql, useQuery as useQueryApollo, useMutation as useMutationApollo, useSubscription as useSubscriptionApollo, ApolloProvider, useApolloClient, } from "@apollo/client";
 import { resolveFiles } from "./storageUtils";
-import { Auth } from "aws-amplify";
 export var createAppSyncHooks = function (_a) {
-    var queries = _a.queries, mutations = _a.mutations, subscriptions = _a.subscriptions, url = _a.url, region = _a.region, type = _a.type, refetchSubscriptions = _a.refetchSubscriptions;
-    var buildClient = function (_a) {
-        var token = _a.token;
-        var auth = {
-            type: type,
-            jwtToken: function () { return token || ""; },
-        };
-        var httpLink = ApolloLink.from([
-            createAuthLink({
-                url: url,
-                region: region,
-                auth: auth,
-            }),
-            createSubscriptionHandshakeLink({ url: url, region: region, auth: auth }, new HttpLink({ uri: url })),
-        ]);
-        return new ApolloClient({
-            link: httpLink,
-            cache: new InMemoryCache(),
-        });
-    };
+    var queries = _a.queries, mutations = _a.mutations, subscriptions = _a.subscriptions, refetchSubscriptions = _a.refetchSubscriptions;
     var RefetchSubscription = function (_a) {
         var mutation = _a.mutation, include = _a.include;
         var client = useApolloClient();
@@ -104,23 +82,10 @@ export var createAppSyncHooks = function (_a) {
             : null));
     };
     var GraphqlProvider = function (_a) {
-        var token = _a.token, children = _a.children;
-        var client = buildClient({ token: token });
+        var client = _a.client, children = _a.children;
         return (React.createElement(ApolloProvider, { client: client },
             React.createElement(RefetchSubscriptions, null),
             children));
-    };
-    var GraphqlWrapper = function (_a) {
-        var children = _a.children;
-        var _b = useState(), token = _b[0], setToken = _b[1];
-        useEffect(function () {
-            Auth.currentSession().then(function (data) {
-                var _a;
-                // @ts-expect-error
-                setToken((_a = data === null || data === void 0 ? void 0 : data.accessToken) === null || _a === void 0 ? void 0 : _a.jwtToken);
-            });
-        }, []);
-        return React.createElement(GraphqlProvider, { token: token }, children);
     };
     var useSubscription = function (subscription, options) {
         return useSubscriptionApollo(gql(subscriptions[subscription]), options);
@@ -157,7 +122,7 @@ export var createAppSyncHooks = function (_a) {
         return [mutate, result];
     };
     return {
-        GraphqlWrapper: GraphqlWrapper,
+        GraphqlProvider: GraphqlProvider,
         useQuery: useQuery,
         useMutation: useMutation,
         useSubscription: useSubscription,
