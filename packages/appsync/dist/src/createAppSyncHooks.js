@@ -97,7 +97,7 @@ export var createAppSyncHooks = function (_a) {
     var useMutation = function (mutation) {
         var _a = useMutationApollo(gql(mutations[mutation])), m = _a[0], result = _a[1];
         var mutate = function (_a) { var _b; return __awaiter(void 0, void 0, void 0, function () {
-            var resolvedFiles, _c, joinedInput;
+            var resolvedFiles, _c;
             var f = _a.files, opts = __rest(_a, ["files"]);
             return __generator(this, function (_d) {
                 switch (_d.label) {
@@ -112,9 +112,8 @@ export var createAppSyncHooks = function (_a) {
                         _d.label = 3;
                     case 3:
                         resolvedFiles = _c;
-                        joinedInput = __assign(__assign({}, (((_b = opts.variables) === null || _b === void 0 ? void 0 : _b.input) || {})), resolvedFiles);
                         return [2 /*return*/, m(__assign(__assign({}, opts), { variables: {
-                                    input: __assign({}, joinedInput),
+                                    input: __assign(__assign({}, (((_b = opts.variables) === null || _b === void 0 ? void 0 : _b.input) || {})), resolvedFiles),
                                 } }))];
                 }
             });
