@@ -147,13 +147,6 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({
         }
       } catch (err) {
         const e = err as { code?: string; message?: string };
-        console.log("Sign in error", e);
-        if (!e?.code) {
-          return {
-            action,
-            error: e.message || "Unknown Error",
-          };
-        }
 
         if (e.code === SIGN_IN_ERROR_CODES.UserNotFoundException) {
           const result = await Auth.signUp({
@@ -171,7 +164,11 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({
 
           codeDeliveryDetails = result.codeDeliveryDetails;
         } else {
-          error = e.code;
+          console.error("Unknown Sign in error", e);
+          return {
+            action,
+            error: e.code || e.message || "Unknown Error",
+          };
         }
       }
 
