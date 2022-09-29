@@ -126,7 +126,7 @@ export var AuthProvider = function (_a) {
                     hashedPassword = getPassword(phone);
                     _b.label = 1;
                 case 1:
-                    _b.trys.push([1, 7, , 12]);
+                    _b.trys.push([1, 7, , 13]);
                     return [4 /*yield*/, Auth.signIn(phone, hashedPassword)];
                 case 2:
                     signInUser_1 = _b.sent();
@@ -157,18 +157,10 @@ export var AuthProvider = function (_a) {
                 case 5:
                     setAuthenticated(true);
                     _b.label = 6;
-                case 6: return [3 /*break*/, 12];
+                case 6: return [3 /*break*/, 13];
                 case 7:
                     err_1 = _b.sent();
                     e = err_1;
-                    console.log("Sign in error", e);
-                    if (!(e === null || e === void 0 ? void 0 : e.code)) {
-                        return [2 /*return*/, {
-                                action: action,
-                                error: e.message || "Unknown Error",
-                            }];
-                    }
-                    error = e.code;
                     if (!(e.code === SIGN_IN_ERROR_CODES.UserNotFoundException)) return [3 /*break*/, 9];
                     return [4 /*yield*/, Auth.signUp({
                             username: phone,
@@ -181,16 +173,22 @@ export var AuthProvider = function (_a) {
                     result = _b.sent();
                     codeDeliveryDetails = result.codeDeliveryDetails;
                     user = result.user;
-                    return [3 /*break*/, 11];
+                    return [3 /*break*/, 12];
                 case 9:
                     if (!(e.code === SIGN_IN_ERROR_CODES.UserNotConfirmedException)) return [3 /*break*/, 11];
                     return [4 /*yield*/, Auth.resendSignUp(phone)];
                 case 10:
                     result = _b.sent();
                     codeDeliveryDetails = result.codeDeliveryDetails;
-                    _b.label = 11;
-                case 11: return [3 /*break*/, 12];
-                case 12:
+                    return [3 /*break*/, 12];
+                case 11:
+                    console.error("Unknown Sign in error", e);
+                    return [2 /*return*/, {
+                            action: action,
+                            error: e.message || e.code || "Unknown Error",
+                        }];
+                case 12: return [3 /*break*/, 13];
+                case 13:
                     setCognitoUser(user);
                     return [2 /*return*/, {
                             user: user,
