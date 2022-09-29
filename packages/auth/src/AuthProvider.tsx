@@ -167,7 +167,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({
           console.error("Unknown Sign in error", e);
           return {
             action,
-            error: e.code || e.message || "Unknown Error",
+            error: e.message || e.code || "Unknown Error",
           };
         }
       }
