@@ -155,8 +155,6 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({
           };
         }
 
-        error = e.code;
-
         if (e.code === SIGN_IN_ERROR_CODES.UserNotFoundException) {
           const result = await Auth.signUp({
             username: phone,
@@ -172,6 +170,8 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({
           const result = await Auth.resendSignUp(phone);
 
           codeDeliveryDetails = result.codeDeliveryDetails;
+        } else {
+          error = e.code;
         }
       }
 
